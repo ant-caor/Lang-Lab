@@ -1,0 +1,43 @@
+name: version-watch
+
+# Polls endoflife.date weekly for new language releases and opens a PR that
+# bumps versions.lock.json. Runs on free GitHub-hosted runners.
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check upstream versions
+        id: check
+        run: node scripts/check-versions.mjs
+
+      - name: Open PR if versions changed
+        if: steps.check.outputs.updated != ''
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/bump-language-versions
+          title: "chore: bump language versions"
+          commit-message: "chore: bump language versions"
+          body: |
+            Automated version bump detected by the version watcher.
+
+            Updated languages: ${{ steps.check.outputs.updated }}
+
+            Merging this triggers a fresh benchmark run.
+          labels: |
+            automated
+            versions

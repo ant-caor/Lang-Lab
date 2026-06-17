@@ -1,0 +1,9 @@
+{
+  "benchmark": "blur",
+  "n1": 128,
+  "n2": 256,
+  "checksums": {
+    "n1": { "sum": "722869223", "secondary": "" },
+    "n2": { "sum": "229750350", "secondary": "" }
+  }
+}

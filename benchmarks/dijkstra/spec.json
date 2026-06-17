@@ -1,0 +1,9 @@
+{
+  "benchmark": "dijkstra",
+  "n1": 5000,
+  "n2": 20000,
+  "checksums": {
+    "n1": { "sum": "562612262", "secondary": "" },
+    "n2": { "sum": "735570774", "secondary": "" }
+  }
+}

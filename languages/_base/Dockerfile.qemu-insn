@@ -1,0 +1,43 @@
+# Builds qemu-user + a matching TCG `insn` plugin ONCE, bundled with its shared-lib
+# closure and RPATH'd ($ORIGIN) so it loads in any consumer image (glibc >= 2.36)
+# WITHOUT leaking LD_LIBRARY_PATH into the emulated guest (that would break interpreters/VMs).
+# Build & tag first:  docker build -f languages/_base/Dockerfile.qemu-insn -t lang-lab-qemu-insn .
+#
+# The plugin source (tests/plugin/insn.c + include/qemu/qemu-plugin.h) is VENDORED under
+# languages/_base/qemu-plugin/ at the v7.2.0 tag, so the build is hermetic (no network fetch /
+# supply-chain dependency) and ABI-matched to Debian bookworm's qemu-user (7.2 series, plugin
+# API v1). This backend measures ALL languages (native, interpreter, JVM/CLR, BEAM); the trick
+# was resolving argv[0] to an absolute path in measure.sh (qemu-user doesn't PATH-resolve).
+FROM debian:bookworm-slim AS qemu-insn
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      qemu-user build-essential libglib2.0-dev pkg-config patchelf \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY languages/_base/qemu-plugin/ /plugin/src/
+WORKDIR /plugin
+RUN set -eux; \
+    # Pick the host-arch qemu (arm64 locally / amd64 in CI); the output filename is just a label.
+    case "$(dpkg --print-architecture)" in arm64) Q=qemu-aarch64;; amd64) Q=qemu-x86_64;; *) Q=qemu-aarch64;; esac; \
+    mm="$("$Q" --version | grep -oE '[0-9]+\.[0-9]+' | head -1)"; echo "$mm" > /plugin/QEMU_VERSION; \
+    gcc -fPIC -shared -I/plugin/src $(pkg-config --cflags glib-2.0) /plugin/src/insn.c \
+        -o /plugin/libinsn.so $(pkg-config --libs glib-2.0); \
+    cp "$(command -v "$Q")" /plugin/qemu-aarch64; \
+    # Bundle the shared-lib closure of qemu + the plugin (libcapstone, libglib, …); keep the
+    # image's own libc/loader so glibc>=2.36 consumers resolve those natively.
+    mkdir -p /plugin/lib; \
+    { ldd /plugin/qemu-aarch64; ldd /plugin/libinsn.so; } | awk '/=>/{print $3}' | grep -E '^/' | sort -u \
+      | while read -r so; do cp -L "$so" /plugin/lib/ 2>/dev/null || true; done; \
+    rm -f /plugin/lib/libc.so.* /plugin/lib/ld-linux-* /plugin/lib/libm.so.* \
+          /plugin/lib/libpthread.so.* /plugin/lib/libdl.so.* /plugin/lib/librt.so.*; \
+    patchelf --set-rpath '$ORIGIN/lib' /plugin/qemu-aarch64; \
+    patchelf --set-rpath '$ORIGIN/lib' /plugin/libinsn.so; \
+    for f in /plugin/lib/*; do patchelf --set-rpath '$ORIGIN' "$f" 2>/dev/null || true; done; \
+    # self-test: qemu must exit cleanly AND the plugin must report a POSITIVE instruction count,
+    # all via the RPATH bundle (no LD_LIBRARY_PATH). Capturing to a var (not a pipe) means a
+    # qemu crash after printing the summary still fails the build.
+    out="$(/plugin/qemu-aarch64 -plugin /plugin/libinsn.so -d plugin /bin/true 2>&1)" \
+      || { echo "qemu-insn self-test: qemu exited non-zero" >&2; exit 1; }; \
+    echo "$out" | grep -qE 'total insns: [1-9][0-9]*'; \
+    echo "qemu-insn base OK (qemu ${mm}, $(ls /plugin/lib | wc -l) bundled libs)"

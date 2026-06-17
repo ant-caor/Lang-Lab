@@ -1,0 +1,144 @@
+name: benchmark
+
+# Builds a version-pinned Docker image per language and measures deterministic
+# instruction counts UNIFORMLY under qemu-user + the TCG `insn` plugin, for EVERY
+# benchmark under benchmarks/. GitHub runners are amd64 → results tagged isa=x86_64.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "versions.lock.json"
+      - "languages.json"
+      - "languages/**"
+      - "benchmarks/**"
+      - "scripts/measure.sh"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Serialize runs so the collect job's commit/push to main can't race.
+concurrency:
+  group: benchmark-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build qemu-insn base (once, shared with the matrix)
+        run: |
+          docker build -f languages/_base/Dockerfile.qemu-insn -t lang-lab-qemu-insn .
+          docker save lang-lab-qemu-insn | gzip > qemu-insn.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qemu-insn-base
+          path: qemu-insn.tar.gz
+
+  matrix:
+    needs: base
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [c, python, go, rust, swift, perl, php, kotlin, csharp, elixir, scala]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: qemu-insn-base
+      - name: Load qemu-insn base
+        run: gunzip -c qemu-insn.tar.gz | docker load
+
+      - name: Read registry
+        id: reg
+        run: |
+          L='${{ matrix.language }}'
+          echo "version=$(jq -r --arg l "$L" '.[$l]' versions.lock.json)" >> "$GITHUB_OUTPUT"
+          echo "arg=$(jq -r --arg l "$L" '.[$l].buildArg' languages.json)" >> "$GITHUB_OUTPUT"
+          echo "kind=$(jq -r --arg l "$L" '.[$l].runtimeKind // "native"' languages.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Build image (compiles every benchmark for this language)
+        run: |
+          docker build -f "languages/${{ matrix.language }}/Dockerfile" \
+            --build-arg "${{ steps.reg.outputs.arg }}=${{ steps.reg.outputs.version }}" \
+            -t "lang-lab-${{ matrix.language }}" .
+
+      - name: Measure every benchmark (qemu+insn, median of 5)
+        # N1/N2 and the checksum gates are spec-driven per benchmark; measure.sh
+        # appends the size itself. The `run` template's {b} is the benchmark name;
+        # elixir wraps it so beam.smp runs directly (launchWrap).
+        run: |
+          L='${{ matrix.language }}'
+          KIND='${{ steps.reg.outputs.kind }}'
+          RUN_TMPL=$(jq -r --arg l "$L" '.[$l].run' languages.json)
+          WRAP=$(jq -r --arg l "$L" '.[$l].launchWrap // false' languages.json)
+          envflags=()
+          while IFS=$'\t' read -r k v; do [ -n "$k" ] && envflags+=(-e "$k=$v"); done < <(
+            jq -r --arg l "$L" '.[$l].runtimeEnv // {} | to_entries[] | "\(.key)\t\(.value)"' languages.json)
+          for spec in benchmarks/*/spec.json; do
+            b=$(jq -r .benchmark "$spec")
+            n1=$(jq -r .n1 "$spec"); n2=$(jq -r .n2 "$spec")
+            c1=$(jq -r '.checksums.n1.sum' "$spec"); s1=$(jq -r '.checksums.n1.secondary // ""' "$spec")
+            c2=$(jq -r '.checksums.n2.sum' "$spec"); s2=$(jq -r '.checksums.n2.secondary // ""' "$spec")
+            runcmd="${RUN_TMPL//\{b\}/$b}"
+            if [ "$WRAP" = "true" ]; then
+              override=(sh -c "set -a; . /app/beam-launch; exec /usr/local/bin/measure.sh $L $b -- $runcmd")
+            else
+              override=(/usr/local/bin/measure.sh "$L" "$b" -- $runcmd)
+            fi
+            echo "::group::measure $L / $b"
+            docker run --rm \
+              -e RUNTIME_KIND="$KIND" -e N1="$n1" -e N2="$n2" -e RUNS=5 \
+              -e CHECK1_SUM="$c1" -e CHECK1_FLIPS="$s1" -e CHECK2_SUM="$c2" -e CHECK2_FLIPS="$s2" \
+              ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}" > "result-$L-$b.json"
+            cat "result-$L-$b.json"
+            echo "::endgroup::"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "result-${{ matrix.language }}"
+          path: "result-${{ matrix.language }}-*.json"
+
+  collect:
+    needs: matrix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Merge results into per-(isa, benchmark) envelopes
+        run: |
+          mkdir -p results
+          stamp="$(date -u +%Y-%m-%d)"; isa=x86_64   # GitHub runners are amd64
+          for spec in benchmarks/*/spec.json; do
+            b=$(jq -r .benchmark "$spec")
+            n1=$(jq -r .n1 "$spec"); n2=$(jq -r .n2 "$spec")
+            files=(artifacts/*/result-*-"$b".json)
+            [ -e "${files[0]}" ] || { echo "no results for $b - skipping"; continue; }
+            jq -s --arg b "$b" --arg date "$stamp" --arg isa "$isa" \
+               --argjson n1 "$n1" --argjson n2 "$n2" --slurpfile spec "$spec" \
+               '{benchmark:$b, date:$date, backend:"qemu-insn", isa:$isa,
+                 n1:$n1, n2:$n2, runs:5, checksums:$spec[0].checksums, results: .}' \
+               "${files[@]}" > "results/${stamp}-${isa}-${b}.json"
+            # Per-(ISA, benchmark) "latest" so an x86_64 run never mixes the arm64 history.
+            cp "results/${stamp}-${isa}-${b}.json" "results/latest-${isa}-${b}.json"
+          done
+
+      - name: Regenerate charts (one set per benchmark)
+        run: |
+          for f in results/latest-x86_64-*.json; do
+            echo "charts for $f"; python3 scripts/make_charts.py "$f"
+          done
+
+      - name: Commit results + charts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add results docs/charts
+          git commit -m "data: benchmark run ${GITHUB_SHA::7}" || { echo "no changes"; exit 0; }
+          git pull --rebase origin main && git push

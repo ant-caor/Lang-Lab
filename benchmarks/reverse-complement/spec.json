@@ -1,0 +1,9 @@
+{
+  "benchmark": "reverse-complement",
+  "n1": 100000,
+  "n2": 400000,
+  "checksums": {
+    "n1": { "sum": "827974717", "secondary": "" },
+    "n2": { "sum": "533032773", "secondary": "" }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "benchmark": "lz77",
+  "n1": 6000,
+  "n2": 24000,
+  "checksums": {
+    "n1": { "sum": "423979860", "secondary": "" },
+    "n2": { "sum": "850992747", "secondary": "" }
+  }
+}

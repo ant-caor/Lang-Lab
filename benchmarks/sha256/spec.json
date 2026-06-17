@@ -1,0 +1,9 @@
+{
+  "benchmark": "sha256",
+  "n1": 2500,
+  "n2": 10000,
+  "checksums": {
+    "n1": { "sum": "720457911", "secondary": "" },
+    "n2": { "sum": "506466333", "secondary": "" }
+  }
+}

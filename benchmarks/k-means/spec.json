@@ -1,0 +1,9 @@
+{
+  "benchmark": "k-means",
+  "n1": 2000,
+  "n2": 8000,
+  "checksums": {
+    "n1": { "sum": "70735446", "secondary": "" },
+    "n2": { "sum": "52003413", "secondary": "" }
+  }
+}

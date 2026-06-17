@@ -1,0 +1,84 @@
+{
+  "c": {
+    "baseline": true,
+    "dockerfile": "languages/c/Dockerfile",
+    "buildArg": "GCC_VERSION",
+    "runtimeKind": "native",
+    "run": "/app/{b}"
+  },
+  "python": {
+    "eol": "python",
+    "dockerfile": "languages/python/Dockerfile",
+    "buildArg": "PYTHON_VERSION",
+    "runtimeKind": "interp",
+    "run": "python /app/{b}.py"
+  },
+  "go": {
+    "eol": "go",
+    "dockerfile": "languages/go/Dockerfile",
+    "buildArg": "GO_VERSION",
+    "runtimeKind": "native",
+    "runtimeEnv": { "GOMAXPROCS": "1", "GOGC": "off", "GODEBUG": "asyncpreemptoff=1" },
+    "run": "/app/{b}"
+  },
+  "rust": {
+    "eol": "rust",
+    "dockerfile": "languages/rust/Dockerfile",
+    "buildArg": "RUST_VERSION",
+    "runtimeKind": "native",
+    "run": "/app/{b}"
+  },
+  "swift": {
+    "versionSource": "manual",
+    "dockerfile": "languages/swift/Dockerfile",
+    "buildArg": "SWIFT_VERSION",
+    "runtimeKind": "native",
+    "run": "/app/{b}"
+  },
+  "perl": {
+    "eol": "perl",
+    "dockerfile": "languages/perl/Dockerfile",
+    "buildArg": "PERL_VERSION",
+    "runtimeKind": "interp",
+    "run": "perl /app/{b}.pl"
+  },
+  "php": {
+    "eol": "php",
+    "dockerfile": "languages/php/Dockerfile",
+    "buildArg": "PHP_VERSION",
+    "runtimeKind": "interp",
+    "run": "php /app/{b}.php"
+  },
+  "kotlin": {
+    "eol": "kotlin",
+    "dockerfile": "languages/kotlin/Dockerfile",
+    "buildArg": "KOTLIN_VERSION",
+    "runtimeKind": "inproc-vm",
+    "runtimeEnv": { "JAVA_TOOL_OPTIONS": "-XX:+UseSerialGC" },
+    "run": "java -jar /app/{b}.jar"
+  },
+  "csharp": {
+    "eol": "dotnet",
+    "dockerfile": "languages/csharp/Dockerfile",
+    "buildArg": "DOTNET_VERSION",
+    "runtimeKind": "inproc-vm",
+    "runtimeEnv": { "DOTNET_gcServer": "0", "DOTNET_TieredCompilation": "0" },
+    "run": "/app/out/{b}/{b}"
+  },
+  "elixir": {
+    "eol": "elixir",
+    "dockerfile": "languages/elixir/Dockerfile",
+    "buildArg": "ELIXIR_VERSION",
+    "runtimeKind": "native",
+    "launchWrap": true,
+    "run": "$BEAM_ARGV /app/{b}.exs"
+  },
+  "scala": {
+    "eol": "scala",
+    "dockerfile": "languages/scala/Dockerfile",
+    "buildArg": "SCALA_VERSION",
+    "runtimeKind": "inproc-vm",
+    "runtimeEnv": { "JAVA_TOOL_OPTIONS": "-XX:+UseSerialGC" },
+    "run": "java -jar /app/{b}.jar"
+  }
+}

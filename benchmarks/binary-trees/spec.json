@@ -1,0 +1,9 @@
+{
+  "benchmark": "binary-trees",
+  "n1": 10,
+  "n2": 14,
+  "checksums": {
+    "n1": { "sum": "135854", "secondary": "" },
+    "n2": { "sum": "3222190", "secondary": "" }
+  }
+}

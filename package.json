@@ -1,0 +1,11 @@
+{
+  "name": "lang-lab",
+  "version": "0.0.0",
+  "description": "Reproducible benchmarks for backend programming languages",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "check-versions": "node scripts/check-versions.mjs"
+  },
+  "license": "MIT"
+}

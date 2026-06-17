@@ -1,0 +1,9 @@
+{
+  "benchmark": "mandelbrot",
+  "n1": 128,
+  "n2": 256,
+  "checksums": {
+    "n1": { "sum": "6518", "secondary": "" },
+    "n2": { "sum": "26004", "secondary": "" }
+  }
+}

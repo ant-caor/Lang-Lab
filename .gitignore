@@ -1,0 +1,12 @@
+node_modules/
+*.log
+result-*.json
+.DS_Store
+
+# Claude Code local config - NUNCA se commitea (config personal, no parte del proyecto)
+CLAUDE.md
+.claude/
+
+# Python bytecode (never commit)
+__pycache__/
+*.pyc

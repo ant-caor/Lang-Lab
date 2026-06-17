@@ -1,0 +1,9 @@
+{
+  "benchmark": "sort-search",
+  "n1": 50000,
+  "n2": 200000,
+  "checksums": {
+    "n1": { "sum": "408844375", "secondary": "" },
+    "n2": { "sum": "110297196", "secondary": "" }
+  }
+}

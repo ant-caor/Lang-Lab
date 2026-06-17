@@ -1,0 +1,9 @@
+{
+  "benchmark": "k-nucleotide",
+  "n1": 100000,
+  "n2": 200000,
+  "checksums": {
+    "n1": { "sum": "267275319", "secondary": "" },
+    "n2": { "sum": "552155843", "secondary": "" }
+  }
+}

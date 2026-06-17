@@ -1,0 +1,9 @@
+{
+  "benchmark": "fannkuch",
+  "n1": 7,
+  "n2": 9,
+  "checksums": {
+    "n1": { "sum": "228", "secondary": "16" },
+    "n2": { "sum": "8629", "secondary": "30" }
+  }
+}
