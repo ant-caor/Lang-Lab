@@ -100,7 +100,7 @@ cancelling startup + JIT.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(200000) − I(100000)` normalized
 to **C = 1.0×**. Source: [`results/2026-06-17-arm64-k-nucleotide.json`](../../results/2026-06-17-arm64-k-nucleotide.json).
-All 11 printed the identical `267275319` / `552155843` checksums: the order-independent sum holds
+All 12 printed the identical `267275319` / `552155843` checksums: the order-independent sum holds
 across 11 completely different hash-map implementations.
 
 ![relative real work](../../docs/charts/k-nucleotide-diff-ratio.svg)
@@ -118,6 +118,7 @@ across 11 completely different hash-map implementations.
 | Perl | 881.3M | 1.18B | 299.7M | 36.40× | jitter |
 | Elixir | 2.41B | 2.74B | 326.4M | 39.64× | jitter |
 | Python | 709.7M | 1.12B | 410.1M | 49.80× | jitter |
+| Ruby | 5.29B | 17.13B | 11.84B | 1437.92× | jitter |
 
 ### The headline: the std hash map is expensive; a hand-rolled C table is not
 
@@ -129,6 +130,12 @@ the cost of a safe default (a Rust dev could opt into `ahash`/`FxHashMap` and ap
 managed languages cluster at **~10×** (Swift 9.67, C# 9.73, Kotlin 9.98, Scala 10.53): each
 allocates a heap string per k-mer and drives a hashed dictionary through a GC.
 
+**Ruby is the dramatic outlier: 1437.92×, the single most expensive cell in the entire suite** (past
+Perl's 701× on sha256). Its `Hash` keyed on per-k-mer **String** objects recomputes a full string
+hash and walks the table on every probe, all through the MRI object model. Where PHP's C-backed
+associative array keeps it to 16×, Ruby's general-purpose string-keyed map is its own worst axis by
+far, roughly 14× the next interpreter.
+
 **A fairness nuance worth stating:** C and Rust key on an inline / fixed-size 8-byte k-mer
 (`[u8; 8]`), so they skip the per-k-mer **heap string allocation** that Go, Swift, C#, Kotlin,
 Scala, Python, Perl and PHP each pay (their string slice/substring is a real allocation). That is
@@ -136,7 +143,7 @@ idiomatic for C and Rust and is documented in the representation table above; it
 the benchmark honestly measures (how cheaply *your* language lets you key a map by a short
 sequence), not a thumb on the scale.
 
-### The interpreters do *relatively well* here
+### The *other* interpreters do relatively well here
 
 PHP (16×), Perl (36×) and Python (50×) are far closer to C on hash maps than on raw compute,
 the inverse of mandelbrot, where they were 34×/217×/125×. The reason: an interpreter's

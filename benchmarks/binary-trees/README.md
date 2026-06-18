@@ -89,6 +89,7 @@ Uniform qemu+insn pass, **arm64**, median of 5, differential `I(14) − I(10)` n
 | Rust | 40.2M | 949.3M | 909.0M | 1.19× | exact |
 | Swift | 69.5M | 1.39B | 1.32B | 1.72× | exact |
 | PHP | 226.3M | 4.64B | 4.41B | 5.75× | exact |
+| Ruby | 625.7M | 8.55B | 7.93B | 10.34× | jitter |
 | Python | 399.7M | 8.95B | 8.55B | 11.15× | jitter |
 | Perl | 651.7M | 15.2B | 14.5B | 18.98× | jitter |
 

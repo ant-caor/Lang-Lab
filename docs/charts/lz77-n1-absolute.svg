@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="542" viewBox="0 0 760 542" font-family="ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial">
-<rect width="760" height="542" rx="10" fill="#0d1117"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="582" viewBox="0 0 760 582" font-family="ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial">
+<rect width="760" height="582" rx="10" fill="#0d1117"/>
 <text x="22" y="34" font-size="19" font-weight="700" fill="#e6edf3">lz77:instructions at n=6000</text>
 <text x="22" y="56" font-size="13" fill="#9aa7b4">absolute count · qemu+insn · arm64 · log scale</text>
 <text x="120" y="97" text-anchor="end" font-size="14" fill="#9aa7b4">C</text>
@@ -26,13 +26,16 @@
 <text x="120" y="377" text-anchor="end" font-size="14" fill="#9aa7b4">Scala</text>
 <rect x="132" y="361" width="417.7" height="24" rx="5" fill="#a371f7"/>
 <text x="558.7" y="378" font-size="13" fill="#e6edf3">697.24M</text>
-<text x="120" y="417" text-anchor="end" font-size="14" fill="#9aa7b4">Python</text>
-<rect x="132" y="401" width="481.4" height="24" rx="5" fill="#f0883e"/>
-<text x="622.4" y="418" font-size="13" fill="#e6edf3">1.36B</text>
-<text x="120" y="457" text-anchor="end" font-size="14" fill="#9aa7b4">Perl</text>
-<rect x="132" y="441" width="489.9" height="24" rx="5" fill="#f0883e"/>
-<text x="630.9" y="458" font-size="13" fill="#e6edf3">1.48B</text>
-<text x="120" y="497" text-anchor="end" font-size="14" fill="#9aa7b4">Elixir</text>
-<rect x="132" y="481" width="532.0" height="24" rx="5" fill="#a371f7"/>
-<text x="673.0" y="498" font-size="13" fill="#e6edf3">2.30B</text>
+<text x="120" y="417" text-anchor="end" font-size="14" fill="#9aa7b4">Ruby</text>
+<rect x="132" y="401" width="443.0" height="24" rx="5" fill="#f0883e"/>
+<text x="584.0" y="418" font-size="13" fill="#e6edf3">907.79M</text>
+<text x="120" y="457" text-anchor="end" font-size="14" fill="#9aa7b4">Python</text>
+<rect x="132" y="441" width="481.4" height="24" rx="5" fill="#f0883e"/>
+<text x="622.4" y="458" font-size="13" fill="#e6edf3">1.36B</text>
+<text x="120" y="497" text-anchor="end" font-size="14" fill="#9aa7b4">Perl</text>
+<rect x="132" y="481" width="489.9" height="24" rx="5" fill="#f0883e"/>
+<text x="630.9" y="498" font-size="13" fill="#e6edf3">1.48B</text>
+<text x="120" y="537" text-anchor="end" font-size="14" fill="#9aa7b4">Elixir</text>
+<rect x="132" y="521" width="532.0" height="24" rx="5" fill="#a371f7"/>
+<text x="673.0" y="538" font-size="13" fill="#e6edf3">2.30B</text>
 </svg>

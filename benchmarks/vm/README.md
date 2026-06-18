@@ -79,7 +79,7 @@ print "vm(N)"                                          # line 2
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(800000) − I(200000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-vm.json`](../../results/2026-06-17-arm64-vm.json).
-All 11 ran the same program and printed the identical `350689618` / `234207083` results.
+All 12 ran the same program and printed the identical `350689618` / `234207083` results.
 
 ![relative real work](../../docs/charts/vm-diff-ratio.svg)
 
@@ -95,6 +95,7 @@ All 11 ran the same program and printed the identical `350689618` / `234207083` 
 | Elixir | 2.3B | 3.0B | 754.4M | 4.59× | jitter |
 | PHP | 2.2B | 8.5B | 6.4B | 38.76× | exact |
 | Python | 4.3B | 17.3B | 12.9B | 78.57× | jitter |
+| Ruby | 4.9B | 18.8B | 13.9B | 84.66× | jitter |
 | Perl | 7.4B | 29.7B | 22.3B | 135.53× | jitter |
 
 ### The headline: an interpreter interpreting an interpreter, and Elixir's surprise

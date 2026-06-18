@@ -103,7 +103,7 @@ pointer-chasing, mutate-in-place graph algorithm on the BEAM.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(20000) − I(5000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-dijkstra.json`](../../results/2026-06-17-arm64-dijkstra.json).
-All 11 printed the identical `562612262` / `735570774` checksums: the same heap, the same relaxation
+All 12 printed the identical `562612262` / `735570774` checksums: the same heap, the same relaxation
 order.
 
 ![relative real work](../../docs/charts/dijkstra-diff-ratio.svg)
@@ -119,6 +119,7 @@ order.
 | Scala | 733.1M | 826.9M | 93.8M | 5.66× | jitter |
 | PHP | 216.3M | 821.7M | 605.4M | 36.54× | exact |
 | Elixir | 2.4B | 3.3B | 935.6M | 56.47× | jitter |
+| Ruby | 690.0M | 2.0B | 1.3B | 77.28× | jitter |
 | Python | 513.5M | 2.1B | 1.5B | 92.92× | jitter |
 | Perl | 790.4M | 3.4B | 2.6B | 155.46× | jitter |
 
@@ -150,6 +151,7 @@ Differential vs C = 1.0× across the complete suite:
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× | 4.39× | 3.55× | 4.95× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× | 9.42× | 36.47× | 56.47× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× | 39.44× | 39.28× | 36.54× |
+| Ruby | 104.64× | 10.34× | 117.20× | 1437.92× | 57.08× | 79.91× | 77.28× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× | 114.00× | 131.93× | 92.92× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× | 181.17× | 189.53× | 155.46× |
 

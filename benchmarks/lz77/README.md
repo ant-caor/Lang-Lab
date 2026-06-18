@@ -79,7 +79,7 @@ match-search work while cancelling startup.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(24000) − I(6000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-lz77.json`](../../results/2026-06-17-arm64-lz77.json).
-All 11 printed the identical `423979860` / `850992747` hashes.
+All 12 printed the identical `423979860` / `850992747` hashes.
 
 ![relative real work](../../docs/charts/lz77-diff-ratio.svg)
 
@@ -94,6 +94,7 @@ All 11 printed the identical `423979860` / `850992747` hashes.
 | Scala | 697.2M | 768.0M | 70.8M | 2.07× | jitter |
 | Elixir | 2.3B | 3.2B | 879.3M | 25.73× | jitter |
 | PHP | 363.0M | 1.4B | 1.0B | 29.89× | exact |
+| Ruby | 907.8M | 2.9B | 2.0B | 57.52× | jitter |
 | Python | 1.4B | 5.5B | 4.1B | 120.84× | jitter |
 | Perl | 1.5B | 6.0B | 4.6B | 133.54× | jitter |
 

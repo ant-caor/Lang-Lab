@@ -111,7 +111,7 @@ searches, so the differential `I(200000) − I(50000)` is dominated by the margi
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(200000) − I(50000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-sort-search.json`](../../results/2026-06-17-arm64-sort-search.json).
-All 11 printed the identical `408844375` / `110297196` checksums: the same quicksort and binary
+All 12 printed the identical `408844375` / `110297196` checksums: the same quicksort and binary
 search, operation for operation.
 
 ![relative real work](../../docs/charts/sort-search-diff-ratio.svg)
@@ -127,6 +127,7 @@ search, operation for operation.
 | Kotlin | 280.9M | 467.8M | 186.9M | 3.55× | jitter |
 | Elixir | 2.6B | 4.5B | 1.9B | 36.47× | jitter |
 | PHP | 646.0M | 2.7B | 2.1B | 39.28× | exact |
+| Ruby | 1.5B | 5.7B | 4.2B | 79.91× | jitter |
 | Python | 2.1B | 9.0B | 7.0B | 131.93× | jitter |
 | Perl | 3.0B | 13.0B | 10.0B | 189.53× | jitter |
 

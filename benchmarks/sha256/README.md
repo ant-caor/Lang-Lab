@@ -78,7 +78,7 @@ the differential `I(10000) − I(2500)` is dominated by the marginal compression
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(10000) − I(2500)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-sha256.json`](../../results/2026-06-17-arm64-sha256.json).
-All 11 printed the identical `720457911` / `506466333` hashes.
+All 12 printed the identical `720457911` / `506466333` hashes.
 
 ![relative real work](../../docs/charts/sha256-diff-ratio.svg)
 
@@ -93,12 +93,14 @@ All 11 printed the identical `720457911` / `506466333` hashes.
 | Scala | 715.3M | 855.3M | 140.1M | 5.61× | jitter |
 | Elixir | 2.4B | 3.2B | 772.6M | 30.97× | jitter |
 | PHP | 850.3M | 3.3B | 2.4B | 98.02× | exact |
+| Ruby | 2.6B | 9.5B | 6.9B | 278.14× | jitter |
 | Python | 5.0B | 20.0B | 15.0B | 600.64× | jitter |
 | Perl | 5.8B | 23.3B | 17.5B | 701.29× | jitter |
 
 ### The headline: no native 32-bit integer is catastrophic
 
-This is the most extreme spread in the suite, and the reason is the one rule the benchmark turns on:
+After k-nucleotide (where Ruby's string-keyed hash reaches 1437.92×) this is the most extreme spread
+in the suite, and the reason is the one rule the benchmark turns on:
 every operation is **unsigned 32-bit**. Rust (0.90×, beating C), C, Go, C# and Swift all have a native
 `u32`/`uint` whose adds wrap and whose shifts are free, so they sit at 0.9–1.8×. The languages with
 **no native 32-bit type pay for it on every single operation**: Python (`600×`) and Perl (`701×`)
@@ -123,6 +125,7 @@ graph / image / ML / crypto):
 | Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 | 5.45 |
 | Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 | 30.97 |
 | PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 | 98.02 |
+| Ruby | 104.64 | 10.34 | 117.20 | 1437.92 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 |
 | Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 | 600.64 |
 | Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 | 701.29 |
 

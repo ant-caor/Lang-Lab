@@ -98,7 +98,7 @@ JIT. Tunable up for a stronger signal if the slow interpreters stay tractable un
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(256) − I(128)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-mandelbrot.json`](../../results/2026-06-17-arm64-mandelbrot.json).
-All 11 printed the identical `6518` / `26004` counts; the FMA-proof formulation holds across
+All 12 printed the identical `6518` / `26004` counts; the FMA-proof formulation holds across
 every toolchain.
 
 ![relative real work](../../docs/charts/mandelbrot-diff-ratio.svg)
@@ -114,6 +114,7 @@ every toolchain.
 | Go | 6.2M | 24.2M | 17.9M | 1.29× | jitter |
 | Elixir | 2.05B | 2.31B | 261.2M | 18.76× | jitter |
 | PHP | 192.8M | 667.4M | 474.6M | 34.10× | exact |
+| Ruby | 825.5M | 2.46B | 1.63B | 117.20× | jitter |
 | Python | 620.0M | 2.36B | 1.74B | 124.76× | jitter |
 | Perl | 1.02B | 4.04B | 3.02B | 216.87× | jitter |
 

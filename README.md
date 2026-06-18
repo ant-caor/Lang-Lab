@@ -34,7 +34,7 @@ capture real latency, parallelism, memory bandwidth, or the per-instruction cost
 varies by ISA and microarchitecture). It is a measure of **computational work**, not absolute
 speed.
 
-## Languages (10 + a C baseline)
+## Languages (11 + a C baseline)
 
 Chosen to cover every backend **runtime archetype**, not just the popular ones, so the
 methodology meets the hard runtimes early.
@@ -43,7 +43,7 @@ methodology meets the hard runtimes early.
 |---|---|
 | Native (no GC) | **Rust**, **Swift**, **C** (1.0× baseline) |
 | Compiled + concurrent GC | **Go** |
-| Interpreter | **Python**, **Perl**, **PHP** |
+| Interpreter | **Python**, **Perl**, **PHP**, **Ruby** |
 | VM with JIT + GC | **Kotlin** (JVM), **Scala** (JVM), **C#** (CLR) |
 | Actor VM (BEAM) | **Elixir** |
 
@@ -151,7 +151,7 @@ docs/charts/                     generated SVG charts
 
 ## Status
 
-**v0**: 10 languages + a C baseline measured uniformly under qemu+insn across a thirteen-benchmark
+**v0**: 11 languages + a C baseline measured uniformly under qemu+insn across a thirteen-benchmark
 suite (fannkuch, binary-trees, mandelbrot, k-nucleotide, reverse-complement, sort-search, dijkstra,
 blur, k-means, sha256, lz77, vm, bigint: integer / allocation / floating-point / hash-map / string /
 algorithms / graphs / image / ML / bit-manipulation / compression / interpreter-dispatch /

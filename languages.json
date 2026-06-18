@@ -80,5 +80,12 @@
     "runtimeKind": "inproc-vm",
     "runtimeEnv": { "JAVA_TOOL_OPTIONS": "-XX:+UseSerialGC" },
     "run": "java -jar /app/{b}.jar"
+  },
+  "ruby": {
+    "eol": "ruby",
+    "dockerfile": "languages/ruby/Dockerfile",
+    "buildArg": "RUBY_VERSION",
+    "runtimeKind": "interp",
+    "run": "ruby /app/{b}.rb"
   }
 }

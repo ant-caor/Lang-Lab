@@ -42,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [c, python, go, rust, swift, perl, php, kotlin, csharp, elixir, scala]
+        language: [c, python, go, rust, swift, perl, php, kotlin, csharp, elixir, scala, ruby]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4

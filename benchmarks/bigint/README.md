@@ -78,7 +78,7 @@ print "bigint(N)"                             # line 2
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(6000) − I(1500)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-bigint.json`](../../results/2026-06-17-arm64-bigint.json).
-All 11 printed the identical `831439159` / `694604666` hashes.
+All 12 printed the identical `831439159` / `694604666` hashes.
 
 ![relative real work](../../docs/charts/bigint-diff-ratio.svg)
 
@@ -93,6 +93,7 @@ All 11 printed the identical `831439159` / `694604666` hashes.
 | Swift | 15.2M | 87.4M | 72.2M | 2.17× | exact |
 | PHP | 125.7M | 1.8B | 1.7B | 51.12× | exact |
 | Elixir | 2.1B | 4.1B | 2.0B | 60.95× | jitter |
+| Ruby | 537.3M | 5.4B | 4.9B | 147.19× | jitter |
 | Perl | 508.7M | 9.7B | 9.2B | 276.48× | jitter |
 | Python | 533.8M | 10.6B | 10.0B | 300.77× | jitter |
 
@@ -118,19 +119,23 @@ Differential vs C = 1.0× across all thirteen benchmarks (`fan`=fannkuch, `btr`=
 | Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 | 5.45 | 1.98 | 2.08 | 1.62 |
 | Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 | 30.97 | 25.73 | 4.59 | 60.95 |
 | PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 | 98.02 | 29.89 | 38.76 | 51.12 |
+| Ruby | 104.64 | 10.34 | 117.20 | 1437.92 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 | 57.52 | 84.66 | 147.19 |
 | Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 | 600.64 | 120.84 | 78.57 | 300.77 |
 | Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 | 701.29 | 133.54 | 135.53 | 276.48 |
 
-Thirteen benchmarks, thirteen orderings of the same eleven languages: the final word of the project.
+Thirteen benchmarks, thirteen orderings of the same twelve languages: the final word of the project.
 
 - **No language is fast or slow; each is fast or slow at a kind of work.** A single row spans up to
   ~50× (Rust 0.48×–2.73×) for the fast languages and over ~50× for the slow ones (Elixir 0.30×–60.95×;
-  Python 11.15×–600.64×). Collapsing that to one number is the mistake the suite was built to expose.
+  Python 11.15×–600.64×; Ruby 10.34×–1437.92×, whose top end is the largest single cell anywhere).
+  Collapsing that to one number is the mistake the suite was built to expose.
 - **Rust** beats C on four axes and never exceeds 2.73×, the only language that is never a wrong
   default. **C#** is the most balanced managed runtime. **The JVM** is an allocation specialist.
   **Elixir** is the widest-range language of all, best-in-class at functional dispatch and allocation,
   worst at in-place arrays, graphs and bignum. **Python and Perl** collapse specifically when denied a
-  fixed-width integer (sha256, bigint). **Each language has a fingerprint, not a rank.**
+  fixed-width integer (sha256, bigint). **Ruby** is the most lopsided interpreter: competitive with
+  Python and PHP on most axes, then the single worst cell in the suite on k-nucleotide (1437.92×),
+  where its string-keyed `Hash` is the hot path. **Each language has a fingerprint, not a rank.**
 
 **There is no scalar "speed of a language." Thirteen axes prove it.**
 

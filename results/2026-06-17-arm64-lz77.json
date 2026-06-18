@@ -434,6 +434,44 @@
       "differential": 41911115,
       "correct": true,
       "determinism": "exact"
+    },
+    {
+      "language": "ruby",
+      "benchmark": "lz77",
+      "version": "3.3",
+      "backend": "qemu-insn",
+      "metric": "instructions",
+      "kind": "interp",
+      "n1": 6000,
+      "n2": 24000,
+      "runs": 5,
+      "i_n1": {
+        "median": 907787944,
+        "min": 907746077,
+        "max": 907852384,
+        "runs": [
+          907747711,
+          907852384,
+          907803109,
+          907746077,
+          907787944
+        ]
+      },
+      "i_n2": {
+        "median": 2873616864,
+        "min": 2873595585,
+        "max": 2873630467,
+        "runs": [
+          2873595585,
+          2873616864,
+          2873611874,
+          2873630467,
+          2873623518
+        ]
+      },
+      "differential": 1965828920,
+      "correct": true,
+      "determinism": "jitter"
     }
   ]
 }

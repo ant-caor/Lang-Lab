@@ -89,7 +89,7 @@ startup + JIT.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(400000) − I(100000)` normalized
 to **C = 1.0×**. Source: [`results/2026-06-17-arm64-reverse-complement.json`](../../results/2026-06-17-arm64-reverse-complement.json).
-All 11 printed the identical `827974717` / `533032773` hashes.
+All 12 printed the identical `827974717` / `533032773` hashes.
 
 ![relative real work](../../docs/charts/reverse-complement-diff-ratio.svg)
 
@@ -104,6 +104,7 @@ All 11 printed the identical `827974717` / `533032773` hashes.
 | Scala | 657.1M | 710.9M | 53.8M | 4.78× | jitter |
 | Elixir | 1.99B | 2.10B | 105.9M | 9.42× | jitter |
 | PHP | 182.6M | 626.3M | 443.7M | 39.44× | exact |
+| Ruby | 489.0M | 1.13B | 642.2M | 57.08× | jitter |
 | Python | 468.9M | 1.75B | 1.28B | 114.00× | jitter |
 | Perl | 693.6M | 2.73B | 2.04B | 181.17× | jitter |
 
@@ -153,7 +154,7 @@ Read the rows, not the cells:
   shine (relatively) at hash maps (their native-C associative array), and crater at compute and
   per-character loops.
 
-Five benchmarks, **five different orderings of the same eleven languages**. There is no scalar
+Five benchmarks, **five different orderings of the same twelve languages**. There is no scalar
 "speed of a language": only a speed *at a kind of work*. That is the entire reason lang-lab is a
 suite.
 

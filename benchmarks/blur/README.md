@@ -84,7 +84,7 @@ included) a full 3×3 window, so there is no special-cased border.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(256) − I(128)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-blur.json`](../../results/2026-06-17-arm64-blur.json).
-All 11 printed the identical `722869223` / `229750350` hashes.
+All 12 printed the identical `722869223` / `229750350` hashes.
 
 ![relative real work](../../docs/charts/blur-diff-ratio.svg)
 
@@ -99,6 +99,7 @@ All 11 printed the identical `722869223` / `229750350` hashes.
 | Scala | 707.9M | 828.6M | 120.7M | 3.32× | jitter |
 | Elixir | 2.22B | 2.79B | 564.0M | 15.49× | jitter |
 | PHP | 557.2M | 2.12B | 1.57B | 43.03× | jitter |
+| Ruby | 1.68B | 5.88B | 4.20B | 115.20× | jitter |
 | Python | 1.51B | 5.91B | 4.40B | 120.91× | jitter |
 | Perl | 3.23B | 12.86B | 9.63B | 264.40× | jitter |
 
@@ -132,10 +133,11 @@ Differential vs C = 1.0× across all eight benchmarks:
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× | 4.39× | 3.55× | 4.95× | 3.28× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× | 9.42× | 36.47× | 56.47× | 15.49× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× | 39.44× | 39.28× | 36.54× | 43.03× |
+| Ruby | 104.64× | 10.34× | 117.20× | 1437.92× | 57.08× | 79.91× | 77.28× | 115.20× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× | 114.00× | 131.93× | 92.92× | 120.91× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× | 181.17× | 189.53× | 155.46× | 264.40× |
 
-Eight benchmarks, eight orderings of the same eleven languages: the case the suite was built to make:
+Eight benchmarks, eight orderings of the same twelve languages: the case the suite was built to make:
 
 - **C is the baseline, not the ceiling.** It wins six of eight axes, ties one (k-nucleotide it leads,
   blur it loses), but on a vectorizable stencil, LLVM-backed Rust and Swift beat it outright.

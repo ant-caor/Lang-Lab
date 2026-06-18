@@ -434,6 +434,44 @@
       "differential": 79632930,
       "correct": true,
       "determinism": "jitter"
+    },
+    {
+      "language": "ruby",
+      "benchmark": "k-nucleotide",
+      "version": "3.3",
+      "backend": "qemu-insn",
+      "metric": "instructions",
+      "kind": "interp",
+      "n1": 100000,
+      "n2": 200000,
+      "runs": 5,
+      "i_n1": {
+        "median": 5292750417,
+        "min": 5292731792,
+        "max": 5292819185,
+        "runs": [
+          5292750417,
+          5292777011,
+          5292731792,
+          5292749000,
+          5292819185
+        ]
+      },
+      "i_n2": {
+        "median": 17133060872,
+        "min": 17133034607,
+        "max": 17133081241,
+        "runs": [
+          17133081241,
+          17133034607,
+          17133073144,
+          17133060872,
+          17133035417
+        ]
+      },
+      "differential": 11840310455,
+      "correct": true,
+      "determinism": "jitter"
     }
   ]
 }

@@ -98,7 +98,7 @@ differential `I(8000) − I(2000)` is dominated by the marginal nearest-centroid
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(8000) − I(2000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-k-means.json`](../../results/2026-06-17-arm64-k-means.json).
-All 11 printed the identical `70735446` / `52003413` checksums: same clusters, same assignments.
+All 12 printed the identical `70735446` / `52003413` checksums: same clusters, same assignments.
 
 ![relative real work](../../docs/charts/k-means-diff-ratio.svg)
 
@@ -113,6 +113,7 @@ All 11 printed the identical `70735446` / `52003413` checksums: same clusters, s
 | Kotlin | 282.6M | 580.6M | 298.0M | 6.76× | jitter |
 | Elixir | 2.7B | 4.4B | 1.7B | 39.07× | jitter |
 | PHP | 728.9M | 2.8B | 2.1B | 47.18× | jitter |
+| Ruby | 1.6B | 5.6B | 4.0B | 91.12× | jitter |
 | Python | 2.2B | 8.8B | 6.6B | 149.26× | jitter |
 | Perl | 3.0B | 12.0B | 9.0B | 203.14× | jitter |
 
@@ -141,10 +142,11 @@ Differential vs C = 1.0× across all nine benchmarks (int / alloc / float / hash
 | Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 |
 | Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 |
 | PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 |
+| Ruby | 104.64 | 10.34 | 117.20 | 1437.92 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 |
 | Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 |
 | Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 |
 
-Nine benchmarks, nine orderings of the same eleven languages, the thesis now overdetermined:
+Nine benchmarks, nine orderings of the same twelve languages, the thesis now overdetermined:
 
 - **C is the baseline, not the ceiling.** It wins seven of nine, but loses both vectorizable axes
   (blur, k-means) to LLVM-backed Rust. A `gcc -O3` C build would narrow that, but the suite pins

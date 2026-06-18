@@ -18,7 +18,7 @@ element, and report `Pfannkuchen(n)` (the maximum number of reversals) and a par
 | 7 | `228` | `16` |
 | 9 | `8629` | `30` |
 
-**Correctness: 11/11 ✅.** The 10 language implementations + C (baseline) reproduce the checksums.
+**Correctness: 12/12 ✅.** The 11 language implementations + C (baseline) reproduce the checksums.
 
 ---
 
@@ -44,7 +44,7 @@ qemu 10 from source), it turned out to be a **harness bug, not emulation**:
 > (`python …`, `java …`) → qemu couldn't find them and failed silently. **Fix:** resolve
 > `argv[0]` to an absolute path before handing it to qemu (`scripts/measure.sh`).
 
-With that, **qemu 7.2 emulates all 11 fine.** Lesson: *"produces no output" ≠ "can't emulate"*.
+With that, **qemu 7.2 emulates all 12 fine.** Lesson: *"produces no output" ≠ "can't emulate"*.
 Verify the cause before concluding.
 
 Four real infrastructure problems were solved along the way, documented in
@@ -64,7 +64,7 @@ set) at build time and run `beam.smp` directly under qemu as a single instrument
 
 ## Results: uniform qemu+insn pass
 
-Single backend (`qemu-insn`, qemu 7.2), same ISA (arm64 local), **all 11 directly comparable**.
+Single backend (`qemu-insn`, qemu 7.2), same ISA (arm64 local), **all 12 directly comparable**.
 Raw data in [`results/2026-06-16-arm64-fannkuch.json`](../../results/2026-06-16-arm64-fannkuch.json).
 
 ### The fair metric: real work `I(9) − I(7)`, normalized to C = 1.0×
@@ -87,6 +87,7 @@ isolating the algorithm's real work. C (gcc `-O2`, no GC) is the reference floor
 | **Elixir** | BEAM | 29.71× | jitter |
 | **PHP** | interpreter | 33.62× | exact |
 | **Python** | interpreter | 69.57× | jitter |
+| **Ruby** | interpreter | 104.64× | jitter |
 | **Perl** | interpreter | 189.62× | jitter |
 
 > Regenerated from `results/2026-06-16-arm64-fannkuch.json`. Ordering: native/AOT (C, Rust, Go, C# ≈
