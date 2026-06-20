@@ -1,0 +1,15 @@
+{
+  "benchmark": "polymorphism",
+  "n1": 50,
+  "n2": 200,
+  "checksums": {
+    "n1": {
+      "sum": "774510903",
+      "secondary": ""
+    },
+    "n2": {
+      "sum": "331867123",
+      "secondary": ""
+    }
+  }
+}

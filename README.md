@@ -122,6 +122,7 @@ micro-benchmark isn't enough.
 | **vm** | Interpreter dispatch: a stack bytecode VM running a fixed program | [benchmarks/vm](benchmarks/vm/README.md) |
 | **bigint** | Multi-precision: hand-rolled base-2³² factorial with carry propagation | [benchmarks/bigint](benchmarks/bigint/README.md) |
 | **tak** | Function-call / recursion overhead: naive triple-recursive Takeuchi, no memory | [benchmarks/tak](benchmarks/tak/README.md) |
+| **polymorphism** | Dynamic dispatch: megamorphic virtual calls resolved at runtime (K=6 types) | [benchmarks/polymorphism](benchmarks/polymorphism/README.md) |
 
 Every benchmark has a **reference checksum** that all implementations must reproduce bit for
 bit: proof that they all do exactly the same work.
@@ -152,11 +153,11 @@ docs/charts/                     generated SVG charts
 
 ## Status
 
-**v0**: 11 languages + a C baseline measured uniformly under qemu+insn across a thirteen-benchmark
+**v0**: 12 languages + a C baseline measured uniformly under qemu+insn across a fifteen-benchmark
 suite (fannkuch, binary-trees, mandelbrot, k-nucleotide, reverse-complement, sort-search, dijkstra,
-blur, k-means, sha256, lz77, vm, bigint: integer / allocation / floating-point / hash-map / string /
+blur, k-means, sha256, lz77, vm, bigint, tak, polymorphism: integer / allocation / floating-point / hash-map / string /
 algorithms / graphs / image / ML / bit-manipulation / compression / interpreter-dispatch /
-multi-precision), the measurement engine characterized empirically, CI pipelines defined. Local, in development.
+multi-precision / call-overhead / dynamic-dispatch), the measurement engine characterized empirically, CI pipelines defined. Local, in development.
 
 ## License
 
