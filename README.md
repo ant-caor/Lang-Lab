@@ -2,6 +2,34 @@
 
 **Reproducible benchmarks for backend programming languages.**
 
+<!-- MATRIX:START -->
+
+![lang-lab — the matrix: every language × every benchmark](docs/charts/matrix.svg)
+
+_Real work each language does vs the **C baseline** (= 1.00×), as the differential `I(n₂)−I(n₁)` that cancels startup + JIT. Geomean across all 15 axes; green cells beat or tie C. Full method below._
+
+<details><summary><b>Leaderboard</b> (sorted by overall geomean)</summary>
+
+| # | Language | Overall (vs C) | Fastest axis | Slowest axis |
+|--:|----------|---------------:|--------------|--------------|
+| 1 | **C** _(baseline)_ | **1.00×** | — | — |
+| 2 | Rust | **1.17×** | blur 0.48× | k-nucleotide 2.73× |
+| 3 | C# | **1.51×** | binary-trees 0.45× | k-nucleotide 9.73× |
+| 4 | Go | **1.58×** | binary-trees 1.09× | k-nucleotide 4.93× |
+| 5 | Swift | **2.26×** | blur 0.56× | k-nucleotide 9.67× |
+| 6 | Scala | **2.53×** | binary-trees 0.28× | k-nucleotide 10.5× |
+| 7 | Kotlin | **2.72×** | binary-trees 0.28× | k-nucleotide 9.98× |
+| 8 | Elixir | **19.7×** | binary-trees 0.30× | polymorphism 136× |
+| 9 | PHP | **31.9×** | binary-trees 5.75× | sha256 98.0× |
+| 10 | Ruby | **91.0×** | binary-trees 10.3× | k-nucleotide 1.4k× |
+| 11 | Python | **100×** | binary-trees 11.2× | sha256 601× |
+| 12 | Perl | **147×** | binary-trees 19.0× | sha256 701× |
+| 13 | COBOL | **523×** | fannkuch 26.8× | sha256 223k× |
+
+</details>
+
+<!-- MATRIX:END -->
+
 `lang-lab` measures, **rigorously and reproducibly**, how much CPU work it costs to run
 the same algorithm across backend *programming languages*. It doesn't chase the realism of
 a web framework (that's [TechEmpower](https://www.techempower.com/benchmarks/)) or the
