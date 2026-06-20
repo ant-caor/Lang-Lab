@@ -121,6 +121,7 @@ micro-benchmark isn't enough.
 | **lz77** | Compression: hand-written LZ77 sliding-window longest-match search | [benchmarks/lz77](benchmarks/lz77/README.md) |
 | **vm** | Interpreter dispatch: a stack bytecode VM running a fixed program | [benchmarks/vm](benchmarks/vm/README.md) |
 | **bigint** | Multi-precision: hand-rolled base-2³² factorial with carry propagation | [benchmarks/bigint](benchmarks/bigint/README.md) |
+| **tak** | Function-call / recursion overhead: naive triple-recursive Takeuchi, no memory | [benchmarks/tak](benchmarks/tak/README.md) |
 
 Every benchmark has a **reference checksum** that all implementations must reproduce bit for
 bit: proof that they all do exactly the same work.

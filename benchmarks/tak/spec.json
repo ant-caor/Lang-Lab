@@ -1,0 +1,15 @@
+{
+  "benchmark": "tak",
+  "n1": 6,
+  "n2": 8,
+  "checksums": {
+    "n1": {
+      "sum": "63609",
+      "secondary": "7"
+    },
+    "n2": {
+      "sum": "2493349",
+      "secondary": "9"
+    }
+  }
+}
