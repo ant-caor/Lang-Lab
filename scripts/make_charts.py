@@ -24,7 +24,7 @@ KIND_ARCH = {"native": "native", "interp": "interpreter",
 LANG_ARCH = {"elixir": "vm"}
 NAMES = {"c": "C", "rust": "Rust", "swift": "Swift", "go": "Go", "python": "Python",
          "perl": "Perl", "php": "PHP", "kotlin": "Kotlin", "scala": "Scala",
-         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby"}
+         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby", "cobol": "COBOL"}
 
 
 def human(v):
@@ -103,7 +103,7 @@ def main():
     diff = [(name(r), r["differential"] / base, arch(r)) for r in rows]
     bars(f"{bench}:relative real work (I({n2})−I({n1}), C = 1.0×)",
          f"differential cancels startup + JIT · qemu+insn{isa_tag} · the fair metric",
-         diff, os.path.join(OUT, f"{bench}-diff-ratio.svg"), logscale=False,
+         diff, os.path.join(OUT, f"{bench}-diff-ratio.svg"), logscale=max(v for _, v, _ in diff) > 1000,
          value_fmt=lambda v: f"{v:.2f}×")
 
     # 2) Absolute instruction count at the larger size (median), log scale.

@@ -90,6 +90,8 @@ sequence of operations in every language** (fair instruction counts), while Dijk
 | Scala | `Array[Long]` heap |
 | C# | `long[]` heap |
 | Elixir | `:atomics` for the heap and `dist[]` (mutable 64-bit arrays); adjacency built once |
+| Ruby | `Array` heap (hand-written, not a `PriorityQueue`) + `Array`-of-`Array` adjacency |
+| COBOL | `S9(18) COMP-5 OCCURS` heap of packed keys + CSR adjacency / `dist[]` `OCCURS` tables |
 
 Elixir again uses `:atomics` for the mutable heap and distance array, the honest way to run a
 pointer-chasing, mutate-in-place graph algorithm on the BEAM.
@@ -103,7 +105,7 @@ pointer-chasing, mutate-in-place graph algorithm on the BEAM.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(20000) − I(5000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-dijkstra.json`](../../results/2026-06-17-arm64-dijkstra.json).
-All 12 printed the identical `562612262` / `735570774` checksums: the same heap, the same relaxation
+All 13 printed the identical `562612262` / `735570774` checksums: the same heap, the same relaxation
 order.
 
 ![relative real work](../../docs/charts/dijkstra-diff-ratio.svg)
@@ -122,6 +124,7 @@ order.
 | Ruby | 690.0M | 2.0B | 1.3B | 77.28× | jitter |
 | Python | 513.5M | 2.1B | 1.5B | 92.92× | jitter |
 | Perl | 790.4M | 3.4B | 2.6B | 155.46× | jitter |
+| COBOL | 2.0B | 8.5B | 6.5B | 391.75× | exact |
 
 ### The headline: pointer-chasing punishes access overhead
 
@@ -136,6 +139,13 @@ array live in `:atomics`, so every one of the millions of heap reads/writes and 
 NIF boundary crossing. A pointer-chasing, mutate-in-place graph algorithm is the precise opposite of
 what the BEAM is good at, and exactly where binary-trees (0.30×) showed it at its best. No runtime
 in the suite swings harder by workload.
+
+**COBOL lands dead last at 391.75×** - slower here than every interpreter, including Perl
+(155.46×). GnuCOBOL transpiles to a native ELF, yet each `MOVE`/`COMPUTE`/`IF` lowers to a `libcob`
+runtime call rather than a register op, so the per-access overhead the heap and relaxation loop
+punish is paid on *every* statement. It is the suite's cleanest "compiled ≠ fast": native machine
+code, interpreter-class numbers, but bit-**exact** (the same `562612262` / `735570774` checksums an
+interpreter would jitter around).
 
 ### The seven-axis picture: the whole project in one table
 
@@ -154,10 +164,11 @@ Differential vs C = 1.0× across the complete suite:
 | Ruby | 104.64× | 10.34× | 117.20× | 1437.92× | 57.08× | 79.91× | 77.28× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× | 114.00× | 131.93× | 92.92× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× | 181.17× | 189.53× | 155.46× |
+| COBOL | 26.78× | 182.75× | 7908.42× | 7686.05× | 221.82× | 330.02× | 391.75× |
 
 The conclusion the whole suite was built to support:
 
-- **No language is "fast" or "slow," only fast or slow at a kind of work.** The same eleven
+- **No language is "fast" or "slow," only fast or slow at a kind of work.** The same thirteen
   languages reorder across these seven columns; the spread *within a single row* reaches **100×**
   (Elixir: 0.30× → 56.47×).
 - **Rust** is the lone all-rounder: never below 0.99×, never above 2.73×. If you want one language
@@ -169,6 +180,14 @@ The conclusion the whole suite was built to support:
   concurrent work; never for in-place array or graph crunching.
 - **The interpreters** are a constant 1–2 orders of magnitude back, each least-bad on whichever axis
   its native-C internals (the hash map, the regex/array engine) do the heavy lifting.
+- **COBOL** breaks the "compiled = fast" intuition outright: a native ELF that is the slowest
+  language in the suite on almost every axis, because GnuCOBOL emits a `libcob` call per statement.
+  Yet it is bit-exact (unlike the interpreters), and on plain integer loops it is "only" 27–392×
+  here - it even beats Elixir on fannkuch (26.78× vs 29.71×). Its three cliffs are the columns where
+  it lacks a native primitive: mandelbrot 7908.42× (COMP-2 doubles routed through GMP arbitrary-
+  precision DECIMAL - no FPU codegen) and k-nucleotide 7686.05× (string-keyed hashing); off this
+  table, sha256 reaches **222956×** - the single most extreme cell in the entire suite (~155× past
+  the prior record, bit ops emulated by hand and extrapolated linearly).
 
 Seven benchmarks, seven orderings. **There is no scalar "speed of a language."**
 

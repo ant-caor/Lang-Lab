@@ -34,14 +34,14 @@ capture real latency, parallelism, memory bandwidth, or the per-instruction cost
 varies by ISA and microarchitecture). It is a measure of **computational work**, not absolute
 speed.
 
-## Languages (11 + a C baseline)
+## Languages (12 + a C baseline)
 
 Chosen to cover every backend **runtime archetype**, not just the popular ones, so the
 methodology meets the hard runtimes early.
 
 | Archetype | Languages |
 |---|---|
-| Native (no GC) | **Rust**, **Swift**, **C** (1.0× baseline) |
+| Native (no GC) | **Rust**, **Swift**, **C** (1.0× baseline), **COBOL** (GnuCOBOL→native) |
 | Compiled + concurrent GC | **Go** |
 | Interpreter | **Python**, **Perl**, **PHP**, **Ruby** |
 | VM with JIT + GC | **Kotlin** (JVM), **Scala** (JVM), **C#** (CLR) |
@@ -61,7 +61,7 @@ launcher runtimes.)
 (CPython, Perl, PHP, JVM, BEAM); they all exited silently. The real cause was a harness bug,
 not emulation: **qemu-user doesn't `PATH`-resolve a bare command name.** Natives were invoked
 by absolute path and worked; interpreters/VMs by bare command (`python`, `java`) and failed.
-Resolving `argv[0]` to an absolute path fixed it, and **all 11 measure cleanly**. Elixir needed
+Resolving `argv[0]` to an absolute path fixed it, and **all 12 measure cleanly**. Elixir needed
 one extra step (its `elixir`→`erl`→`beam.smp` shell wrappers aren't ELF binaries, so we capture
 and run `beam.smp` directly). *"No output" ≠ "can't emulate": verify the cause.*
 

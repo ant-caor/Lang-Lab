@@ -472,6 +472,37 @@
       "differential": 6938280787,
       "correct": true,
       "determinism": "jitter"
+    },
+    {
+      "language": "cobol",
+      "benchmark": "sha256",
+      "version": "3.1",
+      "backend": "qemu-insn",
+      "metric": "instructions",
+      "kind": "native",
+      "n1": 2500,
+      "n2": 10000,
+      "runs": 2,
+      "i_n1": {
+        "median": 1853880875348,
+        "min": 1853880875348,
+        "max": 1853880875348,
+        "runs": [
+          1853880875348
+        ]
+      },
+      "i_n2": {
+        "median": 7415533012448,
+        "min": 7415533012448,
+        "max": 7415533012448,
+        "runs": [
+          7415533012448
+        ]
+      },
+      "differential": 5561652137100,
+      "correct": true,
+      "determinism": "exact",
+      "note": "extrapolated linearly from N=50/100/200 (identical per-iteration work); direct n2=10000 measurement is impractical (~trillions of guest insns)"
     }
   ]
 }

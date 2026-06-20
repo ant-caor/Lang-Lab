@@ -78,6 +78,8 @@ not a library call:
 | Scala | `Array[Byte]` | yes |
 | C# | `char[]` / `byte[]` | yes |
 | Elixir | charlist, folded into a new reversed list | no: immutable; idiomatic fold |
+| Ruby | `Array` of integer ASCII codes (`Array.new(l, 0)`) | yes (mutated by index) |
+| COBOL | byte table `PIC X OCCURS` (`SQ(i)`) | yes (`MOVE` into indexed elements) |
 
 ## Sizes
 
@@ -89,7 +91,7 @@ startup + JIT.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(400000) − I(100000)` normalized
 to **C = 1.0×**. Source: [`results/2026-06-17-arm64-reverse-complement.json`](../../results/2026-06-17-arm64-reverse-complement.json).
-All 12 printed the identical `827974717` / `533032773` hashes.
+All 13 printed the identical `827974717` / `533032773` hashes.
 
 ![relative real work](../../docs/charts/reverse-complement-diff-ratio.svg)
 
@@ -107,6 +109,7 @@ All 12 printed the identical `827974717` / `533032773` hashes.
 | Ruby | 489.0M | 1.13B | 642.2M | 57.08× | jitter |
 | Python | 468.9M | 1.75B | 1.28B | 114.00× | jitter |
 | Perl | 693.6M | 2.73B | 2.04B | 181.17× | jitter |
+| COBOL | 836.2M | 3.3B | 2.5B | 221.82× | exact |
 
 ### The headline: the hand-written-loop rule exposes the interpreters
 
@@ -114,7 +117,11 @@ By forbidding `str.translate` / `[::-1]` / `strrev` (the C-level batch primitive
 would normally reach for), the benchmark forces a genuine per-character loop in every language, and
 that is where Python (114×), Perl (181×) and PHP (39×) detonate: each character costs a full
 interpreter dispatch. This is the honest cost of *the language* processing text, not the cost of
-its C runtime's `memcpy`. **Rust ties C (0.99×)**: a `Vec<u8>` index loop lowers to exactly the
+its C runtime's `memcpy`. The slowest of all here is **COBOL (221.82×)** - and it is *compiled*:
+GnuCOBOL transpiles to native ELF, but every per-character `MOVE`/`COMPUTE` lowers to a `libcob`
+runtime call, so the hand-written two-pointer loop pays a function-call tax per byte that edges it
+even past the interpreters. (It is bit-**exact** all the same, unlike the jittery JIT/interpreter
+runtimes above it.) **Rust ties C (0.99×)**: a `Vec<u8>` index loop lowers to exactly the
 same machine code, and it is back to its flat profile here (its 2.73× on k-nucleotide was a
 hash-map-specific SipHash tax, not a string weakness). Swift (1.48×), Go (1.59×) and C# (1.71×)
 sit just behind on tight native/JIT byte buffers.
@@ -139,8 +146,10 @@ Differential vs C = 1.0× across the entire suite:
 | Scala | 2.73× | 0.28× | 0.97× | 10.53× | 4.78× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× | 9.42× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× | 39.44× |
+| Ruby | 104.64× | 10.34× | 117.20× | 1437.92× | 57.08× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× | 114.00× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× | 181.17× |
+| COBOL | 26.78× | 182.75× | 7908.42× | 7686.05× | 221.82× |
 
 Read the rows, not the cells:
 - **Rust** is the only language within ~3× of C on *every* axis (and at-or-below C on four of five):
@@ -153,8 +162,14 @@ Read the rows, not the cells:
 - **The interpreters** are never fast, but *where* they are least-bad differs sharply: PHP and Perl
   shine (relatively) at hash maps (their native-C associative array), and crater at compute and
   per-character loops.
+- **COBOL** is the suite's "compiled ≠ fast" outlier: GnuCOBOL emits native ELF yet routes every
+  statement through `libcob`, so it is the *slowest* language on almost every axis (and the slowest
+  of all on this string loop, 221.82×). It cliffs hardest where it has no native primitive - float
+  (mandelbrot 7908×, COMP-2 doubles run through GMP arbitrary-precision DECIMAL) and string-keyed
+  hashing (k-nucleotide 7686×) - yet on plain integer loops it is "only" 27–183× and even *beats*
+  Elixir on fannkuch (26.78× vs 29.71×). Bit-exact throughout, unlike the interpreters.
 
-Five benchmarks, **five different orderings of the same twelve languages**. There is no scalar
+Five benchmarks, **five different orderings of the same thirteen languages**. There is no scalar
 "speed of a language": only a speed *at a kind of work*. That is the entire reason lang-lab is a
 suite.
 

@@ -89,6 +89,8 @@ The benchmark measures the **hash map**, so the rules protect that:
 | Scala | `mutable.HashMap[String, Int]` | k-mer string |
 | C# | `Dictionary<string, long>` | k-mer string |
 | Elixir | immutable `Map` (`Map.update`) | k-mer binary |
+| Ruby | built-in `Hash` (`Hash.new(0)`) | k-mer `String` |
+| COBOL | hand-rolled open-addressing (FNV-1a + linear probing, parallel `OCCURS` arrays) | 8-byte k-mer (`PIC X(8)`) |
 
 ## Sizes
 
@@ -100,8 +102,8 @@ cancelling startup + JIT.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(200000) − I(100000)` normalized
 to **C = 1.0×**. Source: [`results/2026-06-17-arm64-k-nucleotide.json`](../../results/2026-06-17-arm64-k-nucleotide.json).
-All 12 printed the identical `267275319` / `552155843` checksums: the order-independent sum holds
-across 11 completely different hash-map implementations.
+All 13 printed the identical `267275319` / `552155843` checksums: the order-independent sum holds
+across 12 completely different hash-map implementations.
 
 ![relative real work](../../docs/charts/k-nucleotide-diff-ratio.svg)
 
@@ -119,6 +121,7 @@ across 11 completely different hash-map implementations.
 | Elixir | 2.41B | 2.74B | 326.4M | 39.64× | jitter |
 | Python | 709.7M | 1.12B | 410.1M | 49.80× | jitter |
 | Ruby | 5.29B | 17.13B | 11.84B | 1437.92× | jitter |
+| COBOL | 63.8B | 127.1B | 63.3B | 7686.05× | exact |
 
 ### The headline: the std hash map is expensive; a hand-rolled C table is not
 
@@ -130,11 +133,15 @@ the cost of a safe default (a Rust dev could opt into `ahash`/`FxHashMap` and ap
 managed languages cluster at **~10×** (Swift 9.67, C# 9.73, Kotlin 9.98, Scala 10.53): each
 allocates a heap string per k-mer and drives a hashed dictionary through a GC.
 
-**Ruby is the dramatic outlier: 1437.92×, the single most expensive cell in the entire suite** (past
-Perl's 701× on sha256). Its `Hash` keyed on per-k-mer **String** objects recomputes a full string
-hash and walks the table on every probe, all through the MRI object model. Where PHP's C-backed
-associative array keeps it to 16×, Ruby's general-purpose string-keyed map is its own worst axis by
-far, roughly 14× the next interpreter.
+**Ruby is the dramatic interpreter outlier: 1437.92×**, its own worst axis by far. Its `Hash` keyed
+on per-k-mer **String** objects recomputes a full string hash and walks the table on every probe, all
+through the MRI object model. Where PHP's C-backed associative array keeps it to 16×, Ruby's
+general-purpose string-keyed map costs it roughly 14× the next interpreter. Yet it is no longer the
+most expensive cell here: **COBOL lands at 7686.05×** - native-compiled, but GnuCOBOL has no
+string-hashing primitive, so the k-mer map is emulated with heavy per-statement libcob calls. It is
+one of COBOL's three cliffs (the others being mandelbrot 7908× and sha256 222956×, the latter the
+single most extreme cell in the entire suite), a striking case of *compiled ≠ fast* - and unlike the
+interpreters above it, COBOL is still bit-**exact**.
 
 **A fairness nuance worth stating:** C and Rust key on an inline / fixed-size 8-byte k-mer
 (`[u8; 8]`), so they skip the per-k-mer **heap string allocation** that Go, Swift, C#, Kotlin,
@@ -167,8 +174,10 @@ Differential vs C = 1.0× across the whole suite:
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× |
+| Ruby | 104.64× | 10.34× | 117.20× | 1437.92× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× |
+| COBOL | 26.78× | 182.75× | 7908.42× | 7686.05× |
 
 What the fourth column adds:
 - **Rust finally breaks from C.** Flat at ~1.15× on the first three axes, it jumps to 2.73× here,

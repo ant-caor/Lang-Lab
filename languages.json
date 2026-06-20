@@ -87,5 +87,12 @@
     "buildArg": "RUBY_VERSION",
     "runtimeKind": "interp",
     "run": "ruby /app/{b}.rb"
+  },
+  "cobol": {
+    "versionSource": "manual",
+    "dockerfile": "languages/cobol/Dockerfile",
+    "buildArg": "GNUCOBOL_VERSION",
+    "runtimeKind": "native",
+    "run": "/app/{b}"
   }
 }

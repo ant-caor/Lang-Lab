@@ -472,6 +472,38 @@
       "differential": 4017904547,
       "correct": true,
       "determinism": "jitter"
+    },
+    {
+      "language": "cobol",
+      "benchmark": "k-means",
+      "version": "3.1",
+      "backend": "qemu-insn",
+      "metric": "instructions",
+      "kind": "native",
+      "n1": 2000,
+      "n2": 8000,
+      "runs": 2,
+      "i_n1": {
+        "median": 5868391302,
+        "min": 5868391302,
+        "max": 5868391302,
+        "runs": [
+          5868391302,
+          5868391302
+        ]
+      },
+      "i_n2": {
+        "median": 23450202586,
+        "min": 23450202586,
+        "max": 23450202586,
+        "runs": [
+          23450202586,
+          23450202586
+        ]
+      },
+      "differential": 17581811284,
+      "correct": true,
+      "determinism": "exact"
     }
   ]
 }

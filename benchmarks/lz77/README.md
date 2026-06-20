@@ -69,6 +69,8 @@ the exact parse. Greedy parsing advances `pos` by the match length, and overlapp
 | Scala | `Array[Int]` |
 | C# | `byte[]` / `int[]` |
 | Elixir | `:atomics` (flat byte array) |
+| Ruby | `Array` of Integers |
+| COBOL | `PIC S9(9) COMP-5` OCCURS table |
 
 ## Sizes
 
@@ -79,7 +81,7 @@ match-search work while cancelling startup.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(24000) − I(6000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-lz77.json`](../../results/2026-06-17-arm64-lz77.json).
-All 12 printed the identical `423979860` / `850992747` hashes.
+All 13 printed the identical `423979860` / `850992747` hashes.
 
 ![relative real work](../../docs/charts/lz77-diff-ratio.svg)
 
@@ -97,11 +99,15 @@ All 12 printed the identical `423979860` / `850992747` hashes.
 | Ruby | 907.8M | 2.9B | 2.0B | 57.52× | jitter |
 | Python | 1.4B | 5.5B | 4.1B | 120.84× | jitter |
 | Perl | 1.5B | 6.0B | 4.6B | 133.54× | jitter |
+| COBOL | 2.3B | 9.4B | 7.1B | 208.93× | exact |
 
 The longest-match search is a byte-comparison inner loop, so the compiled and JIT'd languages stay
 tight (Swift 1.23×, Rust 1.40×, the rest under ~2.1×) and the interpreters pay their usual
 per-operation tax (Python 121×, Perl 134×). Elixir's 25.73× reflects the `:atomics` NIF crossing on
-every windowed byte read, the same penalty random-access array work costs it elsewhere.
+every windowed byte read, the same penalty random-access array work costs it elsewhere. COBOL is
+the slowest here at 208.93× - native-compiled yet behind every interpreter, because GnuCOBOL wraps
+each windowed byte compare and `pos` advance in a libcob runtime call instead of emitting a tight
+machine-code inner loop.
 
 ## Reproduce
 

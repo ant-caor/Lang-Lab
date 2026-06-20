@@ -68,6 +68,8 @@ print "bigint(N)"                             # line 2
 | Scala | `Array[Int]`, `Long` intermediate |
 | C# | `uint[]`, `ulong` intermediate |
 | Elixir | a list/`:atomics` of 32-bit limbs, masked (NOT native bignum) |
+| Ruby | `Array` of ints masked `& 0xFFFFFFFF` (native Integer bignum only for the `cur` intermediate, NOT as the limb array) |
+| COBOL | `PIC 9(18) COMP-5` OCCURS table, mask via `FUNCTION MOD(cur,2^32)` + truncating `/` carry (routed through `libcob`'s decimal runtime - no fixed-width limb type) |
 
 ## Sizes
 
@@ -78,7 +80,7 @@ print "bigint(N)"                             # line 2
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(6000) − I(1500)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-bigint.json`](../../results/2026-06-17-arm64-bigint.json).
-All 12 printed the identical `831439159` / `694604666` hashes.
+All 13 printed the identical `831439159` / `694604666` hashes.
 
 ![relative real work](../../docs/charts/bigint-diff-ratio.svg)
 
@@ -96,48 +98,63 @@ All 12 printed the identical `831439159` / `694604666` hashes.
 | Ruby | 537.3M | 5.4B | 4.9B | 147.19× | jitter |
 | Perl | 508.7M | 9.7B | 9.2B | 276.48× | jitter |
 | Python | 533.8M | 10.6B | 10.0B | 300.77× | jitter |
+| COBOL | 1.3B | 25.6B | 24.3B | 728.68× | exact |
 
 The inner limb loop (`limb*k + carry`, mask, propagate) keeps the compiled and JIT'd languages within
 ~1.2–2.2× of C, and (as on sha256) the languages that must **mask every limb to 32 bits with an
-arbitrary-precision integer** crater: Python 301×, Perl 276×. Forbidding native bignum is what makes
-this fair: Python's own `int` would have made it a one-liner and hidden exactly the multi-word
-arithmetic the benchmark exists to measure.
+arbitrary-precision integer** crater: Python 301×, Perl 276×. **COBOL** lands worst of all at 728×,
+even though it is native-compiled: GnuCOBOL has no fixed-width limb type either, so every `limb*k`,
+mask and shift routes through `libcob`'s decimal runtime - the native-but-slowest paradox that
+recurs across the suite. Forbidding native bignum is what makes this fair: Python's own `int` would
+have made it a one-liner and hidden exactly the multi-word arithmetic the benchmark exists to measure.
 
-### The thirteen-axis picture: the complete suite
+### The fourteen-axis picture: the complete suite
 
-Differential vs C = 1.0× across all thirteen benchmarks (`fan`=fannkuch, `btr`=binary-trees,
+Differential vs C = 1.0× across all fourteen benchmarks (`fan`=fannkuch, `btr`=binary-trees,
 `man`=mandelbrot, `knc`=k-nucleotide, `rvc`=reverse-complement, `srt`=sort-search, `dij`=dijkstra,
-`blr`=blur, `kmn`=k-means, `sha`=sha256, `lz7`=lz77, `vm`, `big`=bigint):
+`blr`=blur, `kmn`=k-means, `sha`=sha256, `lz7`=lz77, `vm`, `big`=bigint, `tak`=Takeuchi/recursion):
 
-| Lang | fan | btr | man | knc | rvc | srt | dij | blr | kmn | sha | lz7 | vm | big |
-|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| **Rust** | 1.14 | 1.19 | 1.17 | 2.73 | 0.99 | 1.34 | 2.22 | 0.48 | 0.59 | 0.90 | 1.40 | 1.51 | 1.17 |
-| Go | 1.49 | 1.09 | 1.29 | 4.93 | 1.59 | 1.41 | 2.72 | 1.23 | 1.68 | 1.37 | 1.54 | 1.99 | 1.17 |
-| C# | 1.61 | 0.45 | 1.19 | 9.73 | 1.71 | 1.46 | 1.94 | 1.01 | 1.41 | 1.59 | 1.45 | 1.82 | 1.33 |
-| Swift | 4.75 | 1.72 | 1.17 | 9.67 | 1.48 | 1.89 | 2.29 | 0.56 | 2.49 | 1.84 | 1.23 | 1.80 | 2.17 |
-| Scala | 2.73 | 0.28 | 0.97 | 10.53 | 4.78 | 3.10 | 5.66 | 3.32 | 3.89 | 5.61 | 2.07 | 2.10 | 1.43 |
-| Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 | 5.45 | 1.98 | 2.08 | 1.62 |
-| Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 | 30.97 | 25.73 | 4.59 | 60.95 |
-| PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 | 98.02 | 29.89 | 38.76 | 51.12 |
-| Ruby | 104.64 | 10.34 | 117.20 | 1437.92 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 | 57.52 | 84.66 | 147.19 |
-| Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 | 600.64 | 120.84 | 78.57 | 300.77 |
-| Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 | 701.29 | 133.54 | 135.53 | 276.48 |
+| Lang | fan | btr | man | knc | rvc | srt | dij | blr | kmn | sha | lz7 | vm | big | tak |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| **Rust** | 1.14 | 1.19 | 1.17 | 2.73 | 0.99 | 1.34 | 2.22 | 0.48 | 0.59 | 0.90 | 1.40 | 1.51 | 1.17 | 1.25 |
+| Go | 1.49 | 1.09 | 1.29 | 4.93 | 1.59 | 1.41 | 2.72 | 1.23 | 1.68 | 1.37 | 1.54 | 1.99 | 1.17 | 1.09 |
+| C# | 1.61 | 0.45 | 1.19 | 9.73 | 1.71 | 1.46 | 1.94 | 1.01 | 1.41 | 1.59 | 1.45 | 1.82 | 1.33 | 1.28 |
+| Swift | 4.75 | 1.72 | 1.17 | 9.67 | 1.48 | 1.89 | 2.29 | 0.56 | 2.49 | 1.84 | 1.23 | 1.80 | 2.17 | 4.75 |
+| Scala | 2.73 | 0.28 | 0.97 | 10.53 | 4.78 | 3.10 | 5.66 | 3.32 | 3.89 | 5.61 | 2.07 | 2.10 | 1.43 | 1.38 |
+| Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 | 5.45 | 1.98 | 2.08 | 1.62 | 1.66 |
+| Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 | 30.97 | 25.73 | 4.59 | 60.95 | 11.01 |
+| PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 | 98.02 | 29.89 | 38.76 | 51.12 | 22.39 |
+| Ruby | 104.64 | 10.34 | 117.20 | 1437.92 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 | 57.52 | 84.66 | 147.19 | 40.76 |
+| Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 | 600.64 | 120.84 | 78.57 | 300.77 | 48.80 |
+| Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 | 701.29 | 133.54 | 135.53 | 276.48 | 116.56 |
+| COBOL | 26.78 | 182.75 | 7908.42 | 7686.05 | 221.82 | 330.02 | 391.75 | 152.72 | 398.73 | 222956.36\* | 208.93 | 52.65 | 728.68 | 217.98 |
 
-Thirteen benchmarks, thirteen orderings of the same twelve languages: the final word of the project.
+Fourteen benchmarks, fourteen orderings of the same thirteen languages: the final word of the project.
+
+\* COBOL's sha256 cell (222956.36×) is **extrapolated** linearly from N=50/100/200 (the SHA-256 loop does identical per-iteration work, so the guest-instruction count is exactly linear in N); a direct n2=10000 run is ~7 trillion guest instructions. Every other cell is a direct median-of-5 measurement. See the [sha256 study](sha256/README.md).
 
 - **No language is fast or slow; each is fast or slow at a kind of work.** A single row spans up to
   ~50× (Rust 0.48×–2.73×) for the fast languages and over ~50× for the slow ones (Elixir 0.30×–60.95×;
-  Python 11.15×–600.64×; Ruby 10.34×–1437.92×, whose top end is the largest single cell anywhere).
-  Collapsing that to one number is the mistake the suite was built to expose.
+  Python 11.15×–600.64×; Ruby 10.34×–1437.92×). **COBOL** widens the span to its limit: 26.78× on
+  fannkuch to **222956.36× on sha256** - the single most extreme cell in the entire suite, ~155× past
+  the prior record. Collapsing that to one number is the mistake the suite was built to expose.
 - **Rust** beats C on four axes and never exceeds 2.73×, the only language that is never a wrong
   default. **C#** is the most balanced managed runtime. **The JVM** is an allocation specialist.
   **Elixir** is the widest-range language of all, best-in-class at functional dispatch and allocation,
   worst at in-place arrays, graphs and bignum. **Python and Perl** collapse specifically when denied a
   fixed-width integer (sha256, bigint). **Ruby** is the most lopsided interpreter: competitive with
-  Python and PHP on most axes, then the single worst cell in the suite on k-nucleotide (1437.92×),
-  where its string-keyed `Hash` is the hot path. **Each language has a fingerprint, not a rank.**
+  Python and PHP on most axes, then 1437.92× on k-nucleotide, where its string-keyed `Hash` is the
+  hot path. **COBOL is the capstone paradox: native-compiled, yet the slowest language on almost
+  every axis** - GnuCOBOL emits heavy `libcob` calls per statement, so even plain integer loops run
+  27–730×. It is **bit-exact** (unlike the interpreters), and it has three cliffs wherever it lacks a
+  native primitive: **sha256 222956× (no native hash; bit ops hand-emulated, value extrapolated
+  linearly since direct measurement needs ~7 trillion insns), mandelbrot 7908× (COMP-2 doubles routed
+  through GMP arbitrary-precision DECIMAL - no FPU codegen), and k-nucleotide 7686× (string-keyed
+  hashing)** - yet on a plain permutation loop it even beats Elixir (fannkuch 26.78× vs 29.71×).
+  **Each language has a fingerprint, not a rank.**
 
-**There is no scalar "speed of a language." Thirteen axes prove it.**
+**There is no scalar "speed of a language." Fourteen axes - and "compiled" COBOL slowest of all -
+prove it.**
 
 ## Reproduce
 
