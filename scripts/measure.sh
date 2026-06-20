@@ -27,7 +27,14 @@ case "${runcmd[0]:-}" in
 esac
 
 version="${LANG_VERSION:-unknown}"
-N1="${N1:-7}"; N2="${N2:-9}"; RUNS="${RUNS:-5}"
+N1="${N1:-7}"; N2="${N2:-9}"
+# Adaptive RUNS: when RUNS is not pinned, probe with RUNS_LOW reps and escalate to RUNS_HIGH only
+# if the language jitters (a bit-exact language is proven deterministic in RUNS_LOW reps). An
+# explicit RUNS disables adaptation. The differential is identical to a fixed run for deterministic
+# languages, and uses >= as many reps for jittery ones.
+RUNS_FIXED="${RUNS:+1}"
+RUNS_LOW="${RUNS_LOW:-2}"; RUNS_HIGH="${RUNS_HIGH:-5}"
+RUNS="${RUNS:-$RUNS_HIGH}"
 QEMU="${QEMU:-/opt/qi/qemu-aarch64}"
 PLUGIN="${PLUGIN:-/opt/qi/libinsn.so}"
 QEMU_LIB="${QEMU_LIB:-/opt/qi/lib}"   # bundled shared-lib closure (libcapstone, libglib, …)
@@ -91,13 +98,28 @@ measure_size() {
   echo "$(median "${vals[@]}") $(minv "${vals[@]}") $(maxv "${vals[@]}") $(csv "${vals[@]}")"
 }
 
-validate "$N1" "$CHECK1_SUM" "$CHECK1_FLIPS" || { echo "checksum FAIL at n=$N1" >&2; exit 3; }
-validate "$N2" "$CHECK2_SUM" "$CHECK2_FLIPS" || { echo "checksum FAIL at n=$N2" >&2; exit 3; }
+# Checksum gate (native runs). Decoupled for the parallel driver:
+#   SKIP_GATE=1 -> assume already gated elsewhere; go straight to counting (the parallel phase)
+#   GATE_ONLY=1 -> validate both sizes and exit 0 (the serial gate phase)
+# The guest instruction count is contention-immune, so only this native gate must run serially.
+if [ "${SKIP_GATE:-0}" != "1" ]; then
+  validate "$N1" "$CHECK1_SUM" "$CHECK1_FLIPS" || { echo "checksum FAIL at n=$N1" >&2; exit 3; }
+  validate "$N2" "$CHECK2_SUM" "$CHECK2_FLIPS" || { echo "checksum FAIL at n=$N2" >&2; exit 3; }
+fi
+[ "${GATE_ONLY:-0}" = "1" ] && { echo "gate OK"; exit 0; }
 
-out1="$(measure_size "$N1")" || exit $?
-read -r m1 lo1 hi1 cs1 <<<"$out1"
-out2="$(measure_size "$N2")" || exit $?
-read -r m2 lo2 hi2 cs2 <<<"$out2"
+# Measure both sizes (sets m/lo/hi/cs globals). Adaptive: probe at RUNS_LOW, escalate on jitter.
+measure_both() {
+  local o1 o2
+  o1="$(measure_size "$N1")" || exit $?; read -r m1 lo1 hi1 cs1 <<<"$o1"
+  o2="$(measure_size "$N2")" || exit $?; read -r m2 lo2 hi2 cs2 <<<"$o2"
+}
+if [ -n "$RUNS_FIXED" ]; then
+  measure_both
+else
+  RUNS="$RUNS_LOW"; measure_both
+  if ! { [ "$lo1" = "$hi1" ] && [ "$lo2" = "$hi2" ]; }; then RUNS="$RUNS_HIGH"; measure_both; fi
+fi
 
 diff=$(( m2 - m1 ))
 # A single run can't prove determinism, so don't claim "exact" with RUNS<2.

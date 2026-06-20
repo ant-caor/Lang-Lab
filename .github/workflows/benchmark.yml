@@ -65,7 +65,10 @@ jobs:
             --build-arg "${{ steps.reg.outputs.arg }}=${{ steps.reg.outputs.version }}" \
             -t "lang-lab-${{ matrix.language }}" .
 
-      - name: Measure every benchmark (qemu+insn, median of 5)
+      - name: Measure every benchmark (qemu+insn, adaptive RUNS)
+        # measure.sh now probes 2 reps and escalates to 5 only on jitter (bit-exact langs are
+        # proven deterministic in 2). Pathological cells (e.g. cobol/sha256) should be projected
+        # via scripts/extrapolate.sh, mirroring scripts/bench-fast.sh, rather than run full-size.
         # N1/N2 and the checksum gates are spec-driven per benchmark; measure.sh
         # appends the size itself. The `run` template's {b} is the benchmark name;
         # elixir wraps it so beam.smp runs directly (launchWrap).
@@ -90,7 +93,7 @@ jobs:
             fi
             echo "::group::measure $L / $b"
             docker run --rm \
-              -e RUNTIME_KIND="$KIND" -e N1="$n1" -e N2="$n2" -e RUNS=5 \
+              -e RUNTIME_KIND="$KIND" -e N1="$n1" -e N2="$n2" \
               -e CHECK1_SUM="$c1" -e CHECK1_FLIPS="$s1" -e CHECK2_SUM="$c2" -e CHECK2_FLIPS="$s2" \
               ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}" > "result-$L-$b.json"
             cat "result-$L-$b.json"
