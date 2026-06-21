@@ -1,28 +1,12 @@
 # --- GitHub Linguist overrides ---
-# Lang Lab is a measurement harness. The per-language benchmark sources under
-# languages/<lang>/ are equivalent samples the harness measures (every one
-# reproduces the same checksummed work), so they're excluded from the repo's
-# language stats; what remains reflects the harness itself. The qemu insn
-# plugin is upstream third-party code, and results/ + charts are generated.
+# Lang Lab is a polyglot benchmark lab: the per-language implementations under
+# languages/<lang>/ ARE the project, so they DO count toward the repo's language
+# stats (the language bar should show every backend the lab measures). Only
+# genuinely third-party or generated files are excluded below.
 
-# Per-language benchmark implementations (measured samples, not the project)
-languages/c/**          linguist-vendored
-languages/cobol/**      linguist-vendored
-languages/csharp/**     linguist-vendored
-languages/elixir/**     linguist-vendored
-languages/go/**         linguist-vendored
-languages/kotlin/**     linguist-vendored
-languages/perl/**       linguist-vendored
-languages/php/**        linguist-vendored
-languages/python/**     linguist-vendored
-languages/ruby/**       linguist-vendored
-languages/rust/**       linguist-vendored
-languages/scala/**      linguist-vendored
-languages/swift/**      linguist-vendored
-
-# Upstream third-party: qemu TCG insn plugin (GPL-2.0, Emilio G. Cota)
+# Upstream third-party: the qemu TCG insn plugin (GPL-2.0, Emilio G. Cota).
 languages/_base/qemu-plugin/**  linguist-vendored
 
-# Generated artifacts: CI result history and SVG charts
+# Generated artifacts: CI result history (JSON) and the SVG charts/matrix.
 results/**       linguist-generated
 docs/charts/**   linguist-generated
