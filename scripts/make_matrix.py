@@ -37,12 +37,13 @@ LANG_ARCH = {"elixir": "vm"}
 # Column order + short headers (matches the README benchmark table's narrative order).
 BENCH_ORDER = ["fannkuch", "binary-trees", "mandelbrot", "k-nucleotide", "reverse-complement",
                "sort-search", "dijkstra", "blur", "k-means", "sha256", "lz77", "vm", "bigint",
-               "tak", "polymorphism"]
+               "tak", "polymorphism", "gemm", "viterbi", "gbdt"]
 SHORT = {"fannkuch": "fannkuch", "binary-trees": "binary-trees", "mandelbrot": "mandelbrot",
          "k-nucleotide": "k-nucleotide", "reverse-complement": "reverse-comp",
          "sort-search": "sort-search", "dijkstra": "dijkstra", "blur": "blur",
          "k-means": "k-means", "sha256": "sha256", "lz77": "lz77", "vm": "vm",
-         "bigint": "bigint", "tak": "tak", "polymorphism": "polymorphism"}
+         "bigint": "bigint", "tak": "tak", "polymorphism": "polymorphism",
+         "gemm": "gemm", "viterbi": "viterbi", "gbdt": "gbdt"}
 
 # Diverging log-scale ramp on t = log10(ratio): green (beats C) → pale (ties) → YlOrRd (slower).
 STOPS = [(-0.6, (35, 132, 67)), (-0.3, (65, 171, 93)), (-0.15, (173, 221, 142)),
@@ -124,7 +125,7 @@ def render_svg(langs, benches, ratio, geomean, arch):
          f'font-family="ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial">']
     s.append(f'<rect width="{W}" height="{H}" rx="10" fill="{BG}"/>')
     s.append(f'<text x="22" y="34" font-size="19" font-weight="700" fill="{FG}">'
-             f'lang-lab · the matrix</text>')
+             f'Lang Lab · the matrix</text>')
     s.append(f'<text x="22" y="54" font-size="12.5" fill="{MUTED}">'
              f'real work vs C (= 1.00×), differential I(n₂)−I(n₁) · qemu+insn · {ISA} · '
              f'sorted by geomean across {len(benches)} axes</text>')
@@ -226,7 +227,7 @@ def main():
     langs, benches, ratio, geomean, arch = load_matrix()
     render_svg(langs, benches, ratio, geomean, arch)
     lb = leaderboard_md(langs, benches, ratio, geomean)
-    block = ("\n![lang-lab — the matrix: every language × every benchmark]"
+    block = ("\n![Lang Lab — the matrix: every language × every benchmark]"
              "(docs/charts/matrix.svg)\n\n"
              "_Real work each language does vs the **C baseline** (= 1.00×), as the differential "
              f"`I(n₂)−I(n₁)` that cancels startup + JIT. Geomean across all {len(benches)} axes; "

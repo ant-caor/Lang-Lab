@@ -6,25 +6,25 @@
 
 ![Lang Lab — the matrix: every language × every benchmark](docs/charts/matrix.svg)
 
-_Real work each language does vs the **C baseline** (= 1.00×), as the differential `I(n₂)−I(n₁)` that cancels startup + JIT. Geomean across all 15 axes; green cells beat or tie C. Full method below._
+_Real work each language does vs the **C baseline** (= 1.00×), as the differential `I(n₂)−I(n₁)` that cancels startup + JIT. Geomean across all 18 axes; green cells beat or tie C. Full method below._
 
 <details><summary><b>Leaderboard</b> (sorted by overall geomean)</summary>
 
 | # | Language | Overall (vs C) | Fastest axis | Slowest axis |
 |--:|----------|---------------:|--------------|--------------|
 | 1 | **C** _(baseline)_ | **1.00×** | — | — |
-| 2 | Rust | **1.17×** | blur 0.48× | k-nucleotide 2.73× |
-| 3 | C# | **1.51×** | binary-trees 0.45× | k-nucleotide 9.73× |
+| 2 | Rust | **1.11×** | blur 0.48× | k-nucleotide 2.73× |
+| 3 | C# | **1.54×** | binary-trees 0.45× | k-nucleotide 9.73× |
 | 4 | Go | **1.58×** | binary-trees 1.09× | k-nucleotide 4.93× |
-| 5 | Swift | **2.26×** | blur 0.56× | k-nucleotide 9.67× |
-| 6 | Scala | **2.53×** | binary-trees 0.28× | k-nucleotide 10.5× |
-| 7 | Kotlin | **2.72×** | binary-trees 0.28× | k-nucleotide 9.98× |
-| 8 | Elixir | **19.7×** | binary-trees 0.30× | polymorphism 136× |
-| 9 | PHP | **31.9×** | binary-trees 5.75× | sha256 98.0× |
-| 10 | Ruby | **91.0×** | binary-trees 10.3× | k-nucleotide 1.4k× |
-| 11 | Python | **100×** | binary-trees 11.2× | sha256 601× |
-| 12 | Perl | **147×** | binary-trees 19.0× | sha256 701× |
-| 13 | COBOL | **523×** | fannkuch 26.8× | sha256 223k× |
+| 5 | Swift | **2.24×** | blur 0.56× | k-nucleotide 9.67× |
+| 6 | Scala | **2.39×** | binary-trees 0.28× | k-nucleotide 10.5× |
+| 7 | Kotlin | **2.53×** | binary-trees 0.28× | k-nucleotide 9.98× |
+| 8 | Elixir | **22.3×** | binary-trees 0.30× | polymorphism 136× |
+| 9 | PHP | **32.2×** | binary-trees 5.75× | sha256 98.0× |
+| 10 | Ruby | **90.1×** | binary-trees 10.3× | k-nucleotide 1.4k× |
+| 11 | Python | **104×** | binary-trees 11.2× | sha256 601× |
+| 12 | Perl | **146×** | binary-trees 19.0× | sha256 701× |
+| 13 | COBOL | **461×** | fannkuch 26.8× | sha256 223k× |
 
 </details>
 
@@ -184,11 +184,12 @@ docs/charts/                     generated SVG charts
 
 ## Status
 
-**v0**: 12 languages + a C baseline measured uniformly under qemu+insn across a fifteen-benchmark
+**v0**: 12 languages + a C baseline measured uniformly under qemu+insn across an eighteen-benchmark
 suite (fannkuch, binary-trees, mandelbrot, k-nucleotide, reverse-complement, sort-search, dijkstra,
-blur, k-means, sha256, lz77, vm, bigint, tak, polymorphism: integer / allocation / floating-point / hash-map / string /
+blur, k-means, sha256, lz77, vm, bigint, tak, polymorphism, gemm, viterbi, gbdt: integer / allocation / floating-point / hash-map / string /
 algorithms / graphs / image / ML / bit-manipulation / compression / interpreter-dispatch /
-multi-precision / call-overhead / dynamic-dispatch), the measurement engine characterized empirically, CI pipelines defined. Local, in development.
+multi-precision / call-overhead / dynamic-dispatch / quantized-matmul / sequence-DP / tree-ensemble),
+the measurement engine characterized empirically, CI pipelines defined. Local, in development.
 
 ## License
 
