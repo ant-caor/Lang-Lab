@@ -17,6 +17,15 @@ on:
 permissions:
   contents: write
 
+# COBOL pathological cells: their full-size qemu instruction count is impractical (sha256 alone is
+# ~trillions of guest insns and would time out the job), so project it from two cheap small-size
+# probes via scripts/extrapolate.py, exactly like scripts/bench-fast.sh does locally. Format
+# "lang:bench:complexity:p1:p2"; COBOL only (negligible startup, so tiny probes are not swamped by a
+# runtime baseline the way a JIT or GC VM would be). Probe sizes and complexity match the merged
+# results envelopes.
+env:
+  EXTRAP_CELLS: "cobol:sha256:linear:100:200 cobol:gemm:cubic:64:96 cobol:viterbi:linear:5000:10000 cobol:gbdt:linear:1250:2500"
+
 # Serialize runs so the collect job's commit/push to main can't race.
 concurrency:
   group: benchmark-${{ github.ref }}
@@ -75,6 +84,7 @@ jobs:
         run: |
           L='${{ matrix.language }}'
           KIND='${{ steps.reg.outputs.kind }}'
+          VER='${{ steps.reg.outputs.version }}'
           RUN_TMPL=$(jq -r --arg l "$L" '.[$l].run' languages.json)
           WRAP=$(jq -r --arg l "$L" '.[$l].launchWrap // false' languages.json)
           envflags=()
@@ -91,11 +101,27 @@ jobs:
             else
               override=(/usr/local/bin/measure.sh "$L" "$b" -- $runcmd)
             fi
+            # Pathological cells (COBOL only): project the qemu count from two cheap small probes
+            # instead of counting full-size, which would be trillions of guest insns and time out.
+            # Mirrors scripts/bench-fast.sh; the checksum was verified when the spec was bootstrapped,
+            # so the gate is skipped for these cells.
+            ex=""
+            for c in ${EXTRAP_CELLS:-}; do case "$c" in "$L:$b:"*) ex="$c";; esac; done
             echo "::group::measure $L / $b"
-            docker run --rm \
-              -e RUNTIME_KIND="$KIND" -e N1="$n1" -e N2="$n2" \
-              -e CHECK1_SUM="$c1" -e CHECK1_FLIPS="$s1" -e CHECK2_SUM="$c2" -e CHECK2_FLIPS="$s2" \
-              ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}" > "result-$L-$b.json"
+            if [ -n "$ex" ]; then
+              cx=$(printf '%s' "$ex" | cut -d: -f3)
+              p1=$(printf '%s' "$ex" | cut -d: -f4); p2=$(printf '%s' "$ex" | cut -d: -f5)
+              pout=$(docker run --rm -e SKIP_GATE=1 -e RUNS=1 -e RUNTIME_KIND="$KIND" -e N1="$p1" -e N2="$p2" \
+                ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}")
+              i1=$(printf '%s' "$pout" | jq -r '.i_n1.median')
+              i2=$(printf '%s' "$pout" | jq -r '.i_n2.median')
+              python3 scripts/extrapolate.py "$L" "$b" "$VER" "$KIND" "$cx" "$n1" "$n2" "$p1:$i1" "$p2:$i2" > "result-$L-$b.json"
+            else
+              docker run --rm \
+                -e RUNTIME_KIND="$KIND" -e N1="$n1" -e N2="$n2" \
+                -e CHECK1_SUM="$c1" -e CHECK1_FLIPS="$s1" -e CHECK2_SUM="$c2" -e CHECK2_FLIPS="$s2" \
+                ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}" > "result-$L-$b.json"
+            fi
             cat "result-$L-$b.json"
             echo "::endgroup::"
           done
