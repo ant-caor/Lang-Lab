@@ -68,21 +68,26 @@ validate() {  # n expected_sum expected_secondary("" = skip)
   [ "$sv" = "$3" ]
 }
 
+# Stderr + exit code of the most recent guest run, kept so a failed count can be diagnosed
+# (the qemu plugin writes "total insns" to stderr; a crash/OOM leaves its trace there too).
+RUN_ERR="$(mktemp)"; RUN_RC=0
+trap 'rm -f "$RUN_ERR"' EXIT
+
 # One instruction count at size $1 (summed over processes for launcher runtimes).
 count_once() {
-  local n="$1" log; log="$(mktemp)"
+  local n="$1"
   # No LD_LIBRARY_PATH: qemu finds its bundled libs via RPATH ($ORIGIN/lib), so the
   # emulated guest's library resolution stays clean (else interpreters/VMs break).
   # GLIBC_TUNABLES disables glibc's rseq registration, which qemu-user 7.2 doesn't
   # emulate - without it CPython/Perl/PHP/JVM/BEAM crash silently at startup.
+  RUN_RC=0
   GLIBC_TUNABLES="glibc.pthread.rseq=0" \
-    "$QEMU" -plugin "$PLUGIN" -d plugin "${runcmd[@]}" "$n" >/dev/null 2>"$log" || true
+    "$QEMU" -plugin "$PLUGIN" -d plugin "${runcmd[@]}" "$n" >/dev/null 2>"$RUN_ERR" || RUN_RC=$?
   if [ "$KIND" = "launcher" ]; then
-    awk '/total insns/ {s+=$3} END{print s+0}' "$log"
+    awk '/total insns/ {s+=$3} END{print s+0}' "$RUN_ERR"
   else
-    awk '/total insns/ {print $3; exit}' "$log"
+    awk '/total insns/ {print $3; exit}' "$RUN_ERR"
   fi
-  rm -f "$log"
 }
 
 # RUNS measurements at size $1 -> "median min max csv"
@@ -91,7 +96,10 @@ measure_size() {
   for ((i=0; i<RUNS; i++)); do
     v="$(count_once "$n")"
     if ! [ "${v:-0}" -gt 0 ] 2>/dev/null; then
-      echo "measure FAIL: no instruction count at n=$n (kind=$KIND)" >&2; exit 4
+      echo "measure FAIL: no instruction count at n=$n (kind=$KIND, run exit=${RUN_RC:-?})" >&2
+      echo "  exit hint: 137≈OOM-kill (SIGKILL), 139=SIGSEGV, 132=SIGILL, 134=SIGABRT; run stderr tail:" >&2
+      tail -n 12 "$RUN_ERR" 2>/dev/null | sed 's/^/    /' >&2
+      exit 4
     fi
     vals+=("$v")
   done

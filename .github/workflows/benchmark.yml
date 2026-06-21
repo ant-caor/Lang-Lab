@@ -25,6 +25,11 @@ permissions:
 # results envelopes.
 env:
   EXTRAP_CELLS: "cobol:sha256:linear:100:200 cobol:gemm:cubic:64:96 cobol:viterbi:linear:5000:10000 cobol:gbdt:linear:1250:2500"
+  # Cells that genuinely can't be measured on the free x86_64 runner (e.g. the CLR crashing/OOMing
+  # under qemu-user for csharp/k-nucleotide at n2 — measures fine on arm64). A failure here is
+  # RECORDED as an unmeasured cell ({"measured": false}) and the run stays green; a failure for any
+  # cell NOT listed here still fails the job, so real regressions are not masked. Format "lang:bench".
+  ALLOW_NOMEASURE: "csharp:k-nucleotide"
 
 # Serialize runs so the collect job's commit/push to main can't race.
 concurrency:
@@ -117,10 +122,31 @@ jobs:
               i2=$(printf '%s' "$pout" | jq -r '.i_n2.median')
               python3 scripts/extrapolate.py "$L" "$b" "$VER" "$KIND" "$cx" "$n1" "$n2" "$p1:$i1" "$p2:$i2" > "result-$L-$b.json"
             else
+              # A cell can fail to emit a count (e.g. the CLR crashing/OOMing under qemu-x86_64).
+              # If it's allow-listed in ALLOW_NOMEASURE, record it as an unmeasured cell and carry
+              # on (run stays green); otherwise fail the job so real regressions still surface.
+              rc=0
               docker run --rm \
                 -e RUNTIME_KIND="$KIND" -e N1="$n1" -e N2="$n2" \
                 -e CHECK1_SUM="$c1" -e CHECK1_FLIPS="$s1" -e CHECK2_SUM="$c2" -e CHECK2_FLIPS="$s2" \
-                ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}" > "result-$L-$b.json"
+                ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}" > "result-$L-$b.json" 2> "err-$L-$b.txt" || rc=$?
+              if [ "$rc" -ne 0 ]; then
+                allowed=0
+                for a in ${ALLOW_NOMEASURE:-}; do [ "$a" = "$L:$b" ] && allowed=1; done
+                reason=$(tail -n 3 "err-$L-$b.txt" | tr '\n' ' ')
+                if [ "$allowed" = 1 ]; then
+                  echo "::warning::$L/$b unmeasurable on x86_64 (exit $rc) — recorded as skipped: $reason"
+                  jq -n --arg l "$L" --arg b "$b" --arg ver "$VER" --arg k "$KIND" \
+                     --arg note "not measured on x86_64 (exit $rc): $reason" \
+                     '{language:$l, benchmark:$b, version:$ver, backend:"qemu-insn",
+                       metric:"instructions", kind:$k, measured:false, note:$note}' \
+                     > "result-$L-$b.json"
+                else
+                  echo "::error::$L/$b failed to measure (exit $rc); not in ALLOW_NOMEASURE"
+                  cat "err-$L-$b.txt" >&2
+                  exit "$rc"
+                fi
+              fi
             fi
             cat "result-$L-$b.json"
             echo "::endgroup::"
