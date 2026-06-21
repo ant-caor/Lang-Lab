@@ -1,10 +1,10 @@
-# lang-lab
+# Lang Lab
 
 **Reproducible benchmarks for backend programming languages.**
 
 <!-- MATRIX:START -->
 
-![lang-lab — the matrix: every language × every benchmark](docs/charts/matrix.svg)
+![Lang Lab — the matrix: every language × every benchmark](docs/charts/matrix.svg)
 
 _Real work each language does vs the **C baseline** (= 1.00×), as the differential `I(n₂)−I(n₁)` that cancels startup + JIT. Geomean across all 15 axes; green cells beat or tie C. Full method below._
 
@@ -30,13 +30,13 @@ _Real work each language does vs the **C baseline** (= 1.00×), as the different
 
 <!-- MATRIX:END -->
 
-`lang-lab` measures, **rigorously and reproducibly**, how much CPU work it costs to run
+Lang Lab measures, **rigorously and reproducibly**, how much CPU work it costs to run
 the same algorithm across backend *programming languages*. It doesn't chase the realism of
 a web framework (that's [TechEmpower](https://www.techempower.com/benchmarks/)) or the
 syntactic breadth of [Rosetta Code](https://rosettacode.org/). Its single differentiator is
 **reproducibility** and **automatic maintenance**.
 
-> ⚠️ Not a *human-language* lab. `lang-lab` measures *programming* languages
+> ⚠️ Not a *human-language* lab. Lang Lab measures *programming* languages
 > (Python, Go, Rust, …), it doesn't teach you to conjugate verbs.
 
 ---
