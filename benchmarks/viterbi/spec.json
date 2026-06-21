@@ -1,0 +1,9 @@
+{
+  "benchmark": "viterbi",
+  "n1": 20000,
+  "n2": 80000,
+  "checksums": {
+    "n1": { "sum": "276709012", "secondary": "3019915" },
+    "n2": { "sum": "805821650", "secondary": "12079915" }
+  }
+}

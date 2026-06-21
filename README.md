@@ -152,6 +152,7 @@ micro-benchmark isn't enough.
 | **tak** | Function-call / recursion overhead: naive triple-recursive Takeuchi, no memory | [benchmarks/tak](benchmarks/tak/README.md) |
 | **polymorphism** | Dynamic dispatch: megamorphic virtual calls resolved at runtime (K=6 types) | [benchmarks/polymorphism](benchmarks/polymorphism/README.md) |
 | **gemm** | AI/ML — quantized int8 matrix multiply: the dominant tensor inference kernel, cache-pressure inner loop | [benchmarks/gemm](benchmarks/gemm/README.md) |
+| **viterbi** | AI/ML — HMM/CRF sequence decoding: integer max-plus DP trellis + back-pointer trace | [benchmarks/viterbi](benchmarks/viterbi/README.md) |
 
 Every benchmark has a **reference checksum** that all implementations must reproduce bit for
 bit: proof that they all do exactly the same work.
