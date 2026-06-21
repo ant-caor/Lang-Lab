@@ -6,7 +6,7 @@ differential I(n2)-I(n1) = b*(g(n2)-g(n1)) is recovered exactly (validated: scal
 
 Usage (called by bench-fast.sh for EXTRAP_CELLS):
   extrapolate.py <lang> <bench> <version> <runtimeKind> <complexity> <n1> <n2> <p1:I1> <p2:I2> ...
-complexity in {linear, quad, exp, nlogn}. Emits one result-envelope JSON object on stdout.
+complexity in {linear, quad, cubic, exp, nlogn}. Emits one result-envelope JSON object on stdout.
 """
 import json
 import math
@@ -19,6 +19,8 @@ def g(kind, n):
         return n
     if kind == "quad":
         return n * n
+    if kind == "cubic":
+        return n * n * n
     if kind == "exp":
         return 2.0 ** n
     if kind == "nlogn":

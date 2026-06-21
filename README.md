@@ -151,6 +151,7 @@ micro-benchmark isn't enough.
 | **bigint** | Multi-precision: hand-rolled base-2³² factorial with carry propagation | [benchmarks/bigint](benchmarks/bigint/README.md) |
 | **tak** | Function-call / recursion overhead: naive triple-recursive Takeuchi, no memory | [benchmarks/tak](benchmarks/tak/README.md) |
 | **polymorphism** | Dynamic dispatch: megamorphic virtual calls resolved at runtime (K=6 types) | [benchmarks/polymorphism](benchmarks/polymorphism/README.md) |
+| **gemm** | AI/ML — quantized int8 matrix multiply: the dominant tensor inference kernel, cache-pressure inner loop | [benchmarks/gemm](benchmarks/gemm/README.md) |
 
 Every benchmark has a **reference checksum** that all implementations must reproduce bit for
 bit: proof that they all do exactly the same work.

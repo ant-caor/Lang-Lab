@@ -1,0 +1,9 @@
+{
+  "benchmark": "gemm",
+  "n1": 128,
+  "n2": 256,
+  "checksums": {
+    "n1": { "sum": "151580209", "secondary": "341376" },
+    "n2": { "sum": "586643040", "secondary": "682752" }
+  }
+}
