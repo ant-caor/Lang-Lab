@@ -25,12 +25,19 @@ class KNucleotide
     {
         string s = Gen(n);
 
+        // Use GetAlternateLookup (.NET 9) so that the hot-path TryGetValue + index-update
+        // operates on a ReadOnlySpan<char> slice of the existing string (zero allocation).
+        // Only the first time a k-mer is seen does a string get allocated for the new key.
+        // At n=200000 this reduces ~200k string allocations to at most 65536 (4^8 distinct
+        // 8-mers), cutting GC pressure dramatically under qemu-x86_64's constrained runner.
+        // The dictionary still uses string keys throughout — fairness is preserved.
         var map = new Dictionary<string, long>();
+        var lookup = map.GetAlternateLookup<ReadOnlySpan<char>>();
         for (int i = 0; i + K <= n; i++)
         {
-            string kmer = s.Substring(i, K);
-            map.TryGetValue(kmer, out long c);
-            map[kmer] = c + 1;
+            ReadOnlySpan<char> kmer = s.AsSpan(i, K);
+            lookup.TryGetValue(kmer, out long c);
+            lookup[kmer] = c + 1;
         }
 
         long acc = 0;
