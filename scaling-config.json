@@ -1,0 +1,25 @@
+{
+  "_doc": "Drives the WALL-CLOCK SCALING track (.github/workflows/scaling.yml + scripts/bench-scaling.sh). Each -par benchmark is run NATIVELY (no qemu) at several core counts; speedup = T1/TP of the compute region (COMPUTE_NS). parRun is the run command WITHOUT cores/size ({b}=benchmark); the driver appends `<cores> <size>`. size is per runtime-class (native/vm/interp) so each language gets a workload with enough warmed compute to amortize its barriers. warmup sets LL_WARMUP for JIT runtimes (JVM/CLR).",
+  "cores": [1, 2, 4],
+  "langs": {
+    "c":      {"parRun": "/app/{b}-par",             "class": "native"},
+    "go":     {"parRun": "/app/{b}-par",             "class": "native"},
+    "rust":   {"parRun": "/app/{b}-par",             "class": "native"},
+    "swift":  {"parRun": "/app/{b}-par",             "class": "native"},
+    "python": {"parRun": "python /app/{b}-par.py",   "class": "interp"},
+    "perl":   {"parRun": "perl /app/{b}-par.pl",     "class": "interp"},
+    "php":    {"parRun": "php /app/{b}-par.php",      "class": "interp"},
+    "ruby":   {"parRun": "ruby /app/{b}-par.rb",      "class": "interp"},
+    "kotlin": {"parRun": "java -jar /app/{b}-par.jar", "class": "vm", "warmup": 5},
+    "scala":  {"parRun": "java -jar /app/{b}-par.jar", "class": "vm", "warmup": 5},
+    "csharp": {"parRun": "/app/out/{b}-par/{b}-par",   "class": "vm", "warmup": 5},
+    "elixir": {"parRun": "elixir /app/{b}-par.exs",    "class": "vm"}
+  },
+  "benchmarks": {
+    "gemm":       {"size": {"native": 1024, "vm": 1024, "interp": 256}},
+    "mandelbrot": {"size": {"native": 1536, "vm": 2048, "interp": 512}},
+    "blur":       {"size": {"native": 1024, "vm": 1024, "interp": 384}},
+    "k-means":    {"size": {"native": 80000, "vm": 300000, "interp": 8000}},
+    "gbdt":       {"size": {"native": 80000, "vm": 80000, "interp": 20000}}
+  }
+}

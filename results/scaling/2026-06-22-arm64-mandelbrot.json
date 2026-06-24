@@ -1,0 +1,18 @@
+{
+  "benchmark": "mandelbrot",
+  "date": "2026-06-22",
+  "isa": "arm64",
+  "track": "scaling",
+  "backend": "wallclock-compute",
+  "cores": [1, 2, 4],
+  "host": "local (Docker Desktop, --cpuset-cpus=0-3); JIT runtimes JMH-warmed (LL_WARMUP=5)",
+  "note": "Wall-clock T1/TP of the compute region (COMPUTE_NS, startup excluded). mandelbrot is load-imbalanced under row-band partitioning (in-set centre rows iterate all 50 steps), so 4-core speedup tops out ~2.5x for every language. cores cap = 4 (free-runner budget).",
+  "results": [
+    {"language": "c",           "primitive": "threads",    "timing": "compute", "size": 1536, "speedup": {"1": 1.0, "2": 1.916, "4": 2.471}},
+    {"language": "go",          "primitive": "goroutines", "timing": "compute", "size": 1536, "speedup": {"1": 1.0, "2": 1.910, "4": 2.509}},
+    {"language": "rust",        "primitive": "threads",    "timing": "compute", "size": 1536, "speedup": {"1": 1.0, "2": 1.925, "4": 2.473}},
+    {"language": "elixir",      "primitive": "processes",  "timing": "compute", "size": 1024, "speedup": {"1": 1.0, "2": 1.917, "4": 2.529}},
+    {"language": "python-proc", "primitive": "processes",  "timing": "compute", "size": 512,  "speedup": {"1": 1.0, "2": 1.891, "4": 2.495}},
+    {"language": "kotlin",      "primitive": "threads",    "timing": "compute", "size": 2048, "speedup": {"1": 1.0, "2": 1.910, "4": 2.450}}
+  ]
+}

@@ -4,6 +4,10 @@ FROM php:${PHP_VERSION}-cli
 ARG PHP_VERSION
 ENV LANG_VERSION=${PHP_VERSION}
 
+# pcntl: PHP CLI has no shared-memory threads, so the wall-clock scaling track's
+# parallel benchmarks use pcntl_fork (the only fair CPU-parallel primitive in core PHP).
+RUN docker-php-ext-install pcntl
+
 COPY --from=lang-lab-qemu-insn /plugin/qemu-aarch64 /opt/qi/qemu-aarch64
 COPY --from=lang-lab-qemu-insn /plugin/libinsn.so   /opt/qi/libinsn.so
 COPY --from=lang-lab-qemu-insn /plugin/lib          /opt/qi/lib

@@ -1,0 +1,18 @@
+{
+  "benchmark": "k-means",
+  "date": "2026-06-22",
+  "isa": "arm64",
+  "track": "scaling",
+  "backend": "wallclock-compute",
+  "cores": [1, 2, 4],
+  "host": "local (Docker Desktop, --cpuset-cpus=0-3); JIT runtimes JMH-warmed (LL_WARMUP=5)",
+  "note": "Wall-clock T1/TP of the compute region (COMPUTE_NS, startup excluded). Per-language sizes chosen for adequate warmed compute. NOT bit-reproducible; reported as a ratio. cores cap = 4 (free-runner budget).",
+  "results": [
+    {"language": "c",           "primitive": "threads",      "timing": "compute", "size": 80000,  "speedup": {"1": 1.0, "2": 1.825, "4": 3.216}},
+    {"language": "go",          "primitive": "goroutines",   "timing": "compute", "size": 80000,  "speedup": {"1": 1.0, "2": 1.798, "4": 3.113}},
+    {"language": "rust",        "primitive": "threads",      "timing": "compute", "size": 80000,  "speedup": {"1": 1.0, "2": 1.870, "4": 3.265}},
+    {"language": "elixir",      "primitive": "processes",    "timing": "compute", "size": 40000,  "speedup": {"1": 1.0, "2": 1.897, "4": 3.501}},
+    {"language": "python-proc", "primitive": "processes",    "timing": "compute", "size": 8000,   "speedup": {"1": 1.0, "2": 1.738, "4": 2.628}},
+    {"language": "kotlin",      "primitive": "threads",      "timing": "compute", "size": 300000, "speedup": {"1": 1.0, "2": 1.810, "4": 3.020}}
+  ]
+}

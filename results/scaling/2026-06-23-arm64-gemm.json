@@ -1,0 +1,159 @@
+{
+  "benchmark": "gemm",
+  "date": "2026-06-23",
+  "isa": "arm64",
+  "track": "scaling",
+  "backend": "wallclock-compute",
+  "cores": [
+    1,
+    2,
+    4
+  ],
+  "host": "local (Docker Desktop, --cpuset-cpus=0-3); JIT runtimes warmed (LL_WARMUP=5)",
+  "note": "Wall-clock T1/TP of the compute region (COMPUTE_NS, startup excluded; JIT runtimes warmed). gemm = quantized int8 row-band matmul, i->k->j pinned, embarrassingly parallel over output rows. native/vm size=1024, interp size=256. python-threads is the GIL-bound variant (~1.0x, expected). cores cap = 4 (free-runner budget).",
+  "results": [
+    {
+      "language": "c",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 1024,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.920,
+        "4": 3.530
+      }
+    },
+    {
+      "language": "go",
+      "primitive": "goroutines",
+      "timing": "compute",
+      "size": 1024,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.897,
+        "4": 3.580
+      }
+    },
+    {
+      "language": "rust",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 1024,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.968,
+        "4": 3.533
+      }
+    },
+    {
+      "language": "swift",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 1024,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.930,
+        "4": 3.702
+      }
+    },
+    {
+      "language": "python-proc",
+      "primitive": "processes",
+      "timing": "compute",
+      "size": 256,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.924,
+        "4": 3.609
+      }
+    },
+    {
+      "language": "perl",
+      "primitive": "processes",
+      "timing": "compute",
+      "size": 256,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.451,
+        "4": 2.211
+      }
+    },
+    {
+      "language": "php",
+      "primitive": "processes",
+      "timing": "compute",
+      "size": 256,
+      "speedup": {
+        "1": 1.000,
+        "2": 2.254,
+        "4": 4.080
+      }
+    },
+    {
+      "language": "ruby",
+      "primitive": "processes",
+      "timing": "compute",
+      "size": 256,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.916,
+        "4": 3.518
+      }
+    },
+    {
+      "language": "kotlin",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 1024,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.857,
+        "4": 3.455
+      }
+    },
+    {
+      "language": "scala",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 1024,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.866,
+        "4": 3.605
+      }
+    },
+    {
+      "language": "csharp",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 1024,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.945,
+        "4": 3.764
+      }
+    },
+    {
+      "language": "elixir",
+      "primitive": "processes",
+      "timing": "compute",
+      "size": 1024,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.974,
+        "4": 3.612
+      }
+    },
+    {
+      "language": "python-threads",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 256,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.026,
+        "4": 1.026
+      }
+    }
+  ]
+}

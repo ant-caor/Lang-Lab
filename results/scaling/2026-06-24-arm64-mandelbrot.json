@@ -1,0 +1,148 @@
+{
+  "benchmark": "mandelbrot",
+  "date": "2026-06-24",
+  "isa": "arm64",
+  "track": "scaling",
+  "backend": "wallclock-compute",
+  "cores": [
+    1,
+    2,
+    4
+  ],
+  "host": "local (Docker Desktop, --cpuset-cpus=0-3); JIT runtimes warmed (LL_WARMUP=5)",
+  "note": "Wall-clock T1/TP of the compute region (COMPUTE_NS, startup excluded; JIT runtimes warmed). 12 languages, cores cap = 4.",
+  "results": [
+    {
+      "language": "c",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 1536,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.927,
+        "4": 2.495
+      }
+    },
+    {
+      "language": "go",
+      "primitive": "goroutines",
+      "timing": "compute",
+      "size": 1536,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.903,
+        "4": 2.469
+      }
+    },
+    {
+      "language": "rust",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 1536,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.923,
+        "4": 2.479
+      }
+    },
+    {
+      "language": "swift",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 1536,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.884,
+        "4": 2.454
+      }
+    },
+    {
+      "language": "python-proc",
+      "primitive": "processes",
+      "timing": "compute",
+      "size": 512,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.850,
+        "4": 2.489
+      }
+    },
+    {
+      "language": "perl",
+      "primitive": "processes",
+      "timing": "compute",
+      "size": 512,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.971,
+        "4": 2.671
+      }
+    },
+    {
+      "language": "php",
+      "primitive": "processes",
+      "timing": "compute",
+      "size": 512,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.903,
+        "4": 2.514
+      }
+    },
+    {
+      "language": "ruby",
+      "primitive": "processes",
+      "timing": "compute",
+      "size": 512,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.907,
+        "4": 2.537
+      }
+    },
+    {
+      "language": "kotlin",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 2048,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.907,
+        "4": 2.463
+      }
+    },
+    {
+      "language": "scala",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 2048,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.893,
+        "4": 2.436
+      }
+    },
+    {
+      "language": "csharp",
+      "primitive": "threads",
+      "timing": "compute",
+      "size": 2048,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.953,
+        "4": 2.499
+      }
+    },
+    {
+      "language": "elixir",
+      "primitive": "processes",
+      "timing": "compute",
+      "size": 2048,
+      "speedup": {
+        "1": 1.000,
+        "2": 1.907,
+        "4": 2.559
+      }
+    }
+  ]
+}

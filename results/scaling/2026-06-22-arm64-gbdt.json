@@ -1,0 +1,18 @@
+{
+  "benchmark": "gbdt",
+  "date": "2026-06-22",
+  "isa": "arm64",
+  "track": "scaling",
+  "backend": "wallclock-compute",
+  "cores": [1, 2, 4],
+  "host": "local (Docker Desktop, --cpuset-cpus=0-3); JIT runtimes JMH-warmed (LL_WARMUP=5)",
+  "note": "Wall-clock T1/TP of the compute region (COMPUTE_NS, startup excluded). gbdt scales best of the batch: independent, compute-heavy per-sample tree traversal. cores cap = 4 (free-runner budget).",
+  "results": [
+    {"language": "c",           "primitive": "threads",    "timing": "compute", "size": 80000, "speedup": {"1": 1.0, "2": 1.869, "4": 3.583}},
+    {"language": "go",          "primitive": "goroutines", "timing": "compute", "size": 80000, "speedup": {"1": 1.0, "2": 1.881, "4": 3.385}},
+    {"language": "rust",        "primitive": "threads",    "timing": "compute", "size": 80000, "speedup": {"1": 1.0, "2": 1.635, "4": 3.473}},
+    {"language": "elixir",      "primitive": "processes",  "timing": "compute", "size": 40000, "speedup": {"1": 1.0, "2": 1.940, "4": 3.700}},
+    {"language": "python-proc", "primitive": "processes",  "timing": "compute", "size": 20000, "speedup": {"1": 1.0, "2": 1.918, "4": 3.594}},
+    {"language": "kotlin",      "primitive": "threads",    "timing": "compute", "size": 80000, "speedup": {"1": 1.0, "2": 1.899, "4": 3.161}}
+  ]
+}

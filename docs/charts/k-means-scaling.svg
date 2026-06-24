@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="470" viewBox="0 0 820 470" font-family="ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial">
+<rect width="820" height="470" rx="10" fill="#0d1117"/>
+<text x="22" y="34" font-size="19" font-weight="700" fill="#e6edf3">k-means: parallel speedup vs cores</text>
+<text x="22" y="56" font-size="13" fill="#9aa7b4">wall-clock T1/TP of the compute region (startup excluded) · arm64 · higher is better, ideal = linear</text>
+<line x1="64" y1="424.0" x2="670" y2="424.0" stroke="#21262d" stroke-width="1"/>
+<text x="54" y="428.0" text-anchor="end" font-size="12" fill="#9aa7b4">0×</text>
+<line x1="64" y1="355.2" x2="670" y2="355.2" stroke="#21262d" stroke-width="1"/>
+<text x="54" y="359.2" text-anchor="end" font-size="12" fill="#9aa7b4">1×</text>
+<line x1="64" y1="286.4" x2="670" y2="286.4" stroke="#21262d" stroke-width="1"/>
+<text x="54" y="290.4" text-anchor="end" font-size="12" fill="#9aa7b4">2×</text>
+<line x1="64" y1="217.6" x2="670" y2="217.6" stroke="#21262d" stroke-width="1"/>
+<text x="54" y="221.6" text-anchor="end" font-size="12" fill="#9aa7b4">3×</text>
+<line x1="64" y1="148.8" x2="670" y2="148.8" stroke="#21262d" stroke-width="1"/>
+<text x="54" y="152.8" text-anchor="end" font-size="12" fill="#9aa7b4">4×</text>
+<line x1="64" y1="80.0" x2="670" y2="80.0" stroke="#21262d" stroke-width="1"/>
+<text x="54" y="84.0" text-anchor="end" font-size="12" fill="#9aa7b4">5×</text>
+<text x="64.0" y="448.0" text-anchor="middle" font-size="13" fill="#9aa7b4">1 core</text>
+<text x="367.0" y="448.0" text-anchor="middle" font-size="13" fill="#9aa7b4">2 cores</text>
+<text x="670.0" y="448.0" text-anchor="middle" font-size="13" fill="#9aa7b4">4 cores</text>
+<polyline points="64.0,355.2 367.0,286.4 670.0,148.8" fill="none" stroke="#9aa7b4" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="678.0" y="152.8" font-size="12" fill="#9aa7b4">ideal</text>
+<polyline points="64.0,355.2 367.0,292.0 670.0,190.9" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#3fb950"/>
+<circle cx="367.0" cy="292.0" r="3" fill="#3fb950"/>
+<circle cx="670.0" cy="190.9" r="3" fill="#3fb950"/>
+<text x="678" y="194.9" font-size="12.5" fill="#3fb950">Rust 3.39×</text>
+<polyline points="64.0,355.2 367.0,295.1 670.0,191.5" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#f0883e"/>
+<circle cx="367.0" cy="295.1" r="3" fill="#f0883e"/>
+<circle cx="670.0" cy="191.5" r="3" fill="#f0883e"/>
+<text x="678" y="210.9" font-size="12.5" fill="#f0883e">Ruby 3.38×</text>
+<polyline points="64.0,355.2 367.0,291.2 670.0,193.7" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#a371f7"/>
+<circle cx="367.0" cy="291.2" r="3" fill="#a371f7"/>
+<circle cx="670.0" cy="193.7" r="3" fill="#a371f7"/>
+<text x="678" y="226.9" font-size="12.5" fill="#a371f7">C# 3.35×</text>
+<polyline points="64.0,355.2 367.0,299.3 670.0,200.7" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#a371f7"/>
+<circle cx="367.0" cy="299.3" r="3" fill="#a371f7"/>
+<circle cx="670.0" cy="200.7" r="3" fill="#a371f7"/>
+<text x="678" y="242.9" font-size="12.5" fill="#a371f7">Elixir 3.25×</text>
+<polyline points="64.0,355.2 367.0,297.2 670.0,207.6" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#3fb950"/>
+<circle cx="367.0" cy="297.2" r="3" fill="#3fb950"/>
+<circle cx="670.0" cy="207.6" r="3" fill="#3fb950"/>
+<text x="678" y="258.9" font-size="12.5" fill="#3fb950">C 3.15×</text>
+<polyline points="64.0,355.2 367.0,298.4 670.0,207.6" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#3fb950"/>
+<circle cx="367.0" cy="298.4" r="3" fill="#3fb950"/>
+<circle cx="670.0" cy="207.6" r="3" fill="#3fb950"/>
+<text x="678" y="274.9" font-size="12.5" fill="#3fb950">Go 3.15×</text>
+<polyline points="64.0,355.2 367.0,306.4 670.0,212.7" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#f0883e"/>
+<circle cx="367.0" cy="306.4" r="3" fill="#f0883e"/>
+<circle cx="670.0" cy="212.7" r="3" fill="#f0883e"/>
+<text x="678" y="290.9" font-size="12.5" fill="#f0883e">Perl 3.07×</text>
+<polyline points="64.0,355.2 367.0,299.3 670.0,227.2" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#a371f7"/>
+<circle cx="367.0" cy="299.3" r="3" fill="#a371f7"/>
+<circle cx="670.0" cy="227.2" r="3" fill="#a371f7"/>
+<text x="678" y="306.9" font-size="12.5" fill="#a371f7">Kotlin 2.86×</text>
+<polyline points="64.0,355.2 367.0,300.9 670.0,228.3" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#a371f7"/>
+<circle cx="367.0" cy="300.9" r="3" fill="#a371f7"/>
+<circle cx="670.0" cy="228.3" r="3" fill="#a371f7"/>
+<text x="678" y="322.9" font-size="12.5" fill="#a371f7">Scala 2.85×</text>
+<polyline points="64.0,355.2 367.0,304.2 670.0,229.7" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#3fb950"/>
+<circle cx="367.0" cy="304.2" r="3" fill="#3fb950"/>
+<circle cx="670.0" cy="229.7" r="3" fill="#3fb950"/>
+<text x="678" y="338.9" font-size="12.5" fill="#3fb950">Swift 2.82×</text>
+<polyline points="64.0,355.2 367.0,304.7 670.0,252.6" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#f0883e"/>
+<circle cx="367.0" cy="304.7" r="3" fill="#f0883e"/>
+<circle cx="670.0" cy="252.6" r="3" fill="#f0883e"/>
+<text x="678" y="354.9" font-size="12.5" fill="#f0883e">Python (proc) 2.49×</text>
+<polyline points="64.0,355.2 367.0,300.4 670.0,255.6" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#f0883e"/>
+<circle cx="367.0" cy="300.4" r="3" fill="#f0883e"/>
+<circle cx="670.0" cy="255.6" r="3" fill="#f0883e"/>
+<text x="678" y="370.9" font-size="12.5" fill="#f0883e">PHP 2.45×</text>
+</svg>

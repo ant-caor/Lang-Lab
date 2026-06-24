@@ -1,0 +1,149 @@
+name: scaling
+
+# WALL-CLOCK SCALING track (complementary to the instruction track in benchmark.yml).
+# Builds the version-pinned image per language and measures PARALLEL speedup of each
+# -par benchmark, run NATIVELY (no qemu), at 1/2/4 cores. Metric = T1/TP of the
+# compute region (COMPUTE_NS, startup excluded; JIT runtimes JMH-warmed). This is NOT
+# bit-reproducible like the instruction track — it is a ratio, reported as such, and the
+# core count is bounded by the runner (free GitHub runners ~4 vCPU). Driven by
+# scaling-config.json (par-run templates, per-class sizes, JIT warmup).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scaling-config.json"
+      - "scripts/measure-scaling.sh"
+      - "scripts/make_scaling_charts.py"
+      - "languages/**-par.*"
+      - "languages/csharp/*-par/**"
+      - ".github/workflows/scaling.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scaling-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build qemu-insn base (the language Dockerfiles COPY from it, even though
+              the scaling track runs native)
+        run: |
+          docker build -f languages/_base/Dockerfile.qemu-insn -t lang-lab-qemu-insn .
+          docker save lang-lab-qemu-insn | gzip > qemu-insn.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qemu-insn-base
+          path: qemu-insn.tar.gz
+
+  matrix:
+    needs: base
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Languages with a parRun in scaling-config.json (COBOL has no concurrency primitive).
+        language: [c, go, rust, swift, python, perl, php, ruby, kotlin, scala, csharp, elixir]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: qemu-insn-base
+      - run: gunzip -c qemu-insn.tar.gz | docker load
+
+      - name: Read registry
+        id: reg
+        run: |
+          L='${{ matrix.language }}'
+          echo "version=$(jq -r --arg l "$L" '.[$l]' versions.lock.json)" >> "$GITHUB_OUTPUT"
+          echo "arg=$(jq -r --arg l "$L" '.[$l].buildArg' languages.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Build image (compiles every benchmark + its -par variant for this language)
+        run: |
+          docker build -f "languages/${{ matrix.language }}/Dockerfile" \
+            --build-arg "${{ steps.reg.outputs.arg }}=${{ steps.reg.outputs.version }}" \
+            -t "lang-lab-${{ matrix.language }}" .
+
+      - name: Gate + measure scaling for every applicable benchmark
+        run: |
+          L='${{ matrix.language }}'
+          CFG=scaling-config.json
+          cls=$(jq -r --arg l "$L" '.langs[$l].class' "$CFG")
+          warmup=$(jq -r --arg l "$L" '.langs[$l].warmup // 0' "$CFG")
+          parTmpl=$(jq -r --arg l "$L" '.langs[$l].parRun' "$CFG")
+          cores=$(jq -r '.cores | join(" ")' "$CFG")
+          cmax=$(jq -r '.cores[-1]' "$CFG")
+          MS=/usr/local/bin/measure-scaling.sh
+          for b in $(jq -r '.benchmarks | keys[]' "$CFG"); do
+            # Honor a per-benchmark lang restriction (e.g. gemm only has 4 -par ports).
+            if [ "$(jq -r --arg b "$b" '.benchmarks[$b].langs // [] | length' "$CFG")" -gt 0 ]; then
+              [ "$(jq -r --arg b "$b" --arg l "$L" '.benchmarks[$b].langs | index($l) != null' "$CFG")" = "true" ] || continue
+            fi
+            size=$(jq -r --arg b "$b" --arg c "$cls" '.benchmarks[$b].size[$c]' "$CFG")
+            spec="benchmarks/$b/spec.json"
+            n2=$(jq -r .n2 "$spec"); c2=$(jq -r '.checksums.n2.sum' "$spec")
+            runb=${parTmpl//\{b\}/$b}
+            echo "::group::scaling $L / $b (size=$size, warmup=$warmup)"
+            # Correctness + core-invariance gate: the -par result must equal the serial
+            # spec checksum at n2 for cores=1 AND cores=max (cheap; catches breakage).
+            for cc in 1 "$cmax"; do
+              got=$(docker run --rm "lang-lab-$L" sh -c "$runb $cc $n2" 2>/dev/null | sed -n 1p)
+              [ "$got" = "$c2" ] || { echo "::error::scaling gate FAIL $L/$b cores=$cc (got '$got' want '$c2')"; exit 1; }
+            done
+            # Measure: native, compute-region timer, JIT warmup; emit one JSON line.
+            docker run --rm -e LL_WARMUP="$warmup" \
+              -v "$PWD/scripts/measure-scaling.sh:$MS:ro" \
+              "lang-lab-$L" bash -c \
+              "SKIP_GATE=1 SCALE_N=$size CORES='$cores' REPS=5 PRIMITIVE='$cls' bash $MS '$L' '$b' -- $runb '{P}'" \
+              > "result-scaling-$L-$b.json"
+            cat "result-scaling-$L-$b.json"
+            echo "::endgroup::"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "result-scaling-${{ matrix.language }}"
+          path: "result-scaling-${{ matrix.language }}-*.json"
+
+  collect:
+    needs: matrix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Merge into per-(isa, benchmark) scaling envelopes
+        run: |
+          mkdir -p results/scaling
+          stamp="$(date -u +%Y-%m-%d)"; isa=x86_64
+          cores=$(jq -c '.cores' scaling-config.json)
+          for b in $(jq -r '.benchmarks | keys[]' scaling-config.json); do
+            files=(artifacts/*/result-scaling-*-"$b".json)
+            [ -e "${files[0]}" ] || { echo "no scaling results for $b - skipping"; continue; }
+            jq -s --arg b "$b" --arg date "$stamp" --arg isa "$isa" --argjson cores "$cores" \
+               '{benchmark:$b, date:$date, isa:$isa, track:"scaling", backend:"wallclock-compute",
+                 cores:$cores, results: .}' \
+               "${files[@]}" > "results/scaling/${stamp}-${isa}-${b}.json"
+            cp "results/scaling/${stamp}-${isa}-${b}.json" "results/scaling/latest-${isa}-${b}.json"
+          done
+
+      - name: Regenerate scaling charts
+        run: |
+          for f in results/scaling/latest-x86_64-*.json; do
+            [ -e "$f" ] && python3 scripts/make_scaling_charts.py "$f"
+          done
+
+      - name: Commit scaling results + charts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add results/scaling docs/charts
+          git commit -m "data: scaling run ${GITHUB_SHA::7}" || { echo "no changes"; exit 0; }
+          git pull --rebase origin main && git push

@@ -1,0 +1,18 @@
+{
+  "benchmark": "blur",
+  "date": "2026-06-22",
+  "isa": "arm64",
+  "track": "scaling",
+  "backend": "wallclock-compute",
+  "cores": [1, 2, 4],
+  "host": "local (Docker Desktop, --cpuset-cpus=0-3); JIT runtimes JMH-warmed (LL_WARMUP=5)",
+  "note": "Wall-clock T1/TP of the compute region (COMPUTE_NS, startup excluded). Memory-bound 3x3 stencil, 4 double-buffered passes. cores cap = 4 (free-runner budget).",
+  "results": [
+    {"language": "c",           "primitive": "threads",    "timing": "compute", "size": 1024, "speedup": {"1": 1.0, "2": 1.880, "4": 3.451}},
+    {"language": "go",          "primitive": "goroutines", "timing": "compute", "size": 1024, "speedup": {"1": 1.0, "2": 1.909, "4": 3.561}},
+    {"language": "rust",        "primitive": "threads",    "timing": "compute", "size": 1024, "speedup": {"1": 1.0, "2": 1.913, "4": 3.414}},
+    {"language": "elixir",      "primitive": "processes",  "timing": "compute", "size": 512,  "speedup": {"1": 1.0, "2": 1.825, "4": 3.265}},
+    {"language": "python-proc", "primitive": "processes",  "timing": "compute", "size": 384,  "speedup": {"1": 1.0, "2": 1.834, "4": 2.960}},
+    {"language": "kotlin",      "primitive": "threads",    "timing": "compute", "size": 1024, "speedup": {"1": 1.0, "2": 1.850, "4": 3.010}}
+  ]
+}
