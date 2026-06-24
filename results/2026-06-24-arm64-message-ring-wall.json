@@ -1,0 +1,21 @@
+{
+  "benchmark": "message-ring",
+  "metric": "wallclock-per-hop",
+  "date": "2026-06-24",
+  "isa": "arm64",
+  "host": "local (Docker Desktop, native, single OS thread)",
+  "method": "differential wall-clock of two sizes (n1=10000,n2=40000) / hops, min of reps, normalized to C (ratio cancels machine speed); NOT bit-reproducible",
+  "note": "Complements the instruction-track message-ring number, which is blind to syscall cost and biased toward syscall-based context switches (C swapcontext does ~2 rt_sigprocmask/hop).",
+  "us_per_hop": {
+    "rust": 0.0035, "go": 0.1018, "php": 0.1164, "ruby": 0.1681, "c": 0.2074,
+    "csharp": 0.2176, "elixir": 0.2803, "kotlin": 1.4286, "scala": 1.4336,
+    "python": 2.1355, "swift": 41.775
+  },
+  "vs_c": {
+    "rust": 0.02, "go": 0.49, "php": 0.56, "ruby": 0.81, "c": 1.00,
+    "csharp": 1.05, "elixir": 1.35, "kotlin": 6.89, "scala": 6.91,
+    "python": 10.30, "swift": 201.4
+  },
+  "perl": "N/A (no core cooperative primitive)",
+  "cobol": "N/A (no concurrency primitive)"
+}

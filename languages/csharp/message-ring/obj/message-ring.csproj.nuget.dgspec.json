@@ -1,0 +1,66 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/message-ring.csproj": {}
+  },
+  "projects": {
+    "/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/message-ring.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/message-ring.csproj",
+        "projectName": "message-ring",
+        "projectPath": "/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/message-ring.csproj",
+        "packagesPath": "/Users/antonio/.nuget/packages/",
+        "outputPath": "/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/antonio/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

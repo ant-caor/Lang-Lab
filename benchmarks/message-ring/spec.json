@@ -1,0 +1,15 @@
+{
+  "benchmark": "message-ring",
+  "n1": 500,
+  "n2": 2000,
+  "checksums": {
+    "n1": {
+      "sum": "559682169",
+      "secondary": "16000"
+    },
+    "n2": {
+      "sum": "988175140",
+      "secondary": "64000"
+    }
+  }
+}

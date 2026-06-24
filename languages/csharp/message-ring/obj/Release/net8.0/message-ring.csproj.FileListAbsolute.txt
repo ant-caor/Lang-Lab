@@ -1,0 +1,15 @@
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/bin/Release/net8.0/message-ring
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/bin/Release/net8.0/message-ring.deps.json
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/bin/Release/net8.0/message-ring.runtimeconfig.json
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/bin/Release/net8.0/message-ring.dll
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/bin/Release/net8.0/message-ring.pdb
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/Release/net8.0/message-ring.GeneratedMSBuildEditorConfig.editorconfig
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/Release/net8.0/message-ring.AssemblyInfoInputs.cache
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/Release/net8.0/message-ring.AssemblyInfo.cs
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/Release/net8.0/message-ring.csproj.CoreCompileInputs.cache
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/Release/net8.0/message-ring.sourcelink.json
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/Release/net8.0/message-ring.dll
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/Release/net8.0/refint/message-ring.dll
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/Release/net8.0/message-ring.pdb
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/Release/net8.0/message-ring.genruntimeconfig.cache
+/Users/antonio/Documents/GitHub/lang-lab/languages/csharp/message-ring/obj/Release/net8.0/ref/message-ring.dll
