@@ -81,6 +81,20 @@ compute-bound code (worse for JIT and syscall-bound code); its single most depen
 **regression detection within one language across versions**. The full validity characterization is
 in [docs/metric-validity.md](docs/metric-validity.md).
 
+### Two tracks, two contracts
+
+The project measures two different things, with two different reproducibility contracts. Read one
+track's number through its own contract, never the other's.
+
+| Track | Measures | Backend | Reproducibility contract |
+|---|---|---|---|
+| **Instruction** (headline) | user-space instruction *work* vs C (a proxy for algorithmic efficiency, **not** speed) | qemu-user + `insn` plugin | deterministic given (ISA, qemu, plugin): bit-exact for native/interpreters, median-of-N for JIT/GC |
+| **Scaling** | wall-clock parallel *speedup* `T1/TP` on 1/2/4 cores | native, no qemu | a ratio (machine speed cancels), **not** bit-reproducible; stable to ±0.03 on shared CI |
+
+The scaling track and the `message-ring` wall-clock companion exist precisely because the instruction
+metric cannot see parallelism or syscall cost (its limits are quantified in
+[docs/metric-validity.md](docs/metric-validity.md)).
+
 ## Languages (12 + a C baseline)
 
 Chosen to cover every backend **runtime archetype**, not just the popular ones, so the
