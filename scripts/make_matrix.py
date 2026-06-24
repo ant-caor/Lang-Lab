@@ -95,7 +95,7 @@ def latest(b):
 def load_matrix():
     """Return (langs_by_geomean, benches_present, ratio[lang][bench], geomean[lang], arch[lang])."""
     benches = [b for b in BENCH_ORDER if latest(b)]
-    ratio, arch = {}, {}
+    ratio, arch, extrap = {}, {}, set()
     for b in benches:
         env = json.load(open(latest(b)))
         rs = {r["language"]: r for r in env["results"] if r.get("i_n1") and r.get("i_n2")}
@@ -103,15 +103,17 @@ def load_matrix():
         for L, r in rs.items():
             ratio.setdefault(L, {})[b] = r["differential"] / cdiff
             arch[L] = LANG_ARCH.get(L) or KIND_ARCH.get(r.get("kind", "native"), "native")
+            if "extrapolat" in (r.get("note") or "").lower():
+                extrap.add((L, b))
     geomean = {}
     for L, row in ratio.items():
         vals = [row[b] for b in benches if b in row]
         geomean[L] = math.exp(sum(math.log(v) for v in vals) / len(vals))
     langs = sorted(ratio, key=lambda L: geomean[L])
-    return langs, benches, ratio, geomean, arch
+    return langs, benches, ratio, geomean, arch, extrap
 
 
-def render_svg(langs, benches, ratio, geomean, arch):
+def render_svg(langs, benches, ratio, geomean, arch, extrap):
     cw, ch = 50, 30          # cell width / height
     left, gap, ow = 86, 16, 60   # lang-label gutter, gap before OVERALL, OVERALL width
     title_h, head_h = 64, 88
@@ -156,8 +158,9 @@ def render_svg(langs, benches, ratio, geomean, arch):
             rgb = cell_color(r)
             s.append(f'<rect x="{x}" y="{y}" width="{cw}" height="{ch}" fill="{hexc(rgb)}" '
                      f'stroke="{GRID}" stroke-width="1"/>')
+            mark = "*" if (L, b) in extrap else ""
             s.append(f'<text x="{x + cw / 2:.1f}" y="{y + ch / 2 + 4:.1f}" text-anchor="middle" '
-                     f'font-size="10.5" font-weight="600" fill="{text_on(rgb)}">{fmt(r)}</text>')
+                     f'font-size="10.5" font-weight="600" fill="{text_on(rgb)}">{fmt(r)}{mark}</text>')
         # OVERALL cell
         g = geomean[L]
         rgb = cell_color(g)
@@ -186,6 +189,9 @@ def render_svg(langs, benches, ratio, geomean, arch):
                  f'fill="{MUTED}">{txt}</text>')
     s.append(f'<text x="{lx + lw + gap}" y="{ly + 10}" font-size="10.5" fill="{MUTED}">'
              f'← beats C · slower →</text>')
+    if extrap:
+        s.append(f'<text x="{lx}" y="{ly + 42}" font-size="10" fill="{MUTED}">'
+                 f'* extrapolated from small probes (not measured full-size)</text>')
     s.append('</svg>')
 
     os.makedirs(OUT, exist_ok=True)
@@ -195,7 +201,7 @@ def render_svg(langs, benches, ratio, geomean, arch):
     print("wrote", os.path.relpath(path, ROOT))
 
 
-def leaderboard_md(langs, benches, ratio, geomean):
+def leaderboard_md(langs, benches, ratio, geomean, extrap):
     out = ["| # | Language | Overall (vs C) | Fastest axis | Slowest axis |",
            "|--:|----------|---------------:|--------------|--------------|"]
     for i, L in enumerate(langs, 1):
@@ -206,8 +212,10 @@ def leaderboard_md(langs, benches, ratio, geomean):
         row = ratio[L]
         best = min(row, key=row.get)
         worst = max(row, key=row.get)
+        bmk = "*" if (L, best) in extrap else ""
+        wmk = "*" if (L, worst) in extrap else ""
         out.append(f"| {i} | {name} | **{fmt(geomean[L])}×** | "
-                   f"{best} {fmt(row[best])}× | {worst} {fmt(row[worst])}× |")
+                   f"{best} {fmt(row[best])}×{bmk} | {worst} {fmt(row[worst])}×{wmk} |")
     return "\n".join(out)
 
 
@@ -224,16 +232,18 @@ def splice(block):
 
 
 def main():
-    langs, benches, ratio, geomean, arch = load_matrix()
-    render_svg(langs, benches, ratio, geomean, arch)
-    lb = leaderboard_md(langs, benches, ratio, geomean)
+    langs, benches, ratio, geomean, arch, extrap = load_matrix()
+    render_svg(langs, benches, ratio, geomean, arch, extrap)
+    lb = leaderboard_md(langs, benches, ratio, geomean, extrap)
+    foot = ("\n\n_* extrapolated from small probes (negligible-startup runtimes only), not measured "
+            "full-size; still counted in the geomean._" if extrap else "")
     block = ("\n![Lang Lab — the matrix: every language × every benchmark]"
              "(docs/charts/matrix.svg)\n\n"
              "_Real work each language does vs the **C baseline** (= 1.00×), as the differential "
              f"`I(n₂)−I(n₁)` that cancels startup + JIT. **Lower is better** (less work than C). "
              f"Geomean across all {len(benches)} axes; green cells beat or tie C. Full method below._\n\n"
              "<details><summary><b>Leaderboard</b> (sorted by overall geomean)</summary>\n\n"
-             + lb + "\n\n</details>\n")
+             + lb + foot + "\n\n</details>\n")
     if "--write" in sys.argv:
         splice(block)
     else:

@@ -24,7 +24,9 @@ _Real work each language does vs the **C baseline** (= 1.00×), as the different
 | 10 | Ruby | **83.0×** | binary-trees 10.3× | k-nucleotide 1.4k× |
 | 11 | Python | **109×** | binary-trees 11.2× | sha256 601× |
 | 12 | Perl | **146×** | binary-trees 19.0× | sha256 701× |
-| 13 | COBOL | **461×** | fannkuch 26.8× | sha256 223k× |
+| 13 | COBOL | **461×** | fannkuch 26.8× | sha256 223k×* |
+
+_* extrapolated from small probes (negligible-startup runtimes only), not measured full-size; still counted in the geomean._
 
 </details>
 
