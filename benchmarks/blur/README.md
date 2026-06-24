@@ -90,7 +90,7 @@ All 13 printed the identical `722869223` / `229750350` hashes.
 
 ![relative real work](../../docs/charts/blur-diff-ratio.svg)
 
-| Language | I(128) | I(256) | differential | **vs C** | determinism |
+| Language | I(128) | I(256) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | Rust | 6.0M | 23.4M | 17.5M | **0.48×** | exact |
 | Swift | 18.1M | 38.4M | 20.3M | **0.56×** | exact |
@@ -100,11 +100,11 @@ All 13 printed the identical `722869223` / `229750350` hashes.
 | Kotlin | 235.8M | 355.2M | 119.3M | 3.28× | jitter |
 | Scala | 707.9M | 828.6M | 120.7M | 3.32× | jitter |
 | Elixir | 2.22B | 2.79B | 564.0M | 15.49× | jitter |
-| PHP | 557.2M | 2.12B | 1.57B | 43.03× | jitter |
+| PHP | 557.2M | 2.12B | 1.57B | 43.03× | exact |
 | Ruby | 1.68B | 5.88B | 4.20B | 115.20× | jitter |
 | Python | 1.51B | 5.91B | 4.40B | 120.91× | jitter |
-| COBOL | 1.9B | 7.4B | 5.6B | 152.72× | exact |
-| Perl | 3.23B | 12.86B | 9.63B | 264.40× | jitter |
+| COBOL | 1.86B | 7.42B | 5.56B | 152.72× | exact |
+| Perl | 3.23B | 12.9B | 9.63B | 264.40× | jitter |
 
 ### The headline: the one axis where C is beaten
 

@@ -104,7 +104,7 @@ All 13 printed the identical `70735446` / `52003413` checksums: same clusters, s
 
 ![relative real work](../../docs/charts/k-means-diff-ratio.svg)
 
-| Language | I(2k) | I(8k) | differential | **vs C** | determinism |
+| Language | I(2k) | I(8k) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | Rust | 8.9M | 35.0M | 26.1M | **0.59×** | exact |
 | **C** | 14.8M | 58.9M | 44.1M | **1.00×** | exact |
@@ -113,12 +113,12 @@ All 13 printed the identical `70735446` / `52003413` checksums: same clusters, s
 | Swift | 48.0M | 158.0M | 110.0M | 2.49× | exact |
 | Scala | 771.8M | 943.2M | 171.4M | 3.89× | jitter |
 | Kotlin | 282.6M | 580.6M | 298.0M | 6.76× | jitter |
-| Elixir | 2.7B | 4.4B | 1.7B | 39.07× | jitter |
-| PHP | 728.9M | 2.8B | 2.1B | 47.18× | jitter |
-| Ruby | 1.6B | 5.6B | 4.0B | 91.12× | jitter |
-| Python | 2.2B | 8.8B | 6.6B | 149.26× | jitter |
-| Perl | 3.0B | 12.0B | 9.0B | 203.14× | jitter |
-| COBOL | 5.9B | 23.5B | 17.6B | 398.73× | exact |
+| Elixir | 2.71B | 4.43B | 1.72B | 39.07× | jitter |
+| PHP | 728.9M | 2.81B | 2.08B | 47.18× | exact |
+| Ruby | 1.62B | 5.64B | 4.02B | 91.12× | jitter |
+| Python | 2.23B | 8.81B | 6.58B | 149.26× | jitter |
+| Perl | 3.00B | 12.0B | 8.96B | 203.14× | jitter |
+| COBOL | 5.87B | 23.5B | 17.6B | 398.73× | exact |
 
 ### The headline: Rust beats C again, on the same lever
 

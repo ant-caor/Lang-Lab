@@ -85,7 +85,7 @@ All 13 ran the same program and printed the identical `350689618` / `234207083` 
 
 ![relative real work](../../docs/charts/vm-diff-ratio.svg)
 
-| Language | I(200k) | I(800k) | differential | **vs C** | determinism |
+| Language | I(200k) | I(800k) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | **C** | 54.9M | 219.3M | 164.4M | **1.00×** | exact |
 | Rust | 83.0M | 331.4M | 248.4M | 1.51× | exact |
@@ -93,13 +93,13 @@ All 13 ran the same program and printed the identical `350689618` / `234207083` 
 | C# | 312.4M | 612.4M | 300.0M | 1.82× | jitter |
 | Go | 109.3M | 436.3M | 327.0M | 1.99× | jitter |
 | Kotlin | 326.0M | 667.8M | 341.8M | 2.08× | jitter |
-| Scala | 810.0M | 1.2B | 345.5M | 2.10× | jitter |
-| Elixir | 2.3B | 3.0B | 754.4M | 4.59× | jitter |
-| PHP | 2.2B | 8.5B | 6.4B | 38.76× | exact |
-| COBOL | 2.9B | 11.5B | 8.7B | 52.65× | exact |
-| Python | 4.3B | 17.3B | 12.9B | 78.57× | jitter |
-| Ruby | 4.9B | 18.8B | 13.9B | 84.66× | jitter |
-| Perl | 7.4B | 29.7B | 22.3B | 135.53× | jitter |
+| Scala | 810.0M | 1.16B | 345.5M | 2.10× | jitter |
+| Elixir | 2.28B | 3.04B | 754.4M | 4.59× | jitter |
+| PHP | 2.16B | 8.53B | 6.37B | 38.76× | exact |
+| COBOL | 2.88B | 11.5B | 8.66B | 52.65× | exact |
+| Python | 4.35B | 17.3B | 12.9B | 78.57× | jitter |
+| Ruby | 4.92B | 18.8B | 13.9B | 84.66× | jitter |
+| Perl | 7.44B | 29.7B | 22.3B | 135.53× | jitter |
 
 ### The headline: an interpreter interpreting an interpreter, and Elixir's surprise
 

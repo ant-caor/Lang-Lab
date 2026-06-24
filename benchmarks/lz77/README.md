@@ -85,7 +85,7 @@ All 13 printed the identical `423979860` / `850992747` hashes.
 
 ![relative real work](../../docs/charts/lz77-diff-ratio.svg)
 
-| Language | I(6k) | I(24k) | differential | **vs C** | determinism |
+| Language | I(6k) | I(24k) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | **C** | 11.1M | 45.3M | 34.2M | **1.00×** | exact |
 | Swift | 24.8M | 66.7M | 41.9M | 1.23× | exact |
@@ -94,12 +94,12 @@ All 13 printed the identical `423979860` / `850992747` hashes.
 | Go | 17.1M | 69.6M | 52.5M | 1.54× | jitter |
 | Kotlin | 225.5M | 293.1M | 67.6M | 1.98× | jitter |
 | Scala | 697.2M | 768.0M | 70.8M | 2.07× | jitter |
-| Elixir | 2.3B | 3.2B | 879.3M | 25.73× | jitter |
-| PHP | 363.0M | 1.4B | 1.0B | 29.89× | exact |
-| Ruby | 907.8M | 2.9B | 2.0B | 57.52× | jitter |
-| Python | 1.4B | 5.5B | 4.1B | 120.84× | jitter |
-| Perl | 1.5B | 6.0B | 4.6B | 133.54× | jitter |
-| COBOL | 2.3B | 9.4B | 7.1B | 208.93× | exact |
+| Elixir | 2.30B | 3.18B | 879.3M | 25.73× | jitter |
+| PHP | 363.0M | 1.38B | 1.02B | 29.89× | exact |
+| Ruby | 907.8M | 2.87B | 1.97B | 57.52× | jitter |
+| Python | 1.36B | 5.49B | 4.13B | 120.84× | jitter |
+| Perl | 1.48B | 6.05B | 4.56B | 133.54× | jitter |
+| COBOL | 2.30B | 9.44B | 7.14B | 208.93× | exact |
 
 The longest-match search is a byte-comparison inner loop, so the compiled and JIT'd languages stay
 tight (Swift 1.23×, Rust 1.40×, the rest under ~2.1×) and the interpreters pay their usual

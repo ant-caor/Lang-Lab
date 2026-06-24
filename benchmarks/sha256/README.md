@@ -84,7 +84,7 @@ All 13 printed the identical `720457911` / `506466333` hashes.
 
 ![relative real work](../../docs/charts/sha256-diff-ratio.svg)
 
-| Language | I(2.5k) | I(10k) | differential | **vs C** | determinism |
+| Language | I(2.5k) | I(10k) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | Rust | 7.6M | 30.1M | 22.4M | **0.90×** | exact |
 | **C** | 8.4M | 33.3M | 24.9M | **1.00×** | exact |
@@ -93,12 +93,12 @@ All 13 printed the identical `720457911` / `506466333` hashes.
 | Swift | 26.6M | 72.4M | 45.8M | 1.84× | exact |
 | Kotlin | 228.3M | 364.2M | 135.9M | 5.45× | jitter |
 | Scala | 715.3M | 855.3M | 140.1M | 5.61× | jitter |
-| Elixir | 2.4B | 3.2B | 772.6M | 30.97× | jitter |
-| PHP | 850.3M | 3.3B | 2.4B | 98.02× | exact |
-| Ruby | 2.6B | 9.5B | 6.9B | 278.14× | jitter |
-| Python | 5.0B | 20.0B | 15.0B | 600.64× | jitter |
-| Perl | 5.8B | 23.3B | 17.5B | 701.29× | jitter |
-| COBOL | 1.85T | 7.42T | 5.56T | **222956.36×\*** | exact (extrap.) |
+| Elixir | 2.43B | 3.21B | 772.6M | 30.97× | jitter |
+| PHP | 850.3M | 3.30B | 2.45B | 98.02× | exact |
+| Ruby | 2.59B | 9.53B | 6.94B | 278.14× | jitter |
+| Python | 5.04B | 20.0B | 15.0B | 600.64× | jitter |
+| Perl | 5.85B | 23.3B | 17.5B | 701.29× | jitter |
+| COBOL | 1.85T | 7.42T | 5.56T | 222956.36×\* | exact (extrap.) |
 
 ### The headline: no native 32-bit integer is catastrophic
 

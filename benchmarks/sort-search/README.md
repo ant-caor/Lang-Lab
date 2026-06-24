@@ -118,7 +118,7 @@ search, operation for operation.
 
 ![relative real work](../../docs/charts/sort-search-diff-ratio.svg)
 
-| Language | I(50k) | I(200k) | differential | **vs C** | determinism |
+| Language | I(50k) | I(200k) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | **C** | 15.5M | 68.2M | 52.7M | **1.00×** | exact |
 | Rust | 20.8M | 91.6M | 70.7M | 1.34× | exact |
@@ -127,12 +127,12 @@ search, operation for operation.
 | Swift | 40.8M | 140.3M | 99.5M | 1.89× | exact |
 | Scala | 770.3M | 933.7M | 163.3M | 3.10× | jitter |
 | Kotlin | 280.9M | 467.8M | 186.9M | 3.55× | jitter |
-| Elixir | 2.6B | 4.5B | 1.9B | 36.47× | jitter |
-| PHP | 646.0M | 2.7B | 2.1B | 39.28× | exact |
-| Ruby | 1.5B | 5.7B | 4.2B | 79.91× | jitter |
-| Python | 2.1B | 9.0B | 7.0B | 131.93× | jitter |
-| Perl | 3.0B | 13.0B | 10.0B | 189.53× | jitter |
-| COBOL | 5.1B | 22.5B | 17.4B | 330.02× | exact |
+| Elixir | 2.61B | 4.53B | 1.92B | 36.47× | jitter |
+| PHP | 646.0M | 2.72B | 2.07B | 39.28× | exact |
+| Ruby | 1.52B | 5.73B | 4.21B | 79.91× | jitter |
+| Python | 2.09B | 9.04B | 6.95B | 131.93× | jitter |
+| Perl | 2.97B | 13.0B | 9.99B | 189.53× | jitter |
+| COBOL | 5.13B | 22.5B | 17.4B | 330.02× | exact |
 
 ### The headline: recursion + random array access, and Elixir's wall
 

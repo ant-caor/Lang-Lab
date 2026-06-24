@@ -95,7 +95,7 @@ All 13 printed the identical `827974717` / `533032773` hashes.
 
 ![relative real work](../../docs/charts/reverse-complement-diff-ratio.svg)
 
-| Language | I(100k) | I(400k) | differential | **vs C** | determinism |
+| Language | I(100k) | I(400k) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | Rust | 3.9M | 15.0M | 11.1M | **0.99×** | exact |
 | **C** | 3.8M | 15.1M | 11.3M | **1.00×** | exact |
@@ -109,7 +109,7 @@ All 13 printed the identical `827974717` / `533032773` hashes.
 | Ruby | 489.0M | 1.13B | 642.2M | 57.08× | jitter |
 | Python | 468.9M | 1.75B | 1.28B | 114.00× | jitter |
 | Perl | 693.6M | 2.73B | 2.04B | 181.17× | jitter |
-| COBOL | 836.2M | 3.3B | 2.5B | 221.82× | exact |
+| COBOL | 836.2M | 3.33B | 2.50B | 221.82× | exact |
 
 ### The headline: the hand-written-loop rule exposes the interpreters
 

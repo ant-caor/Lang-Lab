@@ -75,8 +75,32 @@ warm-up.
 
 ## Results
 
-_Pending the uniform qemu+insn pass (the differential `I(200) - I(50)` normalized to C = 1.0x
-will land here, with the per-language chart)._
+Single backend (`qemu-insn`), same ISA (arm64 local). Raw data in
+[`results/2026-06-20-arm64-polymorphism.json`](../../results/2026-06-20-arm64-polymorphism.json).
+
+### The fair metric: real work `I(200) - I(50)`, normalized to C = 1.0x (lower is better)
+
+The absolute count includes the runtime's startup, which varies wildly across runtimes. The
+differential between the two sizes cancels it (and JIT compilation), isolating the algorithm's real
+work. C (gcc `-O2`, no GC) is the reference floor; below 1.0x beats C.
+
+![polymorphism differential work](../../docs/charts/polymorphism-diff-ratio.svg)
+
+| Language | I(50) | I(200) | differential | **vs C** (lower is better) | determinism |
+|---|--:|--:|--:|--:|---|
+| **C** | 12.3M | 47.8M | 35.5M | **1.00×** | exact |
+| Rust | 16.7M | 53.7M | 37.0M | 1.04× | exact |
+| C# | 226.8M | 269.8M | 43.0M | 1.21× | jitter |
+| Go | 19.5M | 69.0M | 49.5M | 1.39× | jitter |
+| Kotlin | 233.2M | 327.2M | 93.9M | 2.65× | jitter |
+| Scala | 690.1M | 788.7M | 98.6M | 2.78× | jitter |
+| Swift | 87.8M | 305.7M | 217.8M | 6.13× | exact |
+| PHP | 340.5M | 1.16B | 822.2M | 23.15× | exact |
+| Ruby | 856.2M | 2.44B | 1.58B | 44.55× | jitter |
+| Perl | 1.30B | 4.76B | 3.46B | 97.53× | jitter |
+| Python | 1.48B | 5.16B | 3.68B | 103.71× | jitter |
+| Elixir | 4.43B | 9.26B | 4.83B | 136.15× | jitter |
+| COBOL | 3.87B | 14.4B | 10.5B | 295.41× | exact |
 
 ## Reproduce
 

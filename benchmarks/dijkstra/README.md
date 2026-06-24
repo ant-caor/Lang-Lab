@@ -110,7 +110,7 @@ order.
 
 ![relative real work](../../docs/charts/dijkstra-diff-ratio.svg)
 
-| Language | I(5k) | I(20k) | differential | **vs C** | determinism |
+| Language | I(5k) | I(20k) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | **C** | 5.2M | 21.7M | 16.6M | **1.00×** | exact |
 | C# | 226.4M | 258.4M | 32.1M | 1.94× | jitter |
@@ -120,11 +120,11 @@ order.
 | Kotlin | 269.5M | 351.5M | 82.0M | 4.95× | jitter |
 | Scala | 733.1M | 826.9M | 93.8M | 5.66× | jitter |
 | PHP | 216.3M | 821.7M | 605.4M | 36.54× | exact |
-| Elixir | 2.4B | 3.3B | 935.6M | 56.47× | jitter |
-| Ruby | 690.0M | 2.0B | 1.3B | 77.28× | jitter |
-| Python | 513.5M | 2.1B | 1.5B | 92.92× | jitter |
-| Perl | 790.4M | 3.4B | 2.6B | 155.46× | jitter |
-| COBOL | 2.0B | 8.5B | 6.5B | 391.75× | exact |
+| Elixir | 2.37B | 3.31B | 935.6M | 56.47× | jitter |
+| Ruby | 690.0M | 1.97B | 1.28B | 77.28× | jitter |
+| Python | 513.5M | 2.05B | 1.54B | 92.92× | jitter |
+| Perl | 790.4M | 3.37B | 2.58B | 155.46× | jitter |
+| COBOL | 2.05B | 8.54B | 6.49B | 391.75× | exact |
 
 ### The headline: pointer-chasing punishes access overhead
 

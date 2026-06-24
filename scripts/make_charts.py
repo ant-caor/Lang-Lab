@@ -102,7 +102,7 @@ def main():
     # 1) PRIMARY: differential work, normalized to the baseline (C = 1.0x).
     diff = [(name(r), r["differential"] / base, arch(r)) for r in rows]
     bars(f"{bench}:relative real work (I({n2})−I({n1}), C = 1.0×)",
-         f"differential cancels startup + JIT · qemu+insn{isa_tag} · the fair metric",
+         f"differential cancels startup + JIT · qemu+insn{isa_tag} · the fair metric · lower is better",
          diff, os.path.join(OUT, f"{bench}-diff-ratio.svg"), logscale=max(v for _, v, _ in diff) > 1000,
          value_fmt=lambda v: f"{v:.2f}×")
 
@@ -115,7 +115,7 @@ def main():
     # 3) Absolute instruction count at the smaller size (median), log scale.
     n1_chart = [(name(r), r["i_n1"]["median"], arch(r)) for r in rows]
     bars(f"{bench}:instructions at n={n1}",
-         f"absolute count · qemu+insn{isa_tag} · log scale",
+         f"absolute count · qemu+insn{isa_tag} · log scale · less = more efficient",
          n1_chart, os.path.join(OUT, f"{bench}-n1-absolute.svg"), logscale=True, value_fmt=human)
 
 

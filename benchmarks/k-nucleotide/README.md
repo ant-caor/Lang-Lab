@@ -107,7 +107,7 @@ across 12 completely different hash-map implementations.
 
 ![relative real work](../../docs/charts/k-nucleotide-diff-ratio.svg)
 
-| Language | I(100k) | I(200k) | differential | **vs C** | determinism |
+| Language | I(100k) | I(200k) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | **C** | 13.6M | 21.8M | 8.2M | **1.00×** | exact |
 | Rust | 37.4M | 59.9M | 22.5M | 2.73× | jitter |
@@ -120,7 +120,7 @@ across 12 completely different hash-map implementations.
 | Perl | 881.3M | 1.18B | 299.7M | 36.40× | jitter |
 | Elixir | 2.41B | 2.74B | 326.4M | 39.64× | jitter |
 | Python | 709.7M | 1.12B | 410.1M | 49.80× | jitter |
-| Ruby | 5.29B | 17.13B | 11.84B | 1437.92× | jitter |
+| Ruby | 5.29B | 17.1B | 11.8B | 1437.92× | jitter |
 | COBOL | 63.8B | 127.1B | 63.3B | 7686.05× | exact |
 
 ### The headline: the std hash map is expensive; a hand-rolled C table is not

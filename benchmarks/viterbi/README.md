@@ -113,6 +113,35 @@ backtrace can accidentally produce the right hash, but it is far harder to produ
 work per time step is S*S = 64 multiply-add-compares (the inner argmax). The differential
 `I(80000) − I(20000)` isolates the marginal trellis cost from startup and JIT warm-up.
 
+## Results: uniform qemu+insn pass
+
+Single backend (`qemu-insn`), same ISA (arm64 local). Raw data in
+[`results/2026-06-21-arm64-viterbi.json`](../../results/2026-06-21-arm64-viterbi.json).
+
+### The fair metric: real work `I(80000) - I(20000)`, normalized to C = 1.0x (lower is better)
+
+The absolute count includes the runtime's startup, which varies wildly across runtimes. The
+differential between the two sizes cancels it (and JIT compilation), isolating the algorithm's real
+work. C (gcc `-O2`, no GC) is the reference floor; below 1.0x beats C.
+
+![viterbi differential work](../../docs/charts/viterbi-diff-ratio.svg)
+
+| Language | I(20k) | I(80k) | differential | **vs C** (lower is better) | determinism |
+|---|--:|--:|--:|--:|---|
+| Rust | 13.3M | 52.8M | 39.5M | **0.80×** | exact |
+| **C** | 16.6M | 66.3M | 49.6M | **1.00×** | exact |
+| C# | 242.5M | 306.3M | 63.8M | 1.29× | jitter |
+| Go | 22.8M | 90.4M | 67.6M | 1.36× | jitter |
+| Swift | 44.1M | 142.3M | 98.3M | 1.98× | exact |
+| Kotlin | 246.3M | 358.2M | 111.9M | 2.26× | jitter |
+| Scala | 721.1M | 835.4M | 114.3M | 2.30× | jitter |
+| PHP | 581.3M | 2.22B | 1.64B | 33.03× | exact |
+| Elixir | 2.72B | 4.47B | 1.74B | 35.16× | jitter |
+| Ruby | 1.47B | 5.04B | 3.57B | 71.98× | jitter |
+| Python | 1.73B | 6.79B | 5.06B | 102.04× | jitter |
+| COBOL | 2.24B | 8.93B | 6.69B | 134.90×\* | exact (extrap.) |
+| Perl | 2.69B | 10.7B | 8.03B | 161.86× | jitter |
+
 ## Reproduce
 
 ```bash

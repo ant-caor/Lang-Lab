@@ -84,7 +84,7 @@ All 13 printed the identical `831439159` / `694604666` hashes.
 
 ![relative real work](../../docs/charts/bigint-diff-ratio.svg)
 
-| Language | I(1.5k) | I(6k) | differential | **vs C** | determinism |
+| Language | I(1.5k) | I(6k) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | **C** | 1.9M | 35.2M | 33.4M | **1.00×** | exact |
 | Rust | 2.3M | 41.2M | 38.9M | 1.17× | exact |
@@ -93,12 +93,12 @@ All 13 printed the identical `831439159` / `694604666` hashes.
 | Scala | 667.7M | 715.3M | 47.6M | 1.43× | jitter |
 | Kotlin | 185.5M | 239.7M | 54.1M | 1.62× | jitter |
 | Swift | 15.2M | 87.4M | 72.2M | 2.17× | exact |
-| PHP | 125.7M | 1.8B | 1.7B | 51.12× | exact |
-| Elixir | 2.1B | 4.1B | 2.0B | 60.95× | jitter |
-| Ruby | 537.3M | 5.4B | 4.9B | 147.19× | jitter |
-| Perl | 508.7M | 9.7B | 9.2B | 276.48× | jitter |
+| PHP | 125.7M | 1.83B | 1.71B | 51.12× | exact |
+| Elixir | 2.09B | 4.13B | 2.03B | 60.95× | jitter |
+| Ruby | 537.3M | 5.45B | 4.91B | 147.19× | jitter |
+| Perl | 508.7M | 9.73B | 9.22B | 276.48× | jitter |
 | Python | 533.8M | 10.6B | 10.0B | 300.77× | jitter |
-| COBOL | 1.3B | 25.6B | 24.3B | 728.68× | exact |
+| COBOL | 1.28B | 25.6B | 24.3B | 728.68× | exact |
 
 The inner limb loop (`limb*k + carry`, mask, propagate) keeps the compiled and JIT'd languages within
 ~1.2–2.2× of C, and (as on sha256) the languages that must **mask every limb to 32 bits with an

@@ -105,7 +105,7 @@ every toolchain.
 
 ![relative real work](../../docs/charts/mandelbrot-diff-ratio.svg)
 
-| Language | I(128) | I(256) | differential | **vs C** | determinism |
+| Language | I(128) | I(256) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | Scala | 669.9M | 683.4M | 13.5M | **0.97×** | jitter |
 | **C** | 4.7M | 18.6M | 13.9M | **1.00×** | exact |

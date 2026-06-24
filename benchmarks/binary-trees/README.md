@@ -80,7 +80,7 @@ Uniform qemu+insn pass, **arm64**, median of 5, differential `I(14) − I(10)` n
 
 ![relative real work](../../docs/charts/binary-trees-diff-ratio.svg)
 
-| Language | I(10) | I(14) | differential | **vs C** | determinism |
+| Language | I(10) | I(14) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | Scala | 647.8M | 860.6M | 212.8M | **0.28×** | jitter |
 | Kotlin | 185.6M | 399.4M | 213.8M | **0.28×** | jitter |
@@ -94,7 +94,7 @@ Uniform qemu+insn pass, **arm64**, median of 5, differential `I(14) − I(10)` n
 | Ruby | 625.7M | 8.55B | 7.93B | 10.34× | jitter |
 | Python | 399.7M | 8.95B | 8.55B | 11.15× | jitter |
 | Perl | 651.7M | 15.2B | 14.5B | 18.98× | jitter |
-| COBOL | 2.2B | 142.3B | 140.1B | 182.75× | exact |
+| COBOL | 2.20B | 142.3B | 140.1B | 182.75× | exact |
 
 ### The headline: managed runtimes *beat* C at allocation
 

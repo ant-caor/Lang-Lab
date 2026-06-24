@@ -75,21 +75,21 @@ isolating the algorithm's real work. C (gcc `-O2`, no GC) is the reference floor
 
 ![fannkuch differential work](../../docs/charts/fannkuch-diff-ratio.svg)
 
-| Language | Archetype | Real work (C = 1.0×) | Determinism |
-|---|---|---:|---|
-| **C** | native | 1.00× | exact |
-| **Rust** | native | 1.14× | exact |
-| **Go** | compiled + GC | 1.49× | jitter |
-| **C#** | CLR (self-contained) | 1.61× | jitter |
-| **Scala** | JVM | 2.73× | jitter |
-| **Kotlin** | JVM | 3.34× | jitter |
-| **Swift** | native | 4.75× | exact |
-| **COBOL** | native | 26.78× | exact |
-| **Elixir** | BEAM | 29.71× | jitter |
-| **PHP** | interpreter | 33.62× | exact |
-| **Python** | interpreter | 69.57× | jitter |
-| **Ruby** | interpreter | 104.64× | jitter |
-| **Perl** | interpreter | 189.62× | jitter |
+| Language | I(7) | I(9) | differential | **vs C** (lower is better) | determinism |
+|---|--:|--:|--:|--:|---|
+| **C** | 978.8k | 83.8M | 82.8M | **1.00×** | exact |
+| Rust | 1.1M | 95.6M | 94.5M | 1.14× | exact |
+| Go | 1.6M | 124.6M | 123.0M | 1.49× | jitter |
+| C# | 210.9M | 344.7M | 133.8M | 1.61× | jitter |
+| Scala | 683.2M | 909.7M | 226.5M | 2.73× | jitter |
+| Kotlin | 168.7M | 445.0M | 276.3M | 3.34× | jitter |
+| Swift | 15.9M | 409.7M | 393.8M | 4.75× | exact |
+| COBOL | 31.4M | 2.25B | 2.22B | 26.78× | exact |
+| Elixir | 2.04B | 4.50B | 2.46B | 29.71× | jitter |
+| PHP | 62.0M | 2.85B | 2.79B | 33.62× | exact |
+| Python | 100.8M | 5.86B | 5.76B | 69.57× | jitter |
+| Ruby | 369.1M | 9.04B | 8.67B | 104.64× | jitter |
+| Perl | 165.5M | 15.9B | 15.7B | 189.62× | jitter |
 
 > Regenerated from `results/2026-06-16-arm64-fannkuch.json`. Ordering: native/AOT (C, Rust, Go, C# ≈
 > 1–1.6×) < JVM (Scala/Kotlin ≈ 2.5–2.8×) < Swift (COW/ARC) < **COBOL** (26.78×, native-compiled yet

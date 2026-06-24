@@ -63,7 +63,7 @@ identical `2493349` call count (line 1) and `9` result (line 2).
 
 ![relative real work](../../docs/charts/tak-diff-ratio.svg)
 
-| Language | I(6) | I(8) | differential | vs C | determinism |
+| Language | I(6) | I(8) | differential | **vs C** (lower is better) | determinism |
 |---|--:|--:|--:|--:|---|
 | **C** | 1.4M | 50.4M | 49.0M | **1.00×** | exact |
 | Go | 1.7M | 55.1M | 53.5M | 1.09× | jitter |
@@ -77,7 +77,7 @@ identical `2493349` call count (line 1) and `9` result (line 2).
 | Ruby | 325.9M | 2.32B | 2.00B | 40.76× | jitter |
 | Python | 103.2M | 2.50B | 2.39B | 48.80× | jitter |
 | Perl | 160.6M | 5.87B | 5.71B | 116.56× | jitter |
-| COBOL | 285.2M | 10.97B | 10.68B | 217.98× | exact |
+| COBOL | 285.2M | 11.0B | 10.7B | 217.98× | exact |
 
 The ordering is almost the **inverse** of the allocation/float axes: the compiled and JIT'd
 languages collapse onto C (Go 1.09x, Rust 1.25x, C# 1.28x, Scala 1.38x, Kotlin 1.66x) because a

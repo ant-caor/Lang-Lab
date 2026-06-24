@@ -106,6 +106,35 @@ The comparison is `<=` (pinned). The tree layout is the flat complete-binary-tre
 `n1 = 5000`, `n2 = 20000` samples. Work is `N·B·D` (N·1600 tree traversals); the
 differential `I(20000) − I(5000)` isolates the marginal per-sample inference cost.
 
+## Results: uniform qemu+insn pass
+
+Single backend (`qemu-insn`), same ISA (arm64 local). Raw data in
+[`results/2026-06-21-arm64-gbdt.json`](../../results/2026-06-21-arm64-gbdt.json).
+
+### The fair metric: real work `I(20000) - I(5000)`, normalized to C = 1.0x (lower is better)
+
+The absolute count includes the runtime's startup, which varies wildly across runtimes. The
+differential between the two sizes cancels it (and JIT compilation), isolating the algorithm's real
+work. C (gcc `-O2`, no GC) is the reference floor; below 1.0x beats C.
+
+![gbdt differential work](../../docs/charts/gbdt-diff-ratio.svg)
+
+| Language | I(5k) | I(20k) | differential | **vs C** (lower is better) | determinism |
+|---|--:|--:|--:|--:|---|
+| Rust | 93.4M | 370.3M | 276.9M | **0.82×** | exact |
+| **C** | 113.5M | 450.5M | 337.1M | **1.00×** | exact |
+| Go | 173.0M | 685.0M | 512.0M | 1.52× | jitter |
+| C# | 394.0M | 922.4M | 528.4M | 1.57× | jitter |
+| Swift | 206.5M | 786.9M | 580.4M | 1.72× | exact |
+| Scala | 983.0M | 1.76B | 777.5M | 2.31× | jitter |
+| Kotlin | 495.3M | 1.34B | 840.3M | 2.49× | jitter |
+| PHP | 3.45B | 13.6B | 10.1B | 30.04× | exact |
+| Elixir | 6.57B | 19.8B | 13.2B | 39.19× | jitter |
+| Ruby | 10.6B | 41.3B | 30.7B | 90.95× | jitter |
+| Python | 12.0B | 46.8B | 34.8B | 103.27× | jitter |
+| Perl | 13.8B | 54.5B | 40.6B | 120.60× | jitter |
+| COBOL | 17.9B | 69.0B | 51.1B | 151.47×\* | exact (extrap.) |
+
 ## Reproduce
 
 ```bash

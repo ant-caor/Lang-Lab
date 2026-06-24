@@ -27,7 +27,8 @@ def human(v):
     if v >= 1e12:
         return f"{v/1e12:.2f}T"
     if v >= 1e9:
-        return f"{v/1e9:.1f}B"
+        x = v / 1e9
+        return f"{x:.2f}B" if x < 10 else f"{x:.1f}B"
     if v >= 1e6:
         return f"{v/1e6:.1f}M"
     if v >= 1e3:
@@ -55,7 +56,7 @@ def gen_table(env):
     if not cdiff:
         sys.exit("make_tables: no C baseline in envelope")
     rows.sort(key=lambda r: r["differential"] / cdiff)
-    out = [f"| Language | I({szlabel(n1)}) | I({szlabel(n2)}) | differential | **vs C** | determinism |",
+    out = [f"| Language | I({szlabel(n1)}) | I({szlabel(n2)}) | differential | **vs C** (lower is better) | determinism |",
            "|---|--:|--:|--:|--:|---|"]
     for r in rows:
         L = r["language"]
