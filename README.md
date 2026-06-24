@@ -30,6 +30,14 @@ _Real work each language does vs the **C baseline** (= 1.00×), as the different
 
 <!-- MATRIX:END -->
 
+> **How to read the matrix.** It shows *user-space instruction work* vs C (a proxy for algorithmic
+> efficiency), **not wall-clock speed**. It is a reliable rank for native and interpreter languages
+> and ISA-robust for them; the **JVM cells (Kotlin, Scala) are ISA-specific** (their ratio roughly
+> doubles from arm64 to x86_64). For concurrency read the
+> [scaling track](#scaling-track-wall-clock-parallel-speedup) and the
+> [concurrency study](docs/concurrency-study.md). The metric's empirical validity is measured in
+> [docs/metric-validity.md](docs/metric-validity.md).
+
 Lang Lab measures, **rigorously and reproducibly**, how much CPU work it costs to run
 the same algorithm across backend *programming languages*. It doesn't chase the realism of
 a web framework (that's [TechEmpower](https://www.techempower.com/benchmarks/)) or the
@@ -66,6 +74,10 @@ capture real latency, parallelism, memory bandwidth, or the per-instruction cost
 varies by ISA and microarchitecture). It is a measure of **computational work**, not absolute
 speed. For parallelism specifically, the complementary
 [scaling track](#scaling-track-wall-clock-parallel-speedup) measures wall-clock multicore speedup.
+Empirically the metric predicts wall-clock *order* well and *magnitude* to roughly a 1.3× factor for
+compute-bound code (worse for JIT and syscall-bound code); its single most dependable use is
+**regression detection within one language across versions**. The full validity characterization is
+in [docs/metric-validity.md](docs/metric-validity.md).
 
 ## Languages (12 + a C baseline)
 
@@ -238,6 +250,7 @@ results/scaling/                 scaling-track results (wall-clock T1/TP per lan
 docs/charts/                     generated SVG charts (instruction + scaling)
 docs/scaling-track.md            scaling track: fairness rulebook
 docs/concurrency-study.md        cross-track concurrency study (per language)
+docs/metric-validity.md          empirical validity of the instruction metric (calibration + cross-ISA)
 ```
 
 ## Status
