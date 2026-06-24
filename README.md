@@ -48,6 +48,10 @@ image, count the **CPU instructions executed** (not wall-clock time) with a dete
 emulator, and publish the history, all on free CI, refreshed only when a language ships a
 new version.
 
+A complementary **scaling track** additionally measures wall-clock parallel speedup (`T1/TP`) on
+multiple cores for the parallelizable benchmarks (see
+[below](#scaling-track-wall-clock-parallel-speedup)).
+
 ## Why instructions, not seconds
 
 Timing seconds on shared CI runners gives ±20-30 % noise: variable hardware, noisy
@@ -104,14 +108,17 @@ Rigor rules:
 
 See the [fannkuch study](benchmarks/fannkuch/README.md) for the full results and methodology.
 
-## How it works (two pipelines, free CI)
+## How it works (three pipelines, free CI)
 
 ```
 endoflife.date ──► version-watch (weekly)  ──► PR bumping versions.lock.json
                                                      │ merge triggers…
                                                      ▼
                  benchmark ──► version-pinned Docker image per language
-                               └► qemu+insn → results/<date>.json (history in git)
+                               └► qemu+insn → results/<date>.json   (instruction track)
+
+                 scaling   ──► the same images, run natively (no qemu)
+                               └► wall-clock T1/TP at 1/2/4 cores → results/scaling/   (scaling track)
 ```
 
 Everything runs on **free GitHub-hosted runners**: no self-hosted runners, no own VM, no
@@ -217,6 +224,9 @@ scripts/bench-local.sh           build + measure benchmarks × languages locally
 scripts/check-versions.mjs       version watcher (Node, no dependencies)
 scripts/make_charts.py           SVG chart generator (no dependencies)
 scripts/make_scaling_charts.py   scaling-track speedup chart generator
+scripts/make_tables.py           splices each study's results table into its README
+scripts/make_matrix.py           master language × benchmark matrix (the README hero)
+scripts/make_ring_wall_chart.py  message-ring wall-clock per-hop chart
 languages.json                   registry: endoflife slug, build-arg, runtimeKind, runtimeEnv, run
 versions.lock.json               pinned version per language
 scaling-config.json              scaling track: par-run templates, per-class sizes, JIT warmup
@@ -227,6 +237,7 @@ results/                         instruction-track result history (versioned in 
 results/scaling/                 scaling-track results (wall-clock T1/TP per language)
 docs/charts/                     generated SVG charts (instruction + scaling)
 docs/scaling-track.md            scaling track: fairness rulebook
+docs/concurrency-study.md        cross-track concurrency study (per language)
 ```
 
 ## Status
@@ -237,7 +248,10 @@ blur, k-means, sha256, lz77, vm, bigint, tak, polymorphism, gemm, viterbi, gbdt,
 algorithms / graphs / image / ML / bit-manipulation / compression / interpreter-dispatch /
 multi-precision / call-overhead / dynamic-dispatch / quantized-matmul / sequence-DP / tree-ensemble /
 concurrency-overhead; message-ring is N/A for Perl and COBOL, which have no cooperative primitive),
-the measurement engine characterized empirically, CI pipelines defined. Local, in development.
+the measurement engine characterized empirically, CI pipelines defined. A complementary wall-clock
+**scaling track** adds multicore speedup (`T1/TP`) for the five parallelizable axes, and a
+cross-track **concurrency study** (`docs/concurrency-study.md`) ties the two together. Local, in
+development.
 
 ## License
 
