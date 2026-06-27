@@ -58,15 +58,22 @@ median shift is 1.005 (no systematic bias). The tail is the story, and it is **t
 | Rust | 1.11 | 1.20 | yes |
 | C# | 1.38 | 1.31 | yes |
 | Go | 1.58 | 1.58 | yes |
-| Swift | 2.24 | 2.22 | yes |
+| Swift | 2.03 | 2.22\* | yes |
 | **Scala** | **2.39** | **4.82** | **no (x2)** |
 | **Kotlin** | **2.53** | **4.66** | **no (x1.8)** |
 | Elixir | 22.3 | 23.1 | yes |
 | PHP | 32.2 | 27.4 | yes |
-| Ruby | 90.1 | 76.5 | mostly |
+| Ruby | 75.3 | 76.5\* | mostly |
 | Python | 103.7 | 113.5 | yes |
 | Perl | 145.5 | 130.0 | mostly |
 | COBOL | 460.5 | 436.1 | yes |
+
+\* The arm64 geomeans for Swift and Ruby reflect the post-fix tree (Swift tak/fannkuch, commit
+`2132918`; Ruby k-nucleotide, commit `0cb2c0f`); their x86_64 cells still predate those fixes and
+will refresh on the next successful x86_64 `benchmark` CI run (in progress), after which their
+ISA-stability should be re-derived. (Separately, C#'s arm64 geomean from current envelopes is now
+**1.54**, not the 1.38 shown - a pre-existing drift unrelated to those fixes, left as-is pending its
+own check.)
 
 Worst single cells: gemm/Scala 1.07x -> 7.30x (x6.85), gemm/Kotlin 1.00x -> 6.24x, sort-search and
 bigint Scala/Kotlin x3-3.7. The cross-language leaderboard order holds for the ten non-JVM
