@@ -49,4 +49,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   fairness rulebook (`docs/scaling-track.md`), per-language speedup charts, and a dedicated CI
   workflow that refreshes `results/scaling/`.
 
+### Fixed
+
+- **Ruby k-nucleotide** was 1438× C, by far the worst cell in the whole suite, because of an
+  implementation bug in its DNA generator: it built the sequence as one `String` object per
+  nucleotide (~200k short-lived allocations the size differential could not cancel), not because of
+  the hash map the study text blamed. Rebuilt as an in-place mutable buffer, Ruby now measures
+  **56× C** on k-nucleotide, in line with the other interpreters (Perl 36×, Elixir 40×, Python 50×);
+  the bit-exact checksums are unchanged. The k-nucleotide study narrative, the cross-suite tables,
+  the master matrix and the leaderboard were corrected to match.
+
 [Unreleased]: https://github.com/ant-caor/Lang-Lab/commits/main

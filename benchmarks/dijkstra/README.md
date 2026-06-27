@@ -161,7 +161,7 @@ Differential vs C = 1.0× across the complete suite:
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× | 4.39× | 3.55× | 4.95× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× | 9.42× | 36.47× | 56.47× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× | 39.44× | 39.28× | 36.54× |
-| Ruby | 104.64× | 10.34× | 117.20× | 1437.92× | 57.08× | 79.91× | 77.28× |
+| Ruby | 104.64× | 10.34× | 117.20× | 56.39× | 57.08× | 79.91× | 77.28× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× | 114.00× | 131.93× | 92.92× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× | 181.17× | 189.53× | 155.46× |
 | COBOL | 26.78× | 182.75× | 7908.42× | 7686.05× | 221.82× | 330.02× | 391.75× |
@@ -186,8 +186,8 @@ The conclusion the whole suite was built to support:
   here - it even beats Elixir on fannkuch (26.78× vs 29.71×). Its three cliffs are the columns where
   it lacks a native primitive: mandelbrot 7908.42× (COMP-2 doubles routed through GMP arbitrary-
   precision DECIMAL - no FPU codegen) and k-nucleotide 7686.05× (string-keyed hashing); off this
-  table, sha256 reaches **222956×** - the single most extreme cell in the entire suite (~155× past
-  the prior record, bit ops emulated by hand and extrapolated linearly).
+  table, sha256 reaches **222956×** - the single most extreme cell in the entire suite (~28× past
+  the next-most-extreme cell, bit ops emulated by hand and extrapolated linearly).
 
 Seven benchmarks, seven orderings. **There is no scalar "speed of a language."**
 

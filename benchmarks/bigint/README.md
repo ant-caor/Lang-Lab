@@ -124,7 +124,7 @@ Differential vs C = 1.0× across all fourteen benchmarks (`fan`=fannkuch, `btr`=
 | Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 | 5.45 | 1.98 | 2.08 | 1.62 | 1.66 |
 | Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 | 30.97 | 25.73 | 4.59 | 60.95 | 11.01 |
 | PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 | 98.02 | 29.89 | 38.76 | 51.12 | 22.39 |
-| Ruby | 104.64 | 10.34 | 117.20 | 1437.92 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 | 57.52 | 84.66 | 147.19 | 40.76 |
+| Ruby | 104.64 | 10.34 | 117.20 | 56.39 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 | 57.52 | 84.66 | 147.19 | 40.76 |
 | Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 | 600.64 | 120.84 | 78.57 | 300.77 | 48.80 |
 | Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 | 701.29 | 133.54 | 135.53 | 276.48 | 116.56 |
 | COBOL | 26.78 | 182.75 | 7908.42 | 7686.05 | 221.82 | 330.02 | 391.75 | 152.72 | 398.73 | 222956.36\* | 208.93 | 52.65 | 728.68 | 217.98 |
@@ -135,16 +135,16 @@ Fourteen benchmarks, fourteen orderings of the same thirteen languages: the fina
 
 - **No language is fast or slow; each is fast or slow at a kind of work.** A single row spans up to
   ~50× (Rust 0.48×–2.73×) for the fast languages and over ~50× for the slow ones (Elixir 0.30×–60.95×;
-  Python 11.15×–600.64×; Ruby 10.34×–1437.92×). **COBOL** widens the span to its limit: 26.78× on
-  fannkuch to **222956.36× on sha256** - the single most extreme cell in the entire suite, ~155× past
-  the prior record. Collapsing that to one number is the mistake the suite was built to expose.
+  Python 11.15×–600.64×; Ruby 10.34×–278.14×). **COBOL** widens the span to its limit: 26.78× on
+  fannkuch to **222956.36× on sha256** - the single most extreme cell in the entire suite, ~28× past
+  the next-most-extreme cell (its own mandelbrot, 7908×). Collapsing that to one number is the mistake the suite was built to expose.
 - **Rust** beats C on four axes and never exceeds 2.73×, the only language that is never a wrong
   default. **C#** is the most balanced managed runtime. **The JVM** is an allocation specialist.
   **Elixir** is the widest-range language of all, best-in-class at functional dispatch and allocation,
   worst at in-place arrays, graphs and bignum. **Python and Perl** collapse specifically when denied a
-  fixed-width integer (sha256, bigint). **Ruby** is the most lopsided interpreter: competitive with
-  Python and PHP on most axes, then 1437.92× on k-nucleotide, where its string-keyed `Hash` is the
-  hot path. **COBOL is the capstone paradox: native-compiled, yet the slowest language on almost
+  fixed-width integer (sha256, bigint). **Ruby** sits in the interpreter band with Python (often a
+  touch faster), worst on sha256 (278×) where it has no native fixed-width integer; its string-keyed
+  `Hash` on k-nucleotide is a moderate 56×, in line with the other interpreters. **COBOL is the capstone paradox: native-compiled, yet the slowest language on almost
   every axis** - GnuCOBOL emits heavy `libcob` calls per statement, so even plain integer loops run
   27–730×. It is **bit-exact** (unlike the interpreters), and it has three cliffs wherever it lacks a
   native primitive: **sha256 222956× (no native hash; bit ops hand-emulated, value extrapolated

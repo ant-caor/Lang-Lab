@@ -103,7 +103,7 @@ All 13 printed the identical `720457911` / `506466333` hashes.
 ### The headline: no native 32-bit integer is catastrophic
 
 This is **the single most extreme cell in the entire project**: COBOL's `222956.36×\*` here is
-roughly 155× past the prior record (Ruby's 1437.92× on k-nucleotide), and the reason is the one rule
+roughly 28× past the next-most-extreme cell (COBOL's own mandelbrot, 7908×), and the reason is the one rule
 the benchmark turns on: every operation is **unsigned 32-bit**. Rust (0.90×, beating C), C, Go, C# and
 Swift all have a native `u32`/`uint` whose adds wrap and whose shifts are free, so they sit at 0.9–1.8×.
 The languages with **no native 32-bit type pay for it on every single operation**: Python (`600×`) and
@@ -137,7 +137,7 @@ graph / image / ML / crypto):
 | Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 | 5.45 |
 | Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 | 30.97 |
 | PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 | 98.02 |
-| Ruby | 104.64 | 10.34 | 117.20 | 1437.92 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 |
+| Ruby | 104.64 | 10.34 | 117.20 | 56.39 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 |
 | Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 | 600.64 |
 | Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 | 701.29 |
 | COBOL | 26.78 | 182.75 | 7908.42 | 7686.05 | 221.82 | 330.02 | 391.75 | 152.72 | 398.73 | 222956.36\* |

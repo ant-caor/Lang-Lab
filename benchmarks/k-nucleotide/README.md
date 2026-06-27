@@ -120,7 +120,7 @@ across 12 completely different hash-map implementations.
 | Perl | 881.3M | 1.18B | 299.7M | 36.40× | jitter |
 | Elixir | 2.41B | 2.74B | 326.4M | 39.64× | jitter |
 | Python | 709.7M | 1.12B | 410.1M | 49.80× | jitter |
-| Ruby | 5.29B | 17.1B | 11.8B | 1437.92× | jitter |
+| Ruby | 1.45B | 1.91B | 464.4M | 56.39× | jitter |
 | COBOL | 63.8B | 127.1B | 63.3B | 7686.05× | exact |
 
 ### The headline: the std hash map is expensive; a hand-rolled C table is not
@@ -133,15 +133,14 @@ the cost of a safe default (a Rust dev could opt into `ahash`/`FxHashMap` and ap
 managed languages cluster at **~10×** (Swift 9.67, C# 9.73, Kotlin 9.98, Scala 10.53): each
 allocates a heap string per k-mer and drives a hashed dictionary through a GC.
 
-**Ruby is the dramatic interpreter outlier: 1437.92×**, its own worst axis by far. Its `Hash` keyed
-on per-k-mer **String** objects recomputes a full string hash and walks the table on every probe, all
-through the MRI object model. Where PHP's C-backed associative array keeps it to 16×, Ruby's
-general-purpose string-keyed map costs it roughly 14× the next interpreter. Yet it is no longer the
-most expensive cell here: **COBOL lands at 7686.05×** - native-compiled, but GnuCOBOL has no
+Below the managed cluster, **the interpreters land between 16× and 56×** - PHP 16×, Perl 36×,
+Elixir 40×, Python 50× and Ruby 56× - close enough that the std hash map is clearly not where most
+of them bleed (their raw-compute axes are far worse); the detail is in the section below.
+**The one genuine outlier is COBOL: 7686.05×** - native-compiled, but GnuCOBOL has no
 string-hashing primitive, so the k-mer map is emulated with heavy per-statement libcob calls. It is
 one of COBOL's three cliffs (the others being mandelbrot 7908× and sha256 222956×, the latter the
 single most extreme cell in the entire suite), a striking case of *compiled ≠ fast* - and unlike the
-interpreters above it, COBOL is still bit-**exact**.
+interpreters, COBOL is still bit-**exact**.
 
 **A fairness nuance worth stating:** C and Rust key on an inline / fixed-size 8-byte k-mer
 (`[u8; 8]`), so they skip the per-k-mer **heap string allocation** that Go, Swift, C#, Kotlin,
@@ -152,13 +151,15 @@ sequence), not a thumb on the scale.
 
 ### The *other* interpreters do relatively well here
 
-PHP (16×), Perl (36×) and Python (50×) are far closer to C on hash maps than on raw compute,
-the inverse of mandelbrot, where they were 34×/217×/125×. The reason: an interpreter's
+PHP (16×), Perl (36×), Python (50×) and Ruby (56×) are far closer to C on hash maps than on raw
+compute, the inverse of mandelbrot, where they were 34×/217×/125×/117×. The reason: an interpreter's
 **associative array is a C-implemented, heavily-optimized core data structure**, while its
 arithmetic is interpreted op-by-op. PHP especially (whose array *is* the language's one
-container) turns in 16×, its best result of any benchmark. Elixir (39.64×) is the outlier among
-them: its `Map` is **immutable**, so every one of the ~200k updates allocates a new persistent
-version, and the BEAM heap churn dominates.
+container) turns in 16×, its best result of any benchmark. Ruby's mutable `Hash` keyed on per-k-mer
+**String** objects is the heaviest mutable-map interpreter at 56×, paying for the MRI object model on
+every probe, but squarely in the interpreter pack. Elixir (39.64×) is the structural exception:
+its `Map` is **immutable**, so every one of the ~200k updates allocates a new persistent version,
+and the BEAM heap churn dominates.
 
 ### The four-axis picture
 
@@ -174,7 +175,7 @@ Differential vs C = 1.0× across the whole suite:
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× |
-| Ruby | 104.64× | 10.34× | 117.20× | 1437.92× |
+| Ruby | 104.64× | 10.34× | 117.20× | 56.39× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× |
 | COBOL | 26.78× | 182.75× | 7908.42× | 7686.05× |
@@ -183,8 +184,10 @@ What the fourth column adds:
 - **Rust finally breaks from C.** Flat at ~1.15× on the first three axes, it jumps to 2.73× here,
   not a runtime weakness but a *safe default*: the std `HashMap`'s SipHash trades speed for
   hash-flooding resistance. The one axis where "idiomatic" costs Rust something.
-- **The interpreters invert their ranking.** PHP and Perl are *least bad* at hash maps of all four
-  benchmarks, because their core associative array is native C; their compute is what's slow.
+- **The interpreters invert their ranking.** PHP, Perl, Python and Ruby are all *least bad* at hash
+  maps relative to their compute axes, because their core associative array is native C; their
+  arithmetic is what's slow. Ruby drops from 104×/117× on fannkuch/mandelbrot to 56× here; Perl
+  swings hardest of all, 217× down to 36×.
 - **The JVM/CLR managed languages converge** (~10×) once the workload is "allocate strings + drive
   a dictionary + GC," regardless of source language.
 

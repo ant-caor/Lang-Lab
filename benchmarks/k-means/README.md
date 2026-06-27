@@ -147,7 +147,7 @@ Differential vs C = 1.0× across all nine benchmarks (int / alloc / float / hash
 | Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 |
 | Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 |
 | PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 |
-| Ruby | 104.64 | 10.34 | 117.20 | 1437.92 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 |
+| Ruby | 104.64 | 10.34 | 117.20 | 56.39 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 |
 | Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 |
 | Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 |
 | COBOL | 26.78 | 182.75 | 7908.42 | 7686.05 | 221.82 | 330.02 | 391.75 | 152.72 | 398.73 |
@@ -165,8 +165,8 @@ Nine benchmarks, nine orderings of the same thirteen languages, the thesis now o
   bit-**exact** (unlike the interpreters), yet it is the slowest language on almost every axis because
   libcob runs a function call per statement. On plain integer loops it is "only" 27–730× (and even
   **beats Elixir on fannkuch**, 26.78× vs 29.71×), but it has three cliffs where it lacks a native
-  primitive: **sha256 222956×** (the single most extreme cell in the entire suite, ~155× past the prior
-  record - bit ops hand-emulated, value extrapolated), **mandelbrot 7908×** (COMP-2 doubles routed
+  primitive: **sha256 222956×** (the single most extreme cell in the entire suite, ~28× past the
+  next-most-extreme cell - bit ops hand-emulated, value extrapolated), **mandelbrot 7908×** (COMP-2 doubles routed
   through GMP arbitrary-precision DECIMAL, no FPU codegen), and **k-nucleotide 7686×** (string-keyed
   hashing). Here on k-means it lands at 398.73×, last of all thirteen.
 - **The same language's row varies by up to ~190×** (Elixir 0.30×→56.47×). A scalar "language speed"

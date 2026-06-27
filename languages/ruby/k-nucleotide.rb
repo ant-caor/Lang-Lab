@@ -14,24 +14,31 @@ IA = 3877
 IC = 29573
 
 CODE = { "A" => 0, "C" => 1, "G" => 2, "T" => 3 }
+# Frozen singleton base strings: append the same object every position instead of
+# allocating a fresh one-char String per nucleotide (the idiomatic in-place buffer
+# build, like Perl's `.=` - keeps `gen` from generating ~L throwaway objects).
+A = "A".freeze
+C = "C".freeze
+G = "G".freeze
+T = "T".freeze
 
 def gen(length)
   seed = 42
-  chars = []
+  s = String.new(capacity: length)
   length.times do
     seed = (seed * IA + IC) % IM
-    chars <<
+    s <<
       if seed < 42000
-        "A"
+        A
       elsif seed < 70000
-        "C"
+        C
       elsif seed < 98000
-        "G"
+        G
       else
-        "T"
+        T
       end
   end
-  chars.join
+  s
 end
 
 def k_nucleotide(length)

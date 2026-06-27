@@ -21,7 +21,7 @@ _Real work each language does vs the **C baseline** (= 1.00×), as the different
 | 7 | Kotlin | **2.99×** | binary-trees 0.28× | message-ring 59.6× |
 | 8 | Elixir | **22.6×** | binary-trees 0.30× | polymorphism 136× |
 | 9 | PHP | **29.9×** | binary-trees 5.75× | sha256 98.0× |
-| 10 | Ruby | **83.0×** | binary-trees 10.3× | k-nucleotide 1.4k× |
+| 10 | Ruby | **70.0×** | binary-trees 10.3× | sha256 278× |
 | 11 | Python | **109×** | binary-trees 11.2× | sha256 601× |
 | 12 | Perl | **146×** | binary-trees 19.0× | sha256 701× |
 | 13 | COBOL | **461×** | fannkuch 26.8× | sha256 223k×* |
