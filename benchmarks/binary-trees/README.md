@@ -134,7 +134,7 @@ argument for a suite rather than one micro-benchmark:
 | C# | 1.61× | 0.45× | ~4× cheaper |
 | Rust | 1.14× | 1.19× | ~flat |
 | Go | 1.49× | 1.09× | ~flat |
-| Swift | 4.75× | 1.72× | cheaper |
+| Swift | 3.42× | 1.72× | cheaper |
 | Python | 69.57× | 11.15× | cheaper |
 | Perl | 189.62× | 18.98× | cheaper |
 

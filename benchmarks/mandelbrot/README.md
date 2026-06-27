@@ -127,7 +127,7 @@ On a tight floating-point loop the seven compiled or JIT-compiled languages clus
 ~30% of C** (Scala 0.97×, Rust 1.17×, Swift 1.17×, C# 1.19×, Kotlin 1.28×, Go 1.29×). For
 scalar `double` arithmetic the JVM and CLR JITs emit essentially the same SSE/NEON code a C
 compiler does. Scala's hot loop even edges *below* C once the JIT warms (the differential
-strips the warm-up). Swift, 4.75× on fannkuch's bounds-checked integer loops, falls to 1.17×
+strips the warm-up). Swift, 3.42× on fannkuch's bounds-checked integer loops, falls to 1.17×
 here: no arrays, no ARC, just registers of doubles.
 
 The interpreters tell the opposite story: floating-point is their **worst** axis. Every
@@ -155,7 +155,7 @@ Differential vs C = 1.0× on all three:
 | **Rust** | 1.14× | 1.19× | 1.17× |
 | Go | 1.49× | 1.09× | 1.29× |
 | C# | 1.61× | 0.45× | 1.19× |
-| Swift | 4.75× | 1.72× | 1.17× |
+| Swift | 3.42× | 1.72× | 1.17× |
 | Scala | 2.73× | 0.28× | 0.97× |
 | Kotlin | 3.34× | 0.28× | 1.28× |
 | Elixir | 29.71× | 0.30× | 18.76× |
@@ -173,7 +173,7 @@ What the third column reveals that the first two could not:
   one-benchmark verdict would suggest.
 - **Elixir** is the most workload-dependent of all: 29.71× / 0.30× / 18.76×. Brilliant at
   garbage-collected allocation, poor at raw integer and boxed-float compute.
-- **Swift** swings from 4.75× (fannkuch) to 1.17× (mandelbrot): its overhead is allocation and
+- **Swift** swings from 3.42× (fannkuch) to 1.17× (mandelbrot): its overhead is allocation and
   bounds-checking, not arithmetic.
 
 A single benchmark would have ranked any of these languages confidently and **wrongly**. That is

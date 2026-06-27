@@ -67,11 +67,11 @@ identical `2493349` call count (line 1) and `9` result (line 2).
 |---|--:|--:|--:|--:|---|
 | **C** | 1.4M | 50.4M | 49.0M | **1.00×** | exact |
 | Go | 1.7M | 55.1M | 53.5M | 1.09× | jitter |
+| Swift | 12.8M | 69.3M | 56.5M | 1.15× | exact |
 | Rust | 1.8M | 62.9M | 61.2M | 1.25× | exact |
 | C# | 207.6M | 270.1M | 62.6M | 1.28× | jitter |
 | Scala | 634.4M | 701.8M | 67.4M | 1.38× | jitter |
 | Kotlin | 156.3M | 237.7M | 81.4M | 1.66× | jitter |
-| Swift | 17.4M | 250.1M | 232.6M | 4.75× | exact |
 | Elixir | 1.97B | 2.51B | 539.6M | 11.01× | jitter |
 | PHP | 63.3M | 1.16B | 1.10B | 22.39× | exact |
 | Ruby | 325.9M | 2.32B | 2.00B | 40.76× | jitter |
@@ -80,13 +80,14 @@ identical `2493349` call count (line 1) and `9` result (line 2).
 | COBOL | 285.2M | 11.0B | 10.7B | 217.98× | exact |
 
 The ordering is almost the **inverse** of the allocation/float axes: the compiled and JIT'd
-languages collapse onto C (Go 1.09x, Rust 1.25x, C# 1.28x, Scala 1.38x, Kotlin 1.66x) because a
+languages collapse onto C (Go 1.09x, Swift 1.15x, Rust 1.25x, C# 1.28x, Scala 1.38x, Kotlin 1.66x) because a
 function call is a few register moves and a branch, which every real compiler nails. The cost
 shows up exactly where the call goes through an interpreter loop or a heavy runtime: PHP 22x,
 Ruby 41x, Python 49x, Perl 117x (each call builds and tears down an interpreter stack frame), and
-**COBOL 218x** (GnuCOBOL emits a full libcob-mediated recursion per call). Swift's 4.75x stands out
-among the natives: its calling convention plus the overflow-checked integer arithmetic on every
-decrement cost more than C/Rust/Go. Elixir's 11x is the BEAM's reduction-counted call.
+**COBOL 218x** (GnuCOBOL emits a full libcob-mediated recursion per call). Elixir's 11x is the
+BEAM's reduction-counted call. (Swift's 1.15x once read 4.75x: an implementation artifact where the
+global call-counter forced a runtime exclusivity check on every call; threading it through an `inout`
+parameter removed it, leaving Swift among the natives.)
 
 **Readings:**
 - **A function call is nearly free once compiled** (Go/Rust/C#/JVM within ~1.7x of C) and

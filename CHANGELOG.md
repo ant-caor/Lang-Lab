@@ -58,5 +58,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   **56× C** on k-nucleotide, in line with the other interpreters (Perl 36×, Elixir 40×, Python 50×);
   the bit-exact checksums are unchanged. The k-nucleotide study narrative, the cross-suite tables,
   the master matrix and the leaderboard were corrected to match.
+- **Swift tak and fannkuch** were inflated by avoidable per-operation overhead rather than the
+  language itself: tak's global call-counter forced a runtime exclusivity check on every recursive
+  call (threading it as an `inout` parameter cut tak from 4.75× to **1.15× C**), and fannkuch's flip
+  loop paid an Array copy-on-write and bounds check per swap (`withUnsafeMutableBufferPointer` cut
+  fannkuch from 4.75× to **3.42× C**). Both checksums are unchanged; the study tables, master matrix
+  and leaderboard were updated to match.
 
 [Unreleased]: https://github.com/ant-caor/Lang-Lab/commits/main

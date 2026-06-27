@@ -141,7 +141,7 @@ Differential vs C = 1.0× across the entire suite:
 | **Rust** | 1.14× | 1.19× | 1.17× | 2.73× | 0.99× |
 | Go | 1.49× | 1.09× | 1.29× | 4.93× | 1.59× |
 | C# | 1.61× | 0.45× | 1.19× | 9.73× | 1.71× |
-| Swift | 4.75× | 1.72× | 1.17× | 9.67× | 1.48× |
+| Swift | 3.42× | 1.72× | 1.17× | 9.67× | 1.48× |
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× | 4.39× |
 | Scala | 2.73× | 0.28× | 0.97× | 10.53× | 4.78× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× | 9.42× |
@@ -157,7 +157,7 @@ Read the rows, not the cells:
 - **The JVM (Kotlin/Scala)** is a study in extremes: best-in-class at allocation (0.28×), competitive
   at float (~1×), but 3–5× at integer-array (fannkuch) and string work. A specialist wearing a
   generalist's reputation.
-- **Swift** inverts between axes (4.75× fannkuch → 1.17–1.48× float/string): its overhead lives in
+- **Swift** inverts between axes (3.42× fannkuch → 1.17–1.48× float/string): its overhead lives in
   array bounds-checks and ARC, not arithmetic or bytes.
 - **The interpreters** are never fast, but *where* they are least-bad differs sharply: PHP and Perl
   shine (relatively) at hash maps (their native-C associative array), and crater at compute and

@@ -17,17 +17,21 @@ func fannkuch(_ n: Int) -> (Int, Int) {
 
         perm = perm1
         var flips = 0
-        var k = perm[0]
-        while k != 0 {
-            var i = 0
-            var j = k
-            while i < j {
-                perm.swapAt(i, j)
-                i += 1
-                j -= 1
+        perm.withUnsafeMutableBufferPointer { buf in
+            var k = buf[0]
+            while k != 0 {
+                var i = 0
+                var j = k
+                while i < j {
+                    let tmp = buf[i]
+                    buf[i] = buf[j]
+                    buf[j] = tmp
+                    i += 1
+                    j -= 1
+                }
+                flips += 1
+                k = buf[0]
             }
-            flips += 1
-            k = perm[0]
         }
 
         if flips > maxFlips {

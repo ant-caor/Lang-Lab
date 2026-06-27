@@ -83,7 +83,7 @@ isolating the algorithm's real work. C (gcc `-O2`, no GC) is the reference floor
 | C# | 210.9M | 344.7M | 133.8M | 1.61× | jitter |
 | Scala | 683.2M | 909.7M | 226.5M | 2.73× | jitter |
 | Kotlin | 168.7M | 445.0M | 276.3M | 3.34× | jitter |
-| Swift | 15.9M | 409.7M | 393.8M | 4.75× | exact |
+| Swift | 15.1M | 298.7M | 283.7M | 3.42× | exact |
 | COBOL | 31.4M | 2.25B | 2.22B | 26.78× | exact |
 | Elixir | 2.04B | 4.50B | 2.46B | 29.71× | jitter |
 | PHP | 62.0M | 2.85B | 2.79B | 33.62× | exact |
@@ -92,15 +92,16 @@ isolating the algorithm's real work. C (gcc `-O2`, no GC) is the reference floor
 | Perl | 165.5M | 15.9B | 15.7B | 189.62× | jitter |
 
 > Regenerated from `results/2026-06-16-arm64-fannkuch.json`. Ordering: native/AOT (C, Rust, Go, C# ≈
-> 1–1.6×) < JVM (Scala/Kotlin ≈ 2.5–2.8×) < Swift (COW/ARC) < **COBOL** (26.78×, native-compiled yet
+> 1–1.6×) < JVM (Scala/Kotlin ≈ 2.5–2.8×) < Swift (3.42×, bounds/overflow checks) < **COBOL** (26.78×, native-compiled yet
 > lands in the managed tier - even *beating* Elixir's 29.71×) < managed/interpreted (Elixir, PHP,
 > Python, Perl, tens to hundreds ×).
 
 **Readings:**
 - **C and Rust are the efficiency floor** (Rust only a few % above C: bounds checks).
 - **The JVM with JIT is excellent** once startup is removed by the differential.
-- **Swift costs more than its native peers**: copy-on-write array + ARC. A fairness case to
-  review (language vs implementation), for the `algo-expert`.
+- **Swift costs more than its native peers** (3.42×): the flip loop's per-swap copy-on-write and
+  bounds checks are gone via `withUnsafeMutableBufferPointer` (down from 4.75×); the residual is the
+  permutation-generation loop's own bounds and overflow checks. A genuine, idiomatic Swift cost.
 - **COBOL is "compiled ≠ fast"**: GnuCOBOL transpiles to native ELF (and is bit-**exact**, unlike
   the interpreters) yet emits heavy `libcob` calls per statement, so on this plain integer loop it
   costs 26.78× - slower than every JVM/native peer and even past Elixir's BEAM.
@@ -121,7 +122,8 @@ isolating the algorithm's real work. C (gcc `-O2`, no GC) is the reference floor
 
 ## Scope and follow-up
 
-- **Fairness review** of the Swift case (COW/ARC) by the `algo-expert`.
+- **Fairness review** of the Swift case: done - the flip-loop COW/bounds overhead was removed
+  (`withUnsafeMutableBufferPointer`), leaving 3.42× of genuine bounds/overflow-check cost.
 - **Canonical x86_64 pass in CI** (runners are amd64; the base picks `qemu-x86_64`).
 - **Larger n** for sharper ratios once a dedicated runner makes the slow interpreters/BEAM cheap.
 

@@ -187,8 +187,8 @@
 <rect x="1052" y="242" width="60" height="30" fill="#feefa3" stroke="#0d1117" stroke-width="1.5"/>
 <text x="1082.0" y="261.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0d1117">1.81×</text>
 <text x="74" y="291.0" text-anchor="end" font-size="13" font-weight="600" fill="#3fb950">Swift</text>
-<rect x="86" y="272" width="50" height="30" fill="#feda78" stroke="#0d1117" stroke-width="1"/>
-<text x="111.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">4.75</text>
+<rect x="86" y="272" width="50" height="30" fill="#fee187" stroke="#0d1117" stroke-width="1"/>
+<text x="111.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">3.42</text>
 <rect x="136" y="272" width="50" height="30" fill="#fdf0a5" stroke="#0d1117" stroke-width="1"/>
 <text x="161.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">1.72</text>
 <rect x="186" y="272" width="50" height="30" fill="#f9f9b3" stroke="#0d1117" stroke-width="1"/>
@@ -213,8 +213,8 @@
 <text x="661.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">1.80</text>
 <rect x="686" y="272" width="50" height="30" fill="#ffeb9c" stroke="#0d1117" stroke-width="1"/>
 <text x="711.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">2.17</text>
-<rect x="736" y="272" width="50" height="30" fill="#feda78" stroke="#0d1117" stroke-width="1"/>
-<text x="761.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">4.75</text>
+<rect x="736" y="272" width="50" height="30" fill="#f9f9b4" stroke="#0d1117" stroke-width="1"/>
+<text x="761.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">1.15</text>
 <rect x="786" y="272" width="50" height="30" fill="#fece6a" stroke="#0d1117" stroke-width="1"/>
 <text x="811.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">6.13</text>
 <rect x="836" y="272" width="50" height="30" fill="#ffe590" stroke="#0d1117" stroke-width="1"/>
@@ -225,8 +225,8 @@
 <text x="961.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">1.72</text>
 <rect x="986" y="272" width="50" height="30" fill="#fd893b" stroke="#0d1117" stroke-width="1"/>
 <text x="1011.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">52.2</text>
-<rect x="1052" y="272" width="60" height="30" fill="#ffe793" stroke="#0d1117" stroke-width="1.5"/>
-<text x="1082.0" y="291.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0d1117">2.65×</text>
+<rect x="1052" y="272" width="60" height="30" fill="#ffe997" stroke="#0d1117" stroke-width="1.5"/>
+<text x="1082.0" y="291.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0d1117">2.41×</text>
 <text x="74" y="321.0" text-anchor="end" font-size="13" font-weight="600" fill="#a371f7">Scala</text>
 <rect x="86" y="302" width="50" height="30" fill="#ffe692" stroke="#0d1117" stroke-width="1"/>
 <text x="111.0" y="321.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">2.73</text>

@@ -16,7 +16,7 @@ _Real work each language does vs the **C baseline** (= 1.00×), as the different
 | 2 | Rust | **1.04×** | message-ring 0.28× | k-nucleotide 2.73× |
 | 3 | Go | **1.75×** | binary-trees 1.09× | message-ring 11.5× |
 | 4 | C# | **1.81×** | binary-trees 0.45× | message-ring 35.3× |
-| 5 | Swift | **2.65×** | blur 0.56× | message-ring 52.2× |
+| 5 | Swift | **2.41×** | blur 0.56× | message-ring 52.2× |
 | 6 | Scala | **2.82×** | binary-trees 0.28× | message-ring 55.1× |
 | 7 | Kotlin | **2.99×** | binary-trees 0.28× | message-ring 59.6× |
 | 8 | Elixir | **22.6×** | binary-trees 0.30× | polymorphism 136× |
