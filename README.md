@@ -6,27 +6,27 @@
 
 ![Lang Lab — the matrix: every language × every benchmark](docs/charts/matrix.svg)
 
-_Real work each language does vs the **C baseline** (= 1.00×), as the differential `I(n₂)−I(n₁)` that cancels startup + JIT. **Lower is better** (less work than C). Geomean across all 19 axes; green cells beat or tie C. Full method below._
+_Real work each language does vs the **C baseline** (= 1.00×), as the differential `I(n₂)−I(n₁)` that cancels startup + JIT. **Lower is better** (less work than C). Geomean across the 18 compute axes; green cells beat or tie C. **message-ring is shown but not ranked**: its instruction count is syscall-blind and misleading for context-switch primitives (wall-clock inverts it; see [the concurrency study](docs/concurrency-study.md)). Full method below._
 
 <details><summary><b>Leaderboard</b> (sorted by overall geomean)</summary>
 
 | # | Language | Overall (vs C) | Fastest axis | Slowest axis |
 |--:|----------|---------------:|--------------|--------------|
 | 1 | **C** _(baseline)_ | **1.00×** | — | — |
-| 2 | Rust | **1.04×** | message-ring 0.28× | k-nucleotide 2.73× |
-| 3 | Go | **1.75×** | binary-trees 1.09× | message-ring 11.5× |
-| 4 | C# | **1.81×** | binary-trees 0.45× | message-ring 35.3× |
-| 5 | Swift | **2.41×** | blur 0.56× | message-ring 52.2× |
-| 6 | Scala | **2.82×** | binary-trees 0.28× | message-ring 55.1× |
-| 7 | Kotlin | **2.99×** | binary-trees 0.28× | message-ring 59.6× |
-| 8 | Elixir | **22.6×** | binary-trees 0.30× | polymorphism 136× |
-| 9 | PHP | **29.9×** | binary-trees 5.75× | sha256 98.0× |
-| 10 | Ruby | **70.0×** | binary-trees 10.3× | sha256 278× |
-| 11 | Python | **109×** | binary-trees 11.2× | sha256 601× |
+| 2 | Rust | **1.11×** | blur 0.48× | k-nucleotide 2.73× |
+| 3 | C# | **1.54×** | binary-trees 0.45× | k-nucleotide 9.73× |
+| 4 | Go | **1.58×** | binary-trees 1.09× | k-nucleotide 4.93× |
+| 5 | Swift | **2.03×** | blur 0.56× | k-nucleotide 9.67× |
+| 6 | Scala | **2.39×** | binary-trees 0.28× | k-nucleotide 10.5× |
+| 7 | Kotlin | **2.53×** | binary-trees 0.28× | k-nucleotide 9.98× |
+| 8 | Elixir | **22.3×** | binary-trees 0.30× | polymorphism 136× |
+| 9 | PHP | **32.2×** | binary-trees 5.75× | sha256 98.0× |
+| 10 | Ruby | **75.3×** | binary-trees 10.3× | sha256 278× |
+| 11 | Python | **104×** | binary-trees 11.2× | sha256 601× |
 | 12 | Perl | **146×** | binary-trees 19.0× | sha256 701× |
-| 13 | COBOL | **461×** | fannkuch 26.8× | sha256 223k×* |
+| 13 | COBOL | **461×*** | fannkuch 26.8× | sha256 223k×* |
 
-_* extrapolated from small probes (negligible-startup runtimes only), not measured full-size; still counted in the geomean._
+_* includes axes extrapolated from small probes (negligible-startup runtimes only), not measured full-size. Over directly measured axes alone: COBOL 339×._
 
 </details>
 
@@ -276,7 +276,9 @@ suite (fannkuch, binary-trees, mandelbrot, k-nucleotide, reverse-complement, sor
 blur, k-means, sha256, lz77, vm, bigint, tak, polymorphism, gemm, viterbi, gbdt, message-ring: integer / allocation / floating-point / hash-map / string /
 algorithms / graphs / image / ML / bit-manipulation / compression / interpreter-dispatch /
 multi-precision / call-overhead / dynamic-dispatch / quantized-matmul / sequence-DP / tree-ensemble /
-concurrency-overhead; message-ring is N/A for Perl and COBOL, which have no cooperative primitive),
+concurrency-overhead; message-ring is N/A for Perl and COBOL, which have no cooperative primitive,
+and is shown in the matrix but excluded from the geomean/leaderboard because instruction counts are
+syscall-blind for context-switch primitives),
 the measurement engine characterized empirically, CI pipelines defined. A complementary wall-clock
 **scaling track** adds multicore speedup (`T1/TP`) for the five parallelizable axes, and a
 cross-track **concurrency study** (`docs/concurrency-study.md`) ties the two together. Local, in

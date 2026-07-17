@@ -38,6 +38,11 @@ LANG_ARCH = {"elixir": "vm"}
 BENCH_ORDER = ["fannkuch", "binary-trees", "mandelbrot", "k-nucleotide", "reverse-complement",
                "sort-search", "dijkstra", "blur", "k-means", "sha256", "lz77", "vm", "bigint",
                "tak", "polymorphism", "gemm", "viterbi", "gbdt", "message-ring"]
+# Shown as a column but EXCLUDED from the geomean/leaderboard ranking: the instruction count is
+# blind to syscall cost, which inverts the wall-clock truth for context-switch primitives (C's
+# swapcontext traps into the kernel ~2x per hop at near-zero guest-instruction cost). See
+# docs/metric-validity.md and benchmarks/message-ring/README.md.
+NOT_RANKED = {"message-ring"}
 SHORT = {"fannkuch": "fannkuch", "binary-trees": "binary-trees", "mandelbrot": "mandelbrot",
          "k-nucleotide": "k-nucleotide", "reverse-complement": "reverse-comp",
          "sort-search": "sort-search", "dijkstra": "dijkstra", "blur": "blur",
@@ -105,22 +110,27 @@ def load_matrix():
             arch[L] = LANG_ARCH.get(L) or KIND_ARCH.get(r.get("kind", "native"), "native")
             if "extrapolat" in (r.get("note") or "").lower():
                 extrap.add((L, b))
-    geomean = {}
+    geomean, geomean_meas = {}, {}
     for L, row in ratio.items():
-        vals = [row[b] for b in benches if b in row]
+        vals = [row[b] for b in benches if b in row and b not in NOT_RANKED]
         geomean[L] = math.exp(sum(math.log(v) for v in vals) / len(vals))
+        # the same geomean over directly-measured cells only (extrapolated cells dropped)
+        mvals = [row[b] for b in benches
+                 if b in row and b not in NOT_RANKED and (L, b) not in extrap]
+        geomean_meas[L] = math.exp(sum(math.log(v) for v in mvals) / len(mvals))
     langs = sorted(ratio, key=lambda L: geomean[L])
-    return langs, benches, ratio, geomean, arch, extrap
+    return langs, benches, ratio, geomean, geomean_meas, arch, extrap
 
 
 def render_svg(langs, benches, ratio, geomean, arch, extrap):
+    ranked = [b for b in benches if b not in NOT_RANKED]
     cw, ch = 50, 30          # cell width / height
     left, gap, ow = 86, 16, 60   # lang-label gutter, gap before OVERALL, OVERALL width
     title_h, head_h = 64, 88
     grid_x, grid_y = left, title_h + head_h
     grid_w = len(benches) * cw
     W = grid_x + grid_w + gap + ow + 18
-    legend_h = 56
+    legend_h = 74 if any(b in NOT_RANKED for b in benches) else 56
     H = grid_y + len(langs) * ch + legend_h + 16
 
     s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
@@ -130,14 +140,15 @@ def render_svg(langs, benches, ratio, geomean, arch, extrap):
              f'Lang Lab · the matrix</text>')
     s.append(f'<text x="22" y="54" font-size="12.5" fill="{MUTED}">'
              f'real work vs C (= 1.00×, lower is better), differential I(n₂)−I(n₁) · qemu+insn · {ISA} · '
-             f'sorted by geomean across {len(benches)} axes</text>')
+             f'sorted by geomean across {len(ranked)} compute axes († shown, not ranked)</text>')
 
     # rotated column headers
     for j, b in enumerate(benches):
         cx = grid_x + j * cw + cw / 2
+        hdr = SHORT.get(b, b) + ("†" if b in NOT_RANKED else "")
         s.append(f'<text x="{cx:.1f}" y="{grid_y - 8}" font-size="11" fill="{MUTED}" '
                  f'text-anchor="start" transform="rotate(-45 {cx:.1f} {grid_y - 8})">'
-                 f'{_xesc(SHORT.get(b, b))}</text>')
+                 f'{_xesc(hdr)}</text>')
     ox = grid_x + grid_w + gap + ow / 2
     s.append(f'<text x="{ox:.1f}" y="{grid_y - 8}" font-size="11" font-weight="700" fill="{FG}" '
              f'text-anchor="start" transform="rotate(-45 {ox:.1f} {grid_y - 8})">OVERALL</text>')
@@ -161,14 +172,15 @@ def render_svg(langs, benches, ratio, geomean, arch, extrap):
             mark = "*" if (L, b) in extrap else ""
             s.append(f'<text x="{x + cw / 2:.1f}" y="{y + ch / 2 + 4:.1f}" text-anchor="middle" '
                      f'font-size="10.5" font-weight="600" fill="{text_on(rgb)}">{fmt(r)}{mark}</text>')
-        # OVERALL cell
+        # OVERALL cell (geomean over ranked axes; * if any of them is extrapolated)
         g = geomean[L]
         rgb = cell_color(g)
+        emark = "*" if any((L, b) in extrap for b in ranked) else ""
         s.append(f'<rect x="{grid_x + grid_w + gap}" y="{y}" width="{ow}" height="{ch}" '
                  f'fill="{hexc(rgb)}" stroke="{GRID}" stroke-width="1.5"/>')
         s.append(f'<text x="{grid_x + grid_w + gap + ow / 2:.1f}" y="{y + ch / 2 + 4:.1f}" '
                  f'text-anchor="middle" font-size="11.5" font-weight="700" '
-                 f'fill="{text_on(rgb)}">{fmt(g)}×</text>')
+                 f'fill="{text_on(rgb)}">{fmt(g)}×{emark}</text>')
 
     # legend: gradient bar + ticks
     ly = grid_y + len(langs) * ch + 26
@@ -192,6 +204,10 @@ def render_svg(langs, benches, ratio, geomean, arch, extrap):
     if extrap:
         s.append(f'<text x="{lx}" y="{ly + 42}" font-size="10" fill="{MUTED}">'
                  f'* extrapolated from small probes (not measured full-size)</text>')
+    if any(b in NOT_RANKED for b in benches):
+        s.append(f'<text x="{lx}" y="{ly + 56}" font-size="10" fill="{MUTED}">'
+                 f'† shown but excluded from the geomean: instruction counts are syscall-blind, '
+                 f'misleading for context-switch primitives (see the concurrency study)</text>')
     s.append('</svg>')
 
     os.makedirs(OUT, exist_ok=True)
@@ -202,6 +218,7 @@ def render_svg(langs, benches, ratio, geomean, arch, extrap):
 
 
 def leaderboard_md(langs, benches, ratio, geomean, extrap):
+    ranked = [b for b in benches if b not in NOT_RANKED]
     out = ["| # | Language | Overall (vs C) | Fastest axis | Slowest axis |",
            "|--:|----------|---------------:|--------------|--------------|"]
     for i, L in enumerate(langs, 1):
@@ -209,12 +226,13 @@ def leaderboard_md(langs, benches, ratio, geomean, extrap):
         if L == "c":
             out.append(f"| {i} | **C** _(baseline)_ | **1.00×** | — | — |")
             continue
-        row = ratio[L]
+        row = {b: ratio[L][b] for b in ranked if b in ratio[L]}
         best = min(row, key=row.get)
         worst = max(row, key=row.get)
         bmk = "*" if (L, best) in extrap else ""
         wmk = "*" if (L, worst) in extrap else ""
-        out.append(f"| {i} | {name} | **{fmt(geomean[L])}×** | "
+        emark = "*" if any((L, b) in extrap for b in ranked) else ""
+        out.append(f"| {i} | {name} | **{fmt(geomean[L])}×{emark}** | "
                    f"{best} {fmt(row[best])}×{bmk} | {worst} {fmt(row[worst])}×{wmk} |")
     return "\n".join(out)
 
@@ -232,16 +250,27 @@ def splice(block):
 
 
 def main():
-    langs, benches, ratio, geomean, arch, extrap = load_matrix()
+    langs, benches, ratio, geomean, geomean_meas, arch, extrap = load_matrix()
+    ranked = [b for b in benches if b not in NOT_RANKED]
     render_svg(langs, benches, ratio, geomean, arch, extrap)
     lb = leaderboard_md(langs, benches, ratio, geomean, extrap)
-    foot = ("\n\n_* extrapolated from small probes (negligible-startup runtimes only), not measured "
-            "full-size; still counted in the geomean._" if extrap else "")
+    extrap_langs = sorted({L for (L, b) in extrap if b in ranked})
+    foot = ""
+    if extrap_langs:
+        meas = ", ".join(f"{NAMES.get(L, L)} {fmt(geomean_meas[L])}×" for L in extrap_langs)
+        foot = ("\n\n_* includes axes extrapolated from small probes (negligible-startup runtimes "
+                f"only), not measured full-size. Over directly measured axes alone: {meas}._")
+    excl = ""
+    if any(b in NOT_RANKED for b in benches):
+        excl = (" **message-ring is shown but not ranked**: its instruction count is syscall-blind "
+                "and misleading for context-switch primitives (wall-clock inverts it; see "
+                "[the concurrency study](docs/concurrency-study.md)).")
     block = ("\n![Lang Lab — the matrix: every language × every benchmark]"
              "(docs/charts/matrix.svg)\n\n"
              "_Real work each language does vs the **C baseline** (= 1.00×), as the differential "
              f"`I(n₂)−I(n₁)` that cancels startup + JIT. **Lower is better** (less work than C). "
-             f"Geomean across all {len(benches)} axes; green cells beat or tie C. Full method below._\n\n"
+             f"Geomean across the {len(ranked)} compute axes; green cells beat or tie C.{excl} "
+             "Full method below._\n\n"
              "<details><summary><b>Leaderboard</b> (sorted by overall geomean)</summary>\n\n"
              + lb + foot + "\n\n</details>\n")
     if "--write" in sys.argv:

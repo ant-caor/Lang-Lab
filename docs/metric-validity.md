@@ -56,7 +56,7 @@ median shift is 1.005 (no systematic bias). The tail is the story, and it is **t
 | Language | geomean vs C, arm64 | geomean vs C, x86_64 | ISA-stable? |
 |---|--:|--:|---|
 | Rust | 1.11 | 1.20 | yes |
-| C# | 1.38 | 1.31 | yes |
+| C# | 1.54\* | 1.31 | yes |
 | Go | 1.58 | 1.58 | yes |
 | Swift | 2.03 | 2.22\* | yes |
 | **Scala** | **2.39** | **4.82** | **no (x2)** |
@@ -68,12 +68,17 @@ median shift is 1.005 (no systematic bias). The tail is the story, and it is **t
 | Perl | 145.5 | 130.0 | mostly |
 | COBOL | 460.5 | 436.1 | yes |
 
-\* The arm64 geomeans for Swift and Ruby reflect the post-fix tree (Swift tak/fannkuch, commit
-`2132918`; Ruby k-nucleotide, commit `0cb2c0f`); their x86_64 cells still predate those fixes and
-will refresh on the next successful x86_64 `benchmark` CI run (in progress), after which their
-ISA-stability should be re-derived. (Separately, C#'s arm64 geomean from current envelopes is now
-**1.54**, not the 1.38 shown - a pre-existing drift unrelated to those fixes, left as-is pending its
-own check.)
+\* The arm64 geomeans for Swift, Ruby and C# are recomputed from the current envelopes: Swift and
+Ruby reflect the post-fix tree (Swift tak/fannkuch, commit `2132918`; Ruby k-nucleotide, commit
+`0cb2c0f`), and C# now reads **1.54** (its originally recorded 1.38 had drifted from the envelopes;
+the cause of that drift is unconfirmed and still pending its own check). Their x86_64 cells still
+predate those fixes and will refresh on the next successful x86_64 `benchmark` CI run, after which
+the ISA-stability column should be re-derived.
+
+These arm64 geomeans are the **same quantity as the README leaderboard**: both are computed over
+the 18 compute axes, with message-ring excluded from the ranking (it is shown in the matrix as an
+unranked column). If the two ever disagree, one of them is stale — recompute both from
+`results/*-arm64-*.json`.
 
 Worst single cells: gemm/Scala 1.07x -> 7.30x (x6.85), gemm/Kotlin 1.00x -> 6.24x, sort-search and
 bigint Scala/Kotlin x3-3.7. The cross-language leaderboard order holds for the ten non-JVM
@@ -105,6 +110,7 @@ same) guest instruction stream on both ISAs, so they are stable.
 ## How to read the master matrix
 
 It shows **user-space instruction work vs C**, a proxy for algorithmic efficiency, not wall-clock
-speed. It is a reliable rank for the non-JVM languages; treat the **Kotlin/Scala cells as
-ISA-specific**. For concurrency, read the scaling track and the message-ring wall-clock, not the
-instruction number.
+speed. Its geomean/leaderboard is computed over the 18 compute axes: message-ring is shown as a
+column but excluded from the ranking, for exactly the syscall-blindness documented above. It is a
+reliable rank for the non-JVM languages; treat the **Kotlin/Scala cells as ISA-specific**. For
+concurrency, read the scaling track and the message-ring wall-clock, not the instruction number.

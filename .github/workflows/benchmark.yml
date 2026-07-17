@@ -24,12 +24,16 @@ permissions:
 # runtime baseline the way a JIT or GC VM would be). Probe sizes and complexity match the merged
 # results envelopes.
 env:
-  EXTRAP_CELLS: "cobol:sha256:linear:100:200 cobol:gemm:cubic:64:96 cobol:viterbi:linear:5000:10000 cobol:gbdt:linear:1250:2500"
+  # Three probes per cell: the fit uses the lowest+highest, and extrapolate.py checks the declared
+  # complexity against the middle probe (mid-probe residual) instead of taking it on faith.
+  EXTRAP_CELLS: "cobol:sha256:linear:50:100:200 cobol:gemm:cubic:64:96:128 cobol:viterbi:linear:5000:10000:20000 cobol:gbdt:linear:1250:2500:5000"
   # Cells that genuinely can't be measured on the free x86_64 runner (e.g. the CLR crashing/OOMing
   # under qemu-user for csharp/k-nucleotide at n2 — measures fine on arm64). A failure here is
   # RECORDED as an unmeasured cell ({"measured": false}) and the run stays green; a failure for any
   # cell NOT listed here still fails the job, so real regressions are not masked. Format "lang:bench".
-  ALLOW_NOMEASURE: "csharp:k-nucleotide"
+  # scala/message-ring: measures fine on arm64 but emits no instruction count under qemu-x86_64
+  # (run exits 0, no plugin summary — cause undiagnosed; run /backend-doctor on an x86_64 host).
+  ALLOW_NOMEASURE: "csharp:k-nucleotide scala:message-ring"
 
 # Serialize runs so the collect job's commit/push to main can't race.
 concurrency:
@@ -97,6 +101,11 @@ jobs:
             jq -r --arg l "$L" '.[$l].runtimeEnv // {} | to_entries[] | "\(.key)\t\(.value)"' languages.json)
           for spec in benchmarks/*/spec.json; do
             b=$(jq -r .benchmark "$spec")
+            # spec-declared N/A cells (e.g. message-ring for perl/cobol) are skipped entirely
+            if jq -e --arg l "$L" '.na // [] | index($l)' "$spec" >/dev/null; then
+              echo "skip $L/$b (N/A per spec: $(jq -r '.naReason // ""' "$spec"))"
+              continue
+            fi
             n1=$(jq -r .n1 "$spec"); n2=$(jq -r .n2 "$spec")
             c1=$(jq -r '.checksums.n1.sum' "$spec"); s1=$(jq -r '.checksums.n1.secondary // ""' "$spec")
             c2=$(jq -r '.checksums.n2.sum' "$spec"); s2=$(jq -r '.checksums.n2.secondary // ""' "$spec")
@@ -115,12 +124,20 @@ jobs:
             echo "::group::measure $L / $b"
             if [ -n "$ex" ]; then
               cx=$(printf '%s' "$ex" | cut -d: -f3)
-              p1=$(printf '%s' "$ex" | cut -d: -f4); p2=$(printf '%s' "$ex" | cut -d: -f5)
-              pout=$(docker run --rm -e SKIP_GATE=1 -e RUNS=1 -e RUNTIME_KIND="$KIND" -e N1="$p1" -e N2="$p2" \
-                ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}")
-              i1=$(printf '%s' "$pout" | jq -r '.i_n1.median')
-              i2=$(printf '%s' "$pout" | jq -r '.i_n2.median')
-              python3 scripts/extrapolate.py "$L" "$b" "$VER" "$KIND" "$cx" "$n1" "$n2" "$p1:$i1" "$p2:$i2" > "result-$L-$b.json"
+              probes=$(printf '%s' "$ex" | cut -d: -f4- | tr ':' ' ')
+              # measure consecutive probe pairs (measure.sh takes two sizes per run); 3+ probes
+              # let extrapolate.py run its mid-probe fit check on the declared complexity
+              pargs=(); set -- $probes
+              while [ $# -ge 2 ]; do
+                pout=$(docker run --rm -e SKIP_GATE=1 -e RUNS=1 -e RUNTIME_KIND="$KIND" -e N1="$1" -e N2="$2" \
+                  ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}")
+                ia=$(printf '%s' "$pout" | jq -r '.i_n1.median')
+                ib=$(printf '%s' "$pout" | jq -r '.i_n2.median')
+                [ "${#pargs[@]}" -eq 0 ] && pargs+=("$1:$ia")
+                pargs+=("$2:$ib")
+                shift
+              done
+              python3 scripts/extrapolate.py "$L" "$b" "$VER" "$KIND" "$cx" "$n1" "$n2" "${pargs[@]}" > "result-$L-$b.json"
             else
               # A cell can fail to emit a count (e.g. the CLR crashing/OOMing under qemu-x86_64).
               # If it's allow-listed in ALLOW_NOMEASURE, record it as an unmeasured cell and carry
@@ -175,16 +192,20 @@ jobs:
             n1=$(jq -r .n1 "$spec"); n2=$(jq -r .n2 "$spec")
             files=(artifacts/*/result-*-"$b".json)
             [ -e "${files[0]}" ] || { echo "no results for $b - skipping"; continue; }
+            # envelope-level runs = the max any cell actually ran (adaptive RUNS: 2 or 5)
             jq -s --arg b "$b" --arg date "$stamp" --arg isa "$isa" \
                --argjson n1 "$n1" --argjson n2 "$n2" --slurpfile spec "$spec" \
                '{benchmark:$b, date:$date, backend:"qemu-insn", isa:$isa,
-                 n1:$n1, n2:$n2, runs:5, checksums:$spec[0].checksums, results: .}' \
+                 n1:$n1, n2:$n2, runs:(map(.runs // empty) | max),
+                 checksums:$spec[0].checksums, results: .}' \
                "${files[@]}" > "results/${stamp}-${isa}-${b}.json"
             # Per-(ISA, benchmark) "latest" so an x86_64 run never mixes the arm64 history.
             cp "results/${stamp}-${isa}-${b}.json" "results/latest-${isa}-${b}.json"
           done
 
       - name: Regenerate charts (one set per benchmark)
+        # make_charts.py writes non-arm64 envelopes into docs/charts/x86_64/, so this refresh can
+        # never overwrite the arm64 charts embedded by the README + study READMEs.
         run: |
           for f in results/latest-x86_64-*.json; do
             echo "charts for $f"; python3 scripts/make_charts.py "$f"

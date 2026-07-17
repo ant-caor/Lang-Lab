@@ -60,13 +60,24 @@ run_cell() {
     local ex="" c
     for c in ${EXTRAP_CELLS:-}; do case "$c" in "$L:$B:"*) ex="$c";; esac; done
     if [ -n "$ex" ]; then
-      local cx p1 p2 ver pout i1 i2
-      cx=$(printf '%s' "$ex"|cut -d: -f3); p1=$(printf '%s' "$ex"|cut -d: -f4); p2=$(printf '%s' "$ex"|cut -d: -f5)
+      local cx ver probes pa pb pout ia ib
+      local pargs=()
+      cx=$(printf '%s' "$ex"|cut -d: -f3)
+      probes=$(printf '%s' "$ex"|cut -d: -f4-|tr ':' ' ')
       ver=$(jq -r --arg l "$L" '.[$l]' versions.lock.json)
-      pout=$(docker run --rm -e SKIP_GATE=1 -e RUNS=1 -e RUNTIME_KIND="$kind" -e N1="$p1" -e N2="$p2" \
-        ${envf[@]+"${envf[@]}"} "lang-lab-$L" "${override[@]}" 2>"$LOGD/extrap-$L-$B.err")
-      i1=$(printf '%s' "$pout"|jq -r '.i_n1.median'); i2=$(printf '%s' "$pout"|jq -r '.i_n2.median')
-      python3 scripts/extrapolate.py "$L" "$B" "$ver" "$kind" "$cx" "$n1" "$n2" "$p1:$i1" "$p2:$i2" \
+      # Measure consecutive probe pairs (measure.sh takes two sizes per run). Pass 3+ probes so
+      # extrapolate.py can run its mid-probe fit check instead of taking the complexity on faith.
+      set -- $probes
+      while [ $# -ge 2 ]; do
+        pa="$1"; pb="$2"
+        pout=$(docker run --rm -e SKIP_GATE=1 -e RUNS=1 -e RUNTIME_KIND="$kind" -e N1="$pa" -e N2="$pb" \
+          ${envf[@]+"${envf[@]}"} "lang-lab-$L" "${override[@]}" 2>>"$LOGD/extrap-$L-$B.err")
+        ia=$(printf '%s' "$pout"|jq -r '.i_n1.median'); ib=$(printf '%s' "$pout"|jq -r '.i_n2.median')
+        [ "${#pargs[@]}" -eq 0 ] && pargs+=("$pa:$ia")
+        pargs+=("$pb:$ib")
+        shift
+      done
+      python3 scripts/extrapolate.py "$L" "$B" "$ver" "$kind" "$cx" "$n1" "$n2" "${pargs[@]}" \
         > "$redir" 2>>"$LOGD/extrap-$L-$B.err"
       return
     fi
@@ -94,6 +105,10 @@ done
 echo ">> gate (serial)" >&2
 gate_fail=0
 for L in "${langs[@]}"; do for B in "${benches[@]}"; do
+  # spec-declared N/A cells (e.g. message-ring for perl/cobol: no cooperative primitive)
+  if jq -e --arg l "$L" '.na // [] | index($l)' "benchmarks/$B/spec.json" >/dev/null; then
+    echo "   skip $L/$B (N/A per spec)" >&2; continue
+  fi
   # extrap cells are projected from small probes; their full-size NATIVE gate is itself slow, and
   # their checksum was verified when the spec was bootstrapped, so skip the gate for them.
   skip=0; for ec in ${EXTRAP_CELLS:-}; do case "$ec" in "$L:$B:"*) skip=1;; esac; done
@@ -116,6 +131,7 @@ done
 count_batch() { # par_limit langs...
   local p="$1"; shift; local L B
   for L in "$@"; do for B in "${benches[@]}"; do
+    jq -e --arg l "$L" '.na // [] | index($l)' "benchmarks/$B/spec.json" >/dev/null && continue
     while [ "$(jobs -rp | wc -l)" -ge "$p" ]; do sleep 0.3; done
     run_cell count "$L" "$B" &
   done; done
@@ -136,10 +152,11 @@ for B in "${benches[@]}"; do
   # keep only non-empty result files
   ok=(); for f in "${files[@]}"; do [ -s "$f" ] && jq -e .differential "$f" >/dev/null 2>&1 && ok+=("$f"); done
   [ "${#ok[@]}" -gt 0 ] || { echo "   no results for $B" >&2; continue; }
+  # envelope-level runs = the max any cell actually ran (adaptive RUNS: 2 for bit-exact, 5 on jitter)
   jq -s --arg b "$B" --arg date "$STAMP" --arg isa "$ISA" \
      --argjson n1 "$n1" --argjson n2 "$n2" --slurpfile spec "$spec" \
-     '{benchmark:$b, date:$date, backend:"qemu-insn", isa:$isa, n1:$n1, n2:$n2, runs:5,
-       checksums:$spec[0].checksums, results: .}' \
+     '{benchmark:$b, date:$date, backend:"qemu-insn", isa:$isa, n1:$n1, n2:$n2,
+       runs:(map(.runs // empty) | max), checksums:$spec[0].checksums, results: .}' \
      "${ok[@]}" > "$RES/${STAMP}-${ISA}-${B}.json"
   [ "${CHARTS:-1}" = "1" ] && { python3 scripts/make_charts.py "$RES/${STAMP}-${ISA}-${B}.json" >/dev/null 2>&1 || true; }
   echo "   $B: ${#ok[@]} langs -> $RES/${STAMP}-${ISA}-${B}.json" >&2

@@ -27,7 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   channels, a hand-rolled std `Future` executor in Rust, Swift continuations, Python `asyncio`,
   PHP/Ruby fibers, Kotlin/Scala JVM virtual threads, a single-thread C# synchronization context,
   Elixir BEAM processes). Perl and COBOL are N/A (no cooperative primitive in core). Measured under
-  qemu+insn across all 11 and folded into the master comparison matrix (now 19 axes).
+  qemu+insn across all 11 and shown in the master comparison matrix, but **excluded from the
+  ranking geomean**: instruction counts are syscall-blind for context-switch primitives, and the
+  concurrency study shows wall-clock inverts the ordering (the leaderboard ranks the 18 compute
+  axes only).
 - **Concurrency study** (`docs/concurrency-study.md`): a reproducible, cross-track write-up of
   concurrency per language along three axes: primitive cost (wall-clock per hop, with an
   instruction-count view alongside), parallel scalability as wall-clock `T1/TP`, and real-vs-GIL/GVL

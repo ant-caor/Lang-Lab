@@ -77,7 +77,7 @@
       },
       "differential": 70567571483,
       "correct": true,
-      "determinism": "exact",
+      "determinism": "projected",
       "note": "extrapolated (cubic) from probes [64, 96] (identical per-cubic work; ratio scale-invariant); a direct n2=256 run is impractical"
     },
     {

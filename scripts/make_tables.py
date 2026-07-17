@@ -8,8 +8,8 @@ cells across the study tables reproducible from the measured data instead of han
 
 Table format (sorted ascending by vs-C ratio):
     | Language | I(<n1>) | I(<n2>) | differential | vs C | determinism |
-C is bold with a bold 1.00x; sub-1.0x ratios are bold; an extrapolated cell (result has a "note")
-is marked with * and its determinism reads "exact (extrap.)".
+C is bold with a bold 1.00x; sub-1.0x ratios are bold; an extrapolated cell (its "note" says
+"extrapolated") is marked with * and its determinism reads "projected".
 """
 import json
 import os
@@ -62,11 +62,13 @@ def gen_table(env):
         L = r["language"]
         name = f"**{NAMES.get(L, L)}**" if L == "c" else NAMES.get(L, L)
         rat = r["differential"] / cdiff
-        extrap = "note" in r
+        extrap = "extrapolat" in (r.get("note") or "").lower()
         cell = ratio_str(rat) + "×" + ("\\*" if extrap else "")
         if L == "c" or rat <= 1.0:
             cell = f"**{cell}**"
-        det = r["determinism"] + (" (extrap.)" if extrap and "extrap" not in r["determinism"] else "")
+        det = r["determinism"]
+        if extrap and "extrap" not in det and "project" not in det:
+            det += " (extrap.)"
         out.append(f"| {name} | {human(r['i_n1']['median'])} | {human(r['i_n2']['median'])} | "
                    f"{human(r['differential'])} | {cell} | {det} |")
     return "\n".join(out)

@@ -87,7 +87,7 @@ The benchmark measures the **hash map**, so the rules protect that:
 | PHP | associative `array` | k-mer string |
 | Kotlin | `HashMap<String, Int>` | k-mer string |
 | Scala | `mutable.HashMap[String, Int]` | k-mer string |
-| C# | `Dictionary<string, long>` | k-mer string |
+| C# | `Dictionary<string, long>` via `GetAlternateLookup<ReadOnlySpan<char>>` (.NET 9) | span probe; a `string` is allocated only on first sight of each distinct k-mer |
 | Elixir | immutable `Map` (`Map.update`) | k-mer binary |
 | Ruby | built-in `Hash` (`Hash.new(0)`) | k-mer `String` |
 | COBOL | hand-rolled open-addressing (FNV-1a + linear probing, parallel `OCCURS` arrays) | 8-byte k-mer (`PIC X(8)`) |
@@ -131,7 +131,16 @@ for a *general-purpose* map. **Rust's 2.73×** is the most informative number he
 default hasher is **SipHash**, a DoS-resistant keyed hash that is deliberately slower than FNV,
 the cost of a safe default (a Rust dev could opt into `ahash`/`FxHashMap` and approach C). The
 managed languages cluster at **~10×** (Swift 9.67, C# 9.73, Kotlin 9.98, Scala 10.53): each
-allocates a heap string per k-mer and drives a hashed dictionary through a GC.
+allocates a heap string per k-mer position and drives a hashed dictionary through a GC.
+
+**An asymmetry to know about (C#):** since the qemu-x86_64 OOM fix (2026-06-21), the C# source
+probes the dictionary through .NET 9's `GetAlternateLookup<ReadOnlySpan<char>>`, so it allocates a
+string only the **first time each distinct k-mer is seen** (~53k allocations instead of ~200k) —
+Go, Swift, Kotlin and Scala still allocate a fresh substring on *every* position. The 9.73× in the
+table above was measured **before** that change (with the per-position allocation), so it is
+comparable with its peers; the cell will drop on the next arm64 re-measure and should be
+re-characterized then, or the peers given the same zero-allocation probe where their platform
+offers one.
 
 Below the managed cluster, **the interpreters land between 16× and 56×** - PHP 16×, Perl 36×,
 Elixir 40×, Python 50× and Ruby 56× - close enough that the std hash map is clearly not where most
@@ -143,8 +152,9 @@ single most extreme cell in the entire suite), a striking case of *compiled ≠ 
 interpreters, COBOL is still bit-**exact**.
 
 **A fairness nuance worth stating:** C and Rust key on an inline / fixed-size 8-byte k-mer
-(`[u8; 8]`), so they skip the per-k-mer **heap string allocation** that Go, Swift, C#, Kotlin,
-Scala, Python, Perl and PHP each pay (their string slice/substring is a real allocation). That is
+(`[u8; 8]`), so they skip the per-k-mer **heap string allocation** that Go, Swift, Kotlin,
+Scala, Python, Perl and PHP each pay (their string slice/substring is a real allocation; C# now
+sidesteps most of it too — see the note above). That is
 idiomatic for C and Rust and is documented in the representation table above; it is part of what
 the benchmark honestly measures (how cheaply *your* language lets you key a map by a short
 sequence), not a thumb on the scale.

@@ -71,7 +71,7 @@ def bars(title, subtitle, items, outfile, logscale, value_fmt):
         s.append(f'<text x="{left + bw + 9:.1f}" y="{y + 24}" font-size="13" '
                  f'fill="{FG}">{_xesc(value_fmt(v))}</text>')
     s.append('</svg>')
-    os.makedirs(OUT, exist_ok=True)
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
     with open(outfile, "w") as f:
         f.write("\n".join(s))
     print("wrote", os.path.relpath(outfile, ROOT))
@@ -84,6 +84,10 @@ def main():
     isa = data.get("isa", "")
     isa_tag = f" · {isa}" if isa else ""
     bench = data.get("benchmark", "fannkuch")
+    # arm64 is the presentation ISA (the README + study READMEs embed the docs/charts/ set).
+    # Any other ISA (e.g. the x86_64 CI refresh) writes into docs/charts/<isa>/ instead, so a CI
+    # run can never silently overwrite the arm64 charts with same-named x86_64 ones.
+    outdir = OUT if isa in ("", "arm64") else os.path.join(OUT, isa)
     # keep only measured languages (skip build/measure failures)
     rows = [r for r in data["results"] if r.get("i_n2") and r.get("i_n1")]
 
@@ -103,20 +107,20 @@ def main():
     diff = [(name(r), r["differential"] / base, arch(r)) for r in rows]
     bars(f"{bench}:relative real work (I({n2})−I({n1}), C = 1.0×)",
          f"differential cancels startup + JIT · qemu+insn{isa_tag} · the fair metric · lower is better",
-         diff, os.path.join(OUT, f"{bench}-diff-ratio.svg"), logscale=max(v for _, v, _ in diff) > 1000,
+         diff, os.path.join(outdir, f"{bench}-diff-ratio.svg"), logscale=max(v for _, v, _ in diff) > 1000,
          value_fmt=lambda v: f"{v:.2f}×")
 
     # 2) Absolute instruction count at the larger size (median), log scale.
     n2_chart = [(name(r), r["i_n2"]["median"], arch(r)) for r in rows]
     bars(f"{bench}:instructions at n={n2}",
          f"absolute count · qemu+insn{isa_tag} · log scale · less = more efficient",
-         n2_chart, os.path.join(OUT, f"{bench}-n2-absolute.svg"), logscale=True, value_fmt=human)
+         n2_chart, os.path.join(outdir, f"{bench}-n2-absolute.svg"), logscale=True, value_fmt=human)
 
     # 3) Absolute instruction count at the smaller size (median), log scale.
     n1_chart = [(name(r), r["i_n1"]["median"], arch(r)) for r in rows]
     bars(f"{bench}:instructions at n={n1}",
          f"absolute count · qemu+insn{isa_tag} · log scale · less = more efficient",
-         n1_chart, os.path.join(OUT, f"{bench}-n1-absolute.svg"), logscale=True, value_fmt=human)
+         n1_chart, os.path.join(outdir, f"{bench}-n1-absolute.svg"), logscale=True, value_fmt=human)
 
 
 if __name__ == "__main__":

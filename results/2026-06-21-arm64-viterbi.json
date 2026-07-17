@@ -77,7 +77,7 @@
       },
       "differential": 6693877368,
       "correct": true,
-      "determinism": "exact",
+      "determinism": "projected",
       "note": "extrapolated (linear) from probes [5000, 10000] (identical per-linear work; ratio scale-invariant); a direct n2=80000 run is impractical"
     },
     {
