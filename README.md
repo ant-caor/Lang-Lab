@@ -2,6 +2,11 @@
 
 **Reproducible benchmarks for backend programming languages.**
 
+**It measures work, not speed**: bit-exact CPU instruction counts of the same algorithm in every
+language, never wall-clock time. That trade is deliberate, and its accuracy is itself measured:
+the metric predicts wall-clock magnitude at R² 0.91 (log-log, compute-bound code) and rank order
+at Spearman 0.87. [How far it can be trusted, quantified.](docs/metric-validity.md)
+
 <!-- MATRIX:START -->
 
 ![Lang Lab — the matrix: every language × every benchmark](docs/charts/matrix.svg)
@@ -17,13 +22,34 @@ _Real work each language does vs the **C baseline** (= 1.00×), as the different
 | 3 | C# | **1.54×** | binary-trees 0.45× | k-nucleotide 9.73× |
 | 4 | Go | **1.58×** | binary-trees 1.09× | k-nucleotide 4.93× |
 | 5 | Swift | **2.03×** | blur 0.56× | k-nucleotide 9.67× |
-| 6 | Scala | **2.39×** | binary-trees 0.28× | k-nucleotide 10.5× |
-| 7 | Kotlin | **2.53×** | binary-trees 0.28× | k-nucleotide 9.98× |
+| 6 | Scala‡ | **2.39×** | binary-trees 0.28× | k-nucleotide 10.5× |
+| 7 | Kotlin‡ | **2.53×** | binary-trees 0.28× | k-nucleotide 9.98× |
 | 8 | Elixir | **22.3×** | binary-trees 0.30× | polymorphism 136× |
 | 9 | PHP | **32.2×** | binary-trees 5.75× | sha256 98.0× |
 | 10 | Ruby | **75.3×** | binary-trees 10.3× | sha256 278× |
 | 11 | Python | **104×** | binary-trees 11.2× | sha256 601× |
 | 12 | Perl | **146×** | binary-trees 19.0× | sha256 701× |
+
+_‡ JVM ratios are ISA-specific: metric-validity Study 2 measured them roughly doubling from arm64 to x86_64, so their single number holds for this ISA only. Non-JVM rankings are ISA-robust ([details](docs/metric-validity.md))._
+
+**Per-family geomean.** The flat geomean above weights every axis equally, but the axes are not independent: 13 of the 18 sit in three families whose members correlate at r ≈ 0.94–1.00, so it over-weights tight-loop execution. This view casts one vote per runtime capability instead:
+
+| Language | arithmetic | memory loop nests | allocation & GC | stdlib hash map | branchy traversal | calls & dispatch |
+|---|---:|---:|---:|---:|---:|---:|
+| **C** _(baseline)_ | 1.00× | 1.00× | 1.00× | 1.00× | 1.00× | 1.00× |
+| Rust | 1.09× | 0.73× | 1.19× | 2.73× | 1.22× | 1.25× |
+| C# | 1.42× | 1.54× | 0.45× | 9.73× | 1.53× | 1.41× |
+| Go | 1.32× | 1.57× | 1.09× | 4.93× | 1.65× | 1.45× |
+| Swift | 2.00× | 1.55× | 1.72× | 9.67× | 1.78× | 2.34× |
+| Scala‡ | 2.15× | 2.85× | 0.28× | 10.5× | 2.87× | 2.00× |
+| Kotlin‡ | 2.48× | 3.14× | 0.28× | 9.98× | 2.87× | 2.09× |
+| Elixir | 32.0× | 23.4× | 0.30× | 39.6× | 37.4× | 19.0× |
+| PHP | 49.0× | 41.8× | 5.75× | 16.0× | 33.6× | 27.2× |
+| Ruby | 150× | 87.2× | 10.3× | 56.4× | 74.7× | 53.6× |
+| Python | 199× | 137× | 11.2× | 49.8× | 109× | 73.5× |
+| Perl | 299× | 190× | 19.0× | 36.4× | 150× | 116× |
+
+_Families: arithmetic = fannkuch, mandelbrot, sha256, bigint · memory loop nests = reverse-complement, blur, k-means, gemm · allocation & GC = binary-trees · stdlib hash map = k-nucleotide · branchy traversal = sort-search, dijkstra, lz77, viterbi, gbdt · calls & dispatch = vm, tak, polymorphism._
 
 </details>
 
@@ -35,7 +61,10 @@ _Real work each language does vs the **C baseline** (= 1.00×), as the different
 > doubles from arm64 to x86_64). For concurrency read the
 > [scaling track](#scaling-track-wall-clock-parallel-speedup) and the
 > [concurrency study](docs/concurrency-study.md). The metric's empirical validity is measured in
-> [docs/metric-validity.md](docs/metric-validity.md).
+> [docs/metric-validity.md](docs/metric-validity.md), and every implementation is adversarially
+> audited for fairness in [docs/fairness-audit.md](docs/fairness-audit.md): if your language looks
+> unfairly slow, **challenge it with a PR that keeps the checksum** and it will be merged and
+> credited.
 
 Lang Lab measures, **rigorously and reproducibly**, how much CPU work it costs to run
 the same algorithm across backend *programming languages*. It doesn't chase the realism of
@@ -92,7 +121,7 @@ The scaling track and the `message-ring` wall-clock companion exist precisely be
 metric cannot see parallelism or syscall cost (its limits are quantified in
 [docs/metric-validity.md](docs/metric-validity.md)).
 
-## Languages (12 + a C baseline)
+## Languages (11 + a C baseline)
 
 Chosen to cover every backend **runtime archetype**, not just the popular ones, so the
 methodology meets the hard runtimes early.
@@ -119,7 +148,7 @@ launcher runtimes.)
 (CPython, Perl, PHP, JVM, BEAM); they all exited silently. The real cause was a harness bug,
 not emulation: **qemu-user doesn't `PATH`-resolve a bare command name.** Natives were invoked
 by absolute path and worked; interpreters/VMs by bare command (`python`, `java`) and failed.
-Resolving `argv[0]` to an absolute path fixed it, and **all 12 measure cleanly**. Elixir needed
+Resolving `argv[0]` to an absolute path fixed it, and **every language measures cleanly**. Elixir needed
 one extra step (its `elixir`→`erl`→`beam.smp` shell wrappers aren't ELF binaries, so we capture
 and run `beam.smp` directly). *"No output" ≠ "can't emulate": verify the cause.*
 
@@ -128,8 +157,27 @@ Rigor rules:
   ISAs aren't comparable.
 - **Metric = differential** `I(n₂) − I(n₁)`, normalized to **C = 1.0×** (**lower is better**: less
   work than C): cancels startup and JIT, isolating the algorithm's real work.
-- **Jittery runtimes** (Go, C#, JVM): pinned to single-thread + GC off (`runtimeEnv`) and
-  reported as **median of N**; pure natives are bit-exact.
+- **Jittery runtimes** (Go, C#, JVM, BEAM): pinned to a single thread (see the runtime
+  configuration below) and reported as **median of N**; pure natives are bit-exact.
+
+### Runtime configuration (disclosed, deliberate)
+
+The insn plugin sums the instructions of **every** thread in the process, so a concurrent GC or a
+background JIT thread would add nondeterministic counted work. Managed runtimes therefore run in
+pinned, single-threaded configurations. This trades production-representativeness for
+reproducibility, and it is disclosed rather than hidden:
+
+| Runtime | Pinned configuration | What it means for the numbers |
+|---|---|---|
+| Go | `GOMAXPROCS=1`, `GODEBUG=asyncpreemptoff=1`; **GC on** (default `GOGC=100`) | GC work runs on the measured thread and is counted |
+| Kotlin / Scala (JVM) | `-XX:+UseSerialGC` | the serial collector still collects; its work is counted on the measured thread instead of on concurrent GC threads |
+| C# (CLR) | `DOTNET_gcServer=0`, `DOTNET_TieredCompilation=0` | workstation GC (still collecting) + single-tier JIT, so compilation work is deterministic; the differential cancels it |
+| Elixir (BEAM) | `+S 1:1` (single scheduler) | all reductions on one scheduler thread |
+| Interpreters (Python, Perl, PHP, Ruby) | none needed | single-threaded by design |
+
+No configuration turns a garbage collector **off**: allocation-heavy axes like
+[binary-trees](benchmarks/binary-trees/README.md) measure real collection work in every managed
+language.
 
 See the [fannkuch study](benchmarks/fannkuch/README.md) for the full results and methodology.
 
@@ -166,6 +214,15 @@ Each run prints one JSON line with the differential and per-size medians.
 A small **suite**, chosen so each benchmark stresses a different, orthogonal axis of the
 runtime. A language fast at one can be slow at another, which is exactly why one
 micro-benchmark isn't enough.
+
+> **Why hand-written implementations (no `hashlib`, no numpy, no stdlib sort)?** Every language
+> hand-writes the same algorithm (real SHA-256 rounds, hand-rolled bignum limbs, an int8 matmul
+> without BLAS), even where the idiomatic production answer is a native library call. That is
+> deliberate: the suite isolates **what the language itself does to the algorithm's work**, with a
+> bit-exact checksum proving every language did the same work. It does *not* model ecosystem
+> performance: in production Python you would call `hashlib` (C speed) instead of paying 601× on
+> sha256. Read every number as "the cost of running the algorithm *in* the language", never "the
+> cost of shipping this feature in that ecosystem".
 
 | Benchmark | Axis: what it measures | Study |
 |---|---|---|

@@ -19,7 +19,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NAMES = {"c": "C", "rust": "Rust", "swift": "Swift", "go": "Go", "python": "Python",
          "perl": "Perl", "php": "PHP", "kotlin": "Kotlin", "scala": "Scala",
-         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby"}
+         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby", "java": "Java", "javascript": "JavaScript"}
 
 
 def human(v):

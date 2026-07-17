@@ -24,7 +24,7 @@ KIND_ARCH = {"native": "native", "interp": "interpreter",
 LANG_ARCH = {"elixir": "vm"}
 NAMES = {"c": "C", "rust": "Rust", "swift": "Swift", "go": "Go", "python": "Python",
          "perl": "Perl", "php": "PHP", "kotlin": "Kotlin", "scala": "Scala",
-         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby"}
+         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby", "java": "Java", "javascript": "JavaScript"}
 
 
 def human(v):

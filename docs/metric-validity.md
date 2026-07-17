@@ -69,10 +69,13 @@ median shift is 1.005 (no systematic bias). The tail is the story, and it is **t
 
 \* The arm64 geomeans for Swift, Ruby and C# are recomputed from the current envelopes: Swift and
 Ruby reflect the post-fix tree (Swift tak/fannkuch, commit `2132918`; Ruby k-nucleotide, commit
-`0cb2c0f`), and C# now reads **1.54** (its originally recorded 1.38 had drifted from the envelopes;
-the cause of that drift is unconfirmed and still pending its own check). Their x86_64 cells still
-predate those fixes and will refresh on the next successful x86_64 `benchmark` CI run, after which
-the ISA-stability column should be re-derived.
+`0cb2c0f`). C#'s originally recorded 1.38 was **not** an envelope drift (its C# and C rows are
+byte-identical since the figure was first written, verified against `ce840b2`): it was an
+arithmetic slip. The original geomean was computed over 17 of the 18 axes, omitting k-nucleotide,
+C#'s single worst cell (9.73x vs C); that one omission accounts for the entire 1.38 -> 1.54 gap
+(ln(9.73)/18 ~= 0.126 of log-mass). **1.54 is the correct 18-axis figure** and needs no further
+check. Swift's and Ruby's x86_64 cells still predate their fixes and will refresh on the next
+successful x86_64 `benchmark` CI run, after which the ISA-stability column should be re-derived.
 
 These arm64 geomeans are the **same quantity as the README leaderboard**: both are computed over
 the 18 compute axes, with message-ring excluded from the ranking (it is shown in the matrix as an
@@ -105,6 +108,31 @@ same) guest instruction stream on both ISAs, so they are stable.
   as a single number.
 - **Anything syscall-bound** (concurrency primitives, I/O). The instruction count can invert the
   truth. The [scaling track](scaling-track.md) and the message-ring wall-clock exist for this.
+
+## Anticipated objections
+
+Objections we consider technically correct, stated here before anyone else states them:
+
+- **"The differential does not cancel the JIT completely."** True. `I(n2) − I(n1)` cancels the JIT
+  work that is *common* to both runs, but tiered compilation is time-dependent: between n1 and n2 a
+  method can hit a different tier, recompile, OSR or deopt, so some JIT work survives the
+  subtraction. Study 1 hit an instance of exactly this (three JVM cells excluded from the
+  calibration because warmup swamped the differential at small sizes). Mitigations in place:
+  single-tier pinning for the CLR (`DOTNET_TieredCompilation=0`), median-of-N reporting for every
+  JIT runtime, and the adaptive-RUNS escalation on jitter. Treat JIT-runtime cells as
+  median-of-a-noisy-quantity, not as bit-exact counts (native/interpreter cells *are* bit-exact).
+- **"Under qemu TCG the JIT does not see the real CPU."** True. A JIT emits code according to the
+  CPU features it detects; under TCG it sees qemu's emulated CPU model, which is not the local
+  hardware, so the emitted code (and its instruction count) can differ from what production
+  hardware would get. This is one more reason JVM/CLR cells are ISA-specific numbers under this
+  backend rather than universal constants; Study 2 quantifies the consequence (the JVM ratio
+  roughly doubles across ISAs). The counts remain deterministic and comparable *within* the fixed
+  (ISA, qemu, plugin) triple that the reproducibility contract pins.
+- **"The 18 axes are not independent, so the flat geomean overweights tight integer loops."**
+  Partially true, and acknowledged: several axes (sha256, bigint, vm, lz77, sort-search, fannkuch)
+  correlate strongly for interpreters, where they all price the same dispatch overhead. The
+  leaderboard therefore also reports per-family geomeans alongside the flat one (see the README),
+  so a reader can weight families instead of axes.
 
 ## How to read the master matrix
 

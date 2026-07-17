@@ -66,6 +66,16 @@ language's idiomatic allocator, not a forced-uniform encoding.
 | Elixir | 2-tuple `{left, right}` | BEAM per-process heap, copying GC |
 | Ruby | `class Node` with `left`/`right` accessors | MRI heap, mark-and-sweep GC |
 
+### Runtime GC configuration during measurement
+
+Because this axis exists to measure collection work, the pinned runtime configurations matter and
+are stated here (the full table lives in the main README's "Runtime configuration" section):
+every garbage collector is **on**. Go runs its default GC (`GOGC=100`) on the single measured
+thread; Kotlin/Scala run `-XX:+UseSerialGC` (a collecting GC, chosen so the work lands on the
+measured thread instead of concurrent GC threads the instruction counter would count
+nondeterministically); C# runs the workstation GC. What the pinning changes is *where* GC work
+runs and how deterministic the count is, not *whether* collection happens.
+
 ## Sizes
 
 `n1 = 10`, `n2 = 14` (tree depth). Allocation cost is exponential in depth, so the differential

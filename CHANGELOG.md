@@ -52,6 +52,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   fairness rulebook (`docs/scaling-track.md`), per-language speedup charts, and a dedicated CI
   workflow that refreshes `results/scaling/`.
 
+### Changed
+
+- **Go now runs with its garbage collector on** (default `GOGC=100`; previously the whole suite
+  ran `GOGC=off`). Disabling the GC in a suite whose allocation axis (binary-trees) exists to
+  measure collection work was an inconsistency: Go's numbers now include real GC work, like every
+  other managed runtime. The single-thread pinning stays (`GOMAXPROCS=1`, `asyncpreemptoff`),
+  since the instruction counter sums every thread in the process. Go's cells were re-measured
+  across all axes under the new configuration, and every managed runtime's pinned configuration
+  is now disclosed in the README's "Runtime configuration" section.
+
 ### Removed
 
 - **COBOL** (GnuCOBOL), and with it the whole extrapolation subsystem that existed only for its
@@ -64,6 +74,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **C#'s recorded arm64 geomean (1.38) was an arithmetic slip**, not a data problem: it had been
+  computed over 17 of the 18 compute axes, omitting k-nucleotide, C#'s single worst cell (9.73×
+  vs C). The envelopes were never wrong and never changed; the correct 18-axis figure is **1.54**,
+  now consistent between the leaderboard and metric-validity.
 - **Ruby k-nucleotide** was 1438× C, by far the worst cell in the whole suite, because of an
   implementation bug in its DNA generator: it built the sequence as one `String` object per
   nucleotide (~200k short-lived allocations the size differential could not cancel), not because of

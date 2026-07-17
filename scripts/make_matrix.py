@@ -28,7 +28,7 @@ ISA = "arm64"
 BG, FG, MUTED, GRID = "#0d1117", "#e6edf3", "#9aa7b4", "#0d1117"
 NAMES = {"c": "C", "rust": "Rust", "swift": "Swift", "go": "Go", "python": "Python",
          "perl": "Perl", "php": "PHP", "kotlin": "Kotlin", "scala": "Scala",
-         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby"}
+         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby", "java": "Java", "javascript": "JavaScript"}
 # Archetype colour for the row label (matches make_charts.py palette).
 PALETTE = {"native": "#3fb950", "interpreter": "#f0883e", "vm": "#a371f7"}
 KIND_ARCH = {"native": "native", "interp": "interpreter", "inproc-vm": "vm", "launcher": "vm"}
@@ -43,6 +43,31 @@ BENCH_ORDER = ["fannkuch", "binary-trees", "mandelbrot", "k-nucleotide", "revers
 # swapcontext traps into the kernel ~2x per hop at near-zero guest-instruction cost). See
 # docs/metric-validity.md and benchmarks/message-ring/README.md.
 NOT_RANKED = {"message-ring"}
+# Languages whose ratio is NOT ISA-robust (metric-validity Study 2: JVM codegen roughly doubles
+# its ratio from arm64 to x86_64). Marked ‡ in the leaderboard + matrix so the single number is
+# never read as ISA-independent.
+ISA_SPECIFIC = {"kotlin", "scala", "java"}
+# Axis families for the per-family geomean: the honest answer to "the 18 axes are not
+# independent". Empirically (arm64, 18x18 pairwise Pearson on log ratios) 13 of the 18 axes sit
+# in three families whose members correlate at r ~= 0.94-1.00, so the flat geomean effectively
+# over-weights tight-loop execution; the family view casts one vote per runtime capability.
+# Partition designed + validated by the algo-expert review (2026-07-17). Two flagged straddles:
+# gemm sits in memory-loop-nest by design intent (cache pressure) though it still correlates
+# with the arithmetic cluster at n2=256; viterbi sits in branchy-traversal (r=0.99-1.00 with
+# its family) though its README frames the loop-carried dependency first.
+FAMILY = {
+    "fannkuch": "arith", "mandelbrot": "arith", "sha256": "arith", "bigint": "arith",
+    "blur": "memnest", "gemm": "memnest", "k-means": "memnest", "reverse-complement": "memnest",
+    "binary-trees": "allocgc",
+    "k-nucleotide": "stdmap",
+    "sort-search": "branchy", "lz77": "branchy", "gbdt": "branchy", "dijkstra": "branchy",
+    "viterbi": "branchy",
+    "vm": "dispatch", "tak": "dispatch", "polymorphism": "dispatch",
+}
+FAMILY_ORDER = ["arith", "memnest", "allocgc", "stdmap", "branchy", "dispatch"]
+FAMILY_NAMES = {"arith": "arithmetic", "memnest": "memory loop nests",
+                "allocgc": "allocation & GC", "stdmap": "stdlib hash map",
+                "branchy": "branchy traversal", "dispatch": "calls & dispatch"}
 SHORT = {"fannkuch": "fannkuch", "binary-trees": "binary-trees", "mandelbrot": "mandelbrot",
          "k-nucleotide": "k-nucleotide", "reverse-complement": "reverse-comp",
          "sort-search": "sort-search", "dijkstra": "dijkstra", "blur": "blur",
@@ -131,6 +156,8 @@ def render_svg(langs, benches, ratio, geomean, arch, extrap):
     grid_w = len(benches) * cw
     W = grid_x + grid_w + gap + ow + 18
     legend_h = 74 if any(b in NOT_RANKED for b in benches) else 56
+    if any(L in ISA_SPECIFIC for L in langs):
+        legend_h += 14
     H = grid_y + len(langs) * ch + legend_h + 16
 
     s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
@@ -156,7 +183,7 @@ def render_svg(langs, benches, ratio, geomean, arch, extrap):
     # rows
     for i, L in enumerate(langs):
         y = grid_y + i * ch
-        lab = NAMES.get(L, L)
+        lab = NAMES.get(L, L) + ("‡" if L in ISA_SPECIFIC else "")
         s.append(f'<text x="{left - 12}" y="{y + ch / 2 + 4:.1f}" text-anchor="end" '
                  f'font-size="13" font-weight="600" fill="{PALETTE[arch[L]]}">{_xesc(lab)}</text>')
         for j, b in enumerate(benches):
@@ -208,6 +235,10 @@ def render_svg(langs, benches, ratio, geomean, arch, extrap):
         s.append(f'<text x="{lx}" y="{ly + 56}" font-size="10" fill="{MUTED}">'
                  f'† shown but excluded from the geomean: instruction counts are syscall-blind, '
                  f'misleading for context-switch primitives (see the concurrency study)</text>')
+    if any(L in ISA_SPECIFIC for L in langs):
+        s.append(f'<text x="{lx}" y="{ly + 70}" font-size="10" fill="{MUTED}">'
+                 f'‡ JVM ratios are ISA-specific (roughly 2× higher on x86_64, see '
+                 f'docs/metric-validity.md); non-JVM rankings are ISA-robust</text>')
     s.append('</svg>')
 
     os.makedirs(OUT, exist_ok=True)
@@ -222,7 +253,7 @@ def leaderboard_md(langs, benches, ratio, geomean, extrap):
     out = ["| # | Language | Overall (vs C) | Fastest axis | Slowest axis |",
            "|--:|----------|---------------:|--------------|--------------|"]
     for i, L in enumerate(langs, 1):
-        name = NAMES.get(L, L)
+        name = NAMES.get(L, L) + ("‡" if L in ISA_SPECIFIC else "")
         if L == "c":
             out.append(f"| {i} | **C** _(baseline)_ | **1.00×** | — | — |")
             continue
@@ -234,6 +265,31 @@ def leaderboard_md(langs, benches, ratio, geomean, extrap):
         emark = "*" if any((L, b) in extrap for b in ranked) else ""
         out.append(f"| {i} | {name} | **{fmt(geomean[L])}×{emark}** | "
                    f"{best} {fmt(row[best])}×{bmk} | {worst} {fmt(row[worst])}×{wmk} |")
+    return "\n".join(out)
+
+
+def family_md(langs, benches, ratio):
+    """Per-family geomean table: one column per axis family, one equal vote per capability."""
+    fams = [f for f in FAMILY_ORDER if any(FAMILY.get(b) == f for b in benches)]
+    out = ["| Language | " + " | ".join(FAMILY_NAMES[f] for f in fams) + " |",
+           "|---|" + "---:|" * len(fams)]
+    for L in langs:
+        cells = []
+        for f in fams:
+            vals = [ratio[L][b] for b in benches if b in ratio[L] and FAMILY.get(b) == f]
+            if vals:
+                g = math.exp(sum(math.log(v) for v in vals) / len(vals))
+                cells.append(f"{fmt(g)}×")
+            else:
+                cells.append("—")
+        name = NAMES.get(L, L) + ("‡" if L in ISA_SPECIFIC else "")
+        if L == "c":
+            name = "**C** _(baseline)_"
+        out.append(f"| {name} | " + " | ".join(cells) + " |")
+    members = " · ".join(
+        f"{FAMILY_NAMES[f]} = " + ", ".join(b for b in BENCH_ORDER if FAMILY.get(b) == f)
+        for f in fams)
+    out.append(f"\n_Families: {members}._")
     return "\n".join(out)
 
 
@@ -265,6 +321,16 @@ def main():
         excl = (" **message-ring is shown but not ranked**: its instruction count is syscall-blind "
                 "and misleading for context-switch primitives (wall-clock inverts it; see "
                 "[the concurrency study](docs/concurrency-study.md)).")
+    if any(L in ISA_SPECIFIC for L in langs):
+        foot += ("\n\n_‡ JVM ratios are ISA-specific: metric-validity Study 2 measured them "
+                 "roughly doubling from arm64 to x86_64, so their single number holds for this "
+                 "ISA only. Non-JVM rankings are ISA-robust "
+                 "([details](docs/metric-validity.md))._")
+    fam = family_md(langs, benches, ratio)
+    famnote = ("\n\n**Per-family geomean.** The flat geomean above weights every axis equally, "
+               "but the axes are not independent: 13 of the 18 sit in three families whose "
+               "members correlate at r ≈ 0.94–1.00, so it over-weights tight-loop execution. "
+               "This view casts one vote per runtime capability instead:\n\n" + fam)
     block = ("\n![Lang Lab — the matrix: every language × every benchmark]"
              "(docs/charts/matrix.svg)\n\n"
              "_Real work each language does vs the **C baseline** (= 1.00×), as the differential "
@@ -272,7 +338,7 @@ def main():
              f"Geomean across the {len(ranked)} compute axes; green cells beat or tie C.{excl} "
              "Full method below._\n\n"
              "<details><summary><b>Leaderboard</b> (sorted by overall geomean)</summary>\n\n"
-             + lb + foot + "\n\n</details>\n")
+             + lb + foot + famnote + "\n\n</details>\n")
     if "--write" in sys.argv:
         splice(block)
     else:

@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1130" height="602" viewBox="0 0 1130 602" font-family="ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial">
-<rect width="1130" height="602" rx="10" fill="#0d1117"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1130" height="616" viewBox="0 0 1130 616" font-family="ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial">
+<rect width="1130" height="616" rx="10" fill="#0d1117"/>
 <text x="22" y="34" font-size="19" font-weight="700" fill="#e6edf3">Lang Lab · the matrix</text>
 <text x="22" y="54" font-size="12.5" fill="#9aa7b4">real work vs C (= 1.00×, lower is better), differential I(n₂)−I(n₁) · qemu+insn · arm64 · sorted by geomean across 18 compute axes († shown, not ranked)</text>
 <text x="111.0" y="144" font-size="11" fill="#9aa7b4" text-anchor="start" transform="rotate(-45 111.0 144)">fannkuch</text>
@@ -227,7 +227,7 @@
 <text x="1011.0" y="291.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">52.2</text>
 <rect x="1052" y="272" width="60" height="30" fill="#ffed9f" stroke="#0d1117" stroke-width="1.5"/>
 <text x="1082.0" y="291.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0d1117">2.03×</text>
-<text x="74" y="321.0" text-anchor="end" font-size="13" font-weight="600" fill="#a371f7">Scala</text>
+<text x="74" y="321.0" text-anchor="end" font-size="13" font-weight="600" fill="#a371f7">Scala‡</text>
 <rect x="86" y="302" width="50" height="30" fill="#ffe692" stroke="#0d1117" stroke-width="1"/>
 <text x="111.0" y="321.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">2.73</text>
 <rect x="136" y="302" width="50" height="30" fill="#278a47" stroke="#0d1117" stroke-width="1"/>
@@ -268,7 +268,7 @@
 <text x="1011.0" y="321.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">55.1</text>
 <rect x="1052" y="302" width="60" height="30" fill="#ffe998" stroke="#0d1117" stroke-width="1.5"/>
 <text x="1082.0" y="321.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0d1117">2.39×</text>
-<text x="74" y="351.0" text-anchor="end" font-size="13" font-weight="600" fill="#a371f7">Kotlin</text>
+<text x="74" y="351.0" text-anchor="end" font-size="13" font-weight="600" fill="#a371f7">Kotlin‡</text>
 <rect x="86" y="332" width="50" height="30" fill="#fee289" stroke="#0d1117" stroke-width="1"/>
 <text x="111.0" y="351.0" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0d1117">3.34</text>
 <rect x="136" y="332" width="50" height="30" fill="#288a47" stroke="#0d1117" stroke-width="1"/>
@@ -542,4 +542,5 @@
 <text x="972.7" y="564" text-anchor="middle" font-size="10" fill="#9aa7b4">100k×</text>
 <text x="1052" y="548" font-size="10.5" fill="#9aa7b4">← beats C · slower →</text>
 <text x="86" y="594" font-size="10" fill="#9aa7b4">† shown but excluded from the geomean: instruction counts are syscall-blind, misleading for context-switch primitives (see the concurrency study)</text>
+<text x="86" y="608" font-size="10" fill="#9aa7b4">‡ JVM ratios are ISA-specific (roughly 2× higher on x86_64, see docs/metric-validity.md); non-JVM rankings are ISA-robust</text>
 </svg>

@@ -18,7 +18,7 @@
     "dockerfile": "languages/go/Dockerfile",
     "buildArg": "GO_VERSION",
     "runtimeKind": "native",
-    "runtimeEnv": { "GOMAXPROCS": "1", "GOGC": "off", "GODEBUG": "asyncpreemptoff=1" },
+    "runtimeEnv": { "GOMAXPROCS": "1", "GODEBUG": "asyncpreemptoff=1" },
     "run": "/app/{b}"
   },
   "rust": {
@@ -87,5 +87,20 @@
     "buildArg": "RUBY_VERSION",
     "runtimeKind": "interp",
     "run": "ruby /app/{b}.rb"
+  },
+  "java": {
+    "eol": "java",
+    "dockerfile": "languages/java/Dockerfile",
+    "buildArg": "JAVA_VERSION",
+    "runtimeKind": "inproc-vm",
+    "runtimeEnv": { "JAVA_TOOL_OPTIONS": "-XX:+UseSerialGC" },
+    "run": "java -jar /app/{b}.jar"
+  },
+  "javascript": {
+    "eol": "nodejs",
+    "dockerfile": "languages/javascript/Dockerfile",
+    "buildArg": "NODE_VERSION",
+    "runtimeKind": "inproc-vm",
+    "run": "node /app/{b}.js"
   }
 }
