@@ -9,7 +9,7 @@ its members).
 Most ML is floating-point, but float would wreck cross-language reproducibility (FMA contraction and
 non-associative summation give different bits in different languages). So this is **integer k-means**,
 which is also exactly how quantized models run in production. Integer arithmetic is exact and
-associative, so all thirteen implementations land on the bit-identical result.
+associative, so all twelve implementations land on the bit-identical result.
 
 ## The algorithm
 
@@ -89,7 +89,6 @@ handling) matches exactly.
 | C# | `long[]` / `int[]` |
 | Elixir | `:atomics` (points, centroids, assignment, the per-iteration sums/counts) |
 | Ruby | `Array` (`Array.new(n*D, 0)`; centroids via the slice `pt[0, K*D]`) |
-| COBOL | `PIC S9(18) COMP-5 OCCURS` tables (points / centroids / sums) + `S9(9) COMP-5 OCCURS` assignment |
 
 ## Sizes
 
@@ -100,7 +99,7 @@ differential `I(8000) − I(2000)` is dominated by the marginal nearest-centroid
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(8000) − I(2000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-k-means.json`](../../results/2026-06-17-arm64-k-means.json).
-All 13 printed the identical `70735446` / `52003413` checksums: same clusters, same assignments.
+All 12 printed the identical `70735446` / `52003413` checksums: same clusters, same assignments.
 
 ![relative real work](../../docs/charts/k-means-diff-ratio.svg)
 
@@ -118,7 +117,6 @@ All 13 printed the identical `70735446` / `52003413` checksums: same clusters, s
 | Ruby | 1.62B | 5.64B | 4.02B | 91.12× | jitter |
 | Python | 2.23B | 8.81B | 6.58B | 149.26× | jitter |
 | Perl | 3.00B | 12.0B | 8.96B | 203.14× | jitter |
-| COBOL | 5.87B | 23.5B | 17.6B | 398.73× | exact |
 
 ### The headline: Rust beats C again, on the same lever
 
@@ -128,9 +126,7 @@ exploits it: 0.59×, beating C** (built with `gcc -O2`, scalar). Rust now wins o
 two axes whose inner loops vectorize cleanly (blur 0.48×, k-means 0.59×). Behind it C leads, then C#
 (1.41×), Go (1.68×) and Swift (2.49×); the JVM lands at 3.9–6.8× (no auto-vectorisation + bounds
 checks), Elixir at 39× (its five working arrays all live in NIF-crossed `:atomics`), and the
-interpreters detonate as ever, Perl at 203×. And below even Perl sits **COBOL at 398.73×** -
-native-compiled to ELF, yet the slowest language here: GnuCOBOL emits a libcob call per statement,
-so its arithmetic-heavy assign/update inner loops never get near the metal.
+interpreters detonate as ever, Perl at 203×.
 
 ### The nine-axis picture: the full suite
 
@@ -150,9 +146,8 @@ Differential vs C = 1.0× across all nine benchmarks (int / alloc / float / hash
 | Ruby | 104.64 | 10.34 | 117.20 | 56.39 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 |
 | Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 |
 | Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 |
-| COBOL | 26.78 | 182.75 | 7908.42 | 7686.05 | 221.82 | 330.02 | 391.75 | 152.72 | 398.73 |
 
-Nine benchmarks, nine orderings of the same thirteen languages, the thesis now overdetermined:
+Nine benchmarks, nine orderings of the same twelve languages, the thesis now overdetermined:
 
 - **C is the baseline, not the ceiling.** It wins seven of nine, but loses both vectorizable axes
   (blur, k-means) to LLVM-backed Rust. A `gcc -O3` C build would narrow that, but the suite pins
@@ -161,14 +156,6 @@ Nine benchmarks, nine orderings of the same thirteen languages, the thesis now o
 - **C#** is the steadiest managed runtime (0.45×–9.73×); **the JVM** a allocation specialist; **Elixir**
   owns the widest range of any language (0.30×–56.47×); **the interpreters** sit a steady 1–2 orders
   back, each least-bad where its native-C internals carry the load.
-- **COBOL** is the suite's "compiled ≠ fast" proof: GnuCOBOL transpiles to native ELF and is
-  bit-**exact** (unlike the interpreters), yet it is the slowest language on almost every axis because
-  libcob runs a function call per statement. On plain integer loops it is "only" 27–730× (and even
-  **beats Elixir on fannkuch**, 26.78× vs 29.71×), but it has three cliffs where it lacks a native
-  primitive: **sha256 222956×** (the single most extreme cell in the entire suite, ~28× past the
-  next-most-extreme cell - bit ops hand-emulated, value extrapolated), **mandelbrot 7908×** (COMP-2 doubles routed
-  through GMP arbitrary-precision DECIMAL, no FPU codegen), and **k-nucleotide 7686×** (string-keyed
-  hashing). Here on k-means it lands at 398.73×, last of all thirteen.
 - **The same language's row varies by up to ~190×** (Elixir 0.30×→56.47×). A scalar "language speed"
   would have to average that away, which is exactly why it is meaningless.
 

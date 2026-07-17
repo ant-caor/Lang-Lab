@@ -162,7 +162,6 @@ threads combined). The determinism pinning for each language achieves this:
 | **PHP** | Fibers (PHP 8.1+) | single-threaded by construction (no PHP threading model) | `Fiber::suspend()` / `Fiber::resume($value)` for the handoff. Requires PHP >= 8.1. No `parallel` extension. |
 | **Ruby** | `Fiber` (MRI cooperative fibers) | single-threaded by construction (GIL ensures no true parallelism) | `Fiber.new { |v| loop { v = Fiber.yield(transform(v)) } }`. MRI Fibers are cooperative and do not spawn OS threads. |
 | **Perl** | **N/A -- no fair option exists** | -- | Perl has no core cooperative fiber / green-thread primitive. `ithreads` are OS threads (violates the single-OS-thread rule and hits the plugin ceiling). CPAN modules like `Coro` exist but are not present in the lang-lab Perl image. **This cell is N/A**: Perl does not participate in this benchmark. Document in results as "no cooperative primitive in core". |
-| **COBOL** | **N/A -- extrapolated / skipped** | -- | GnuCOBOL has no coroutine or cooperative-concurrency primitive. This cell cannot be implemented faithfully without adding a library outside the lang-lab COBOL image. **This cell is N/A**: COBOL does not participate. Document in results as "no cooperative primitive". Unlike COBOL's participation in sha256/gemm/viterbi (where it implements the algorithm by hand), there is no hand-roll path here -- the concurrency primitive IS the thing being measured. |
 
 ### C baseline rationale
 
@@ -177,7 +176,7 @@ Note: `ucontext_t` is POSIX-deprecated in the POSIX.1-2008 standard but remains 
 functional on glibc bookworm. The lang-lab C image is glibc 2.36 on Debian bookworm;
 `_XOPEN_SOURCE=700` or `#define _GNU_SOURCE` enables it.
 
-### Perl and COBOL coverage calls
+### Perl coverage call
 
 **Perl**: Perl's concurrency model has no cooperative green-thread primitive in core. `ithreads`
 spawn real OS threads (each with its own interpreter state), which violates the single-OS-thread
@@ -186,11 +185,6 @@ coroutines but is not part of the lang-lab Perl image and adding it would mean m
 library, not the language runtime. This is a documented N/A gap, not a fairness failure: the
 benchmark measures a language axis that Perl simply does not have in its core. Perl has N/A in
 the results column.
-
-**COBOL**: GnuCOBOL compiles to C and has no runtime coroutine or fiber mechanism. There is no
-hand-roll path because the concurrency primitive itself is the object of measurement. This is an
-honest N/A, documented alongside the results. COBOL participates in every benchmark where it can
-hand-roll the algorithm (sha256, bigint, etc.); this is not one of them.
 
 ## Sizes
 
@@ -207,7 +201,7 @@ the harness's adaptive RUNS logic and the checksum gate will behave normally.
 
 ## Results: uniform qemu+insn pass
 
-Perl and COBOL do not participate (no cooperative primitive in core), so 11 languages are compared.
+Perl does not participate (no cooperative primitive in core), so 11 languages are compared.
 
 > **Read the wall-clock table first.** This benchmark reports two metrics that disagree sharply, and
 > the disagreement is the point. The **instruction count** (qemu+insn, reproducible) measures how

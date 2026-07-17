@@ -65,7 +65,6 @@ language's idiomatic allocator, not a forced-uniform encoding.
 | C# | `sealed class Node` | CLR heap, generational GC |
 | Elixir | 2-tuple `{left, right}` | BEAM per-process heap, copying GC |
 | Ruby | `class Node` with `left`/`right` accessors | MRI heap, mark-and-sweep GC |
-| COBOL | `01 NODE BASED` group, two `USAGE POINTER` children, `ALLOCATE` per node | manual recursive `FREE` (tree destroyed) |
 
 ## Sizes
 
@@ -94,7 +93,6 @@ Uniform qemu+insn pass, **arm64**, median of 5, differential `I(14) − I(10)` n
 | Ruby | 625.7M | 8.55B | 7.93B | 10.34× | jitter |
 | Python | 399.7M | 8.95B | 8.55B | 11.15× | jitter |
 | Perl | 651.7M | 15.2B | 14.5B | 18.98× | jitter |
-| COBOL | 2.20B | 142.3B | 140.1B | 182.75× | exact |
 
 ### The headline: managed runtimes *beat* C at allocation
 
@@ -106,10 +104,6 @@ shows: idiomatic manual memory management is genuinely expensive for high-churn 
 good GC amortizes it. Go (1.09×) lands next to C; the two non-GC natives that still box every node,
 Rust (1.19×, a `Box` + drop per node) and Swift (1.72×, ARC retain/release), sit just above.
 The interpreters pay per-object overhead and blow up: PHP 5.75×, Python 11.15×, Perl 18.98×.
-And the one *native-compiled* language at the bottom is the most damning of all: COBOL is
-**182.75×**, an order of magnitude past every interpreter - GnuCOBOL transpiles to native ELF
-yet emits a heavy `libcob` call per statement and boxes each tree node through its runtime, so
-"compiled" buys it nothing here. Compiled ≠ fast.
 
 ### Elixir: huge *absolute* cost, cheap *marginal* cost
 

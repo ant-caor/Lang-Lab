@@ -47,8 +47,6 @@ Most languages use a plain recursive function plus a module-level / static integ
 - **Elixir** is immutable: it carries the call count in an `:counters` reference (the same
   mutable-array convention the suite already uses for Elixir elsewhere), so the recursion stays a
   faithful triple call without threading an accumulator through every return.
-- **COBOL** uses a `RECURSIVE` program; the counter lives in `WORKING-STORAGE` (shared across the
-  recursive instances, unlike `LOCAL-STORAGE`), so it accumulates correctly.
 
 ## Sizes
 
@@ -58,7 +56,7 @@ startup and any JIT warm-up.
 ## Results
 
 Uniform qemu+insn pass, arm64, differential `I(8) - I(6)` normalized to **C = 1.0x**. Source:
-[`results/2026-06-19-arm64-tak.json`](../../results/2026-06-19-arm64-tak.json). All 13 printed the
+[`results/2026-06-19-arm64-tak.json`](../../results/2026-06-19-arm64-tak.json). All 12 printed the
 identical `2493349` call count (line 1) and `9` result (line 2).
 
 ![relative real work](../../docs/charts/tak-diff-ratio.svg)
@@ -77,15 +75,13 @@ identical `2493349` call count (line 1) and `9` result (line 2).
 | Ruby | 325.9M | 2.32B | 2.00B | 40.76× | jitter |
 | Python | 103.2M | 2.50B | 2.39B | 48.80× | jitter |
 | Perl | 160.6M | 5.87B | 5.71B | 116.56× | jitter |
-| COBOL | 285.2M | 11.0B | 10.7B | 217.98× | exact |
 
 The ordering is almost the **inverse** of the allocation/float axes: the compiled and JIT'd
 languages collapse onto C (Go 1.09x, Swift 1.15x, Rust 1.25x, C# 1.28x, Scala 1.38x, Kotlin 1.66x) because a
 function call is a few register moves and a branch, which every real compiler nails. The cost
 shows up exactly where the call goes through an interpreter loop or a heavy runtime: PHP 22x,
-Ruby 41x, Python 49x, Perl 117x (each call builds and tears down an interpreter stack frame), and
-**COBOL 218x** (GnuCOBOL emits a full libcob-mediated recursion per call). Elixir's 11x is the
-BEAM's reduction-counted call. (Swift's 1.15x once read 4.75x: an implementation artifact where the
+Ruby 41x, Python 49x, Perl 117x (each call builds and tears down an interpreter stack frame).
+Elixir's 11x is the BEAM's reduction-counted call. (Swift's 1.15x once read 4.75x: an implementation artifact where the
 global call-counter forced a runtime exclusivity check on every call; threading it through an `inout`
 parameter removed it, leaving Swift among the natives.)
 
@@ -93,8 +89,6 @@ parameter removed it, leaving Swift among the natives.)
 - **A function call is nearly free once compiled** (Go/Rust/C#/JVM within ~1.7x of C) and
   measurably expensive interpreted (tens to >100x C). It is the cleanest split between the two
   camps in the whole suite.
-- **COBOL is the slowest here too (218x), but this is its MILDEST slow axis** (vs 7686x-222956x on
-  hash/float/bits): plain integer recursion is the work GnuCOBOL handles least badly.
 - **Determinism:** the natives (C, Rust, Swift) and PHP are bit-exact; the rest jitter.
 
 ## Reproduce

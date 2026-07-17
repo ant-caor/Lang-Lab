@@ -13,8 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instructions (deterministic on shared CI, unlike wall-clock time). The headline metric is the
   differential `I(n₂) − I(n₁)` normalized to **C = 1.0×** (lower is better), which cancels runtime startup and JIT
   compilation to isolate the algorithm's real work.
-- **12 languages + a C baseline**, chosen to cover every backend runtime archetype: C, Rust,
-  Swift and COBOL (native), Go (compiled + concurrent GC), Python, Perl, PHP and Ruby
+- **11 languages + a C baseline**, chosen to cover every backend runtime archetype: C, Rust and
+  Swift (native), Go (compiled + concurrent GC), Python, Perl, PHP and Ruby
   (interpreters), Kotlin, Scala and C# (VMs with JIT + GC), and Elixir (BEAM).
 - **An 18-benchmark suite**, each stressing an orthogonal runtime axis, every implementation
   reproducing a bit-exact reference checksum: fannkuch, binary-trees, mandelbrot, k-nucleotide,
@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   laps), implemented in 11 languages with their idiomatic cooperative primitive (C `ucontext`, Go
   channels, a hand-rolled std `Future` executor in Rust, Swift continuations, Python `asyncio`,
   PHP/Ruby fibers, Kotlin/Scala JVM virtual threads, a single-thread C# synchronization context,
-  Elixir BEAM processes). Perl and COBOL are N/A (no cooperative primitive in core). Measured under
+  Elixir BEAM processes). Perl is N/A (no cooperative primitive in core). Measured under
   qemu+insn across all 11 and shown in the master comparison matrix, but **excluded from the
   ranking geomean**: instruction counts are syscall-blind for context-switch primitives, and the
   concurrency study shows wall-clock inverts the ordering (the leaderboard ranks the 18 compute
@@ -47,10 +47,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Scaling track (wall-clock parallel speedup)**: a second, complementary measurement track that
   reports the wall-clock speedup `T1/TP` (higher is better) at 1/2/4 cores (compute region only, run natively, no
   qemu) for five embarrassingly-parallel axes (gemm, mandelbrot, blur, k-means, gbdt) across every
-  language with a concurrency primitive (all but COBOL), each using its idiomatic real-parallel
-  primitive. Unlike the instruction track it is a ratio, not bit-reproducible. Ships with a
+  language, each using its idiomatic real-parallel primitive. Unlike the instruction track it is a
+  ratio, not bit-reproducible. Ships with a
   fairness rulebook (`docs/scaling-track.md`), per-language speedup charts, and a dedicated CI
   workflow that refreshes `results/scaling/`.
+
+### Removed
+
+- **COBOL** (GnuCOBOL), and with it the whole extrapolation subsystem that existed only for its
+  four pathological cells (`scripts/extrapolate.py`, the `EXTRAP_CELLS` projection in CI and the
+  local driver). COBOL's suite ratio (geomean ~460× C, peaking ~223,000× on sha256) was dominated
+  by hand-rolled emulation of machinery the language lacks (fixed-width binary words, dynamic
+  maps, bignums) rather than by anything a backend service would run, and its projected cells were
+  the only numbers in the matrix not measured full-size. Every remaining number is now directly
+  measured, matching the project's reproducibility contract.
 
 ### Fixed
 

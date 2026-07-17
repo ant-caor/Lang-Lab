@@ -99,7 +99,6 @@ number validates the whole pipeline.
 | C# | `long[]` |
 | Elixir | `:atomics` (the BEAM's mutable 64-bit integer array; in-place swaps) |
 | Ruby | `Array` (`Array.new(n, 0)` of Integers, sorted in place) |
-| COBOL | `PIC S9(18) COMP-5 OCCURS` table (1-indexed 64-bit ints; quicksort recursion via an explicit `OCCURS` manual stack) |
 
 Elixir has no mutable list/tuple, so it uses `:atomics`, the honest way to run an in-place
 quicksort on the BEAM (each `get`/`put` is a NIF call, which the instruction count fairly reflects).
@@ -113,7 +112,7 @@ searches, so the differential `I(200000) − I(50000)` is dominated by the margi
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(200000) − I(50000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-sort-search.json`](../../results/2026-06-17-arm64-sort-search.json).
-All 13 printed the identical `408844375` / `110297196` checksums: the same quicksort and binary
+All 12 printed the identical `408844375` / `110297196` checksums: the same quicksort and binary
 search, operation for operation.
 
 ![relative real work](../../docs/charts/sort-search-diff-ratio.svg)
@@ -132,7 +131,6 @@ search, operation for operation.
 | Ruby | 1.52B | 5.73B | 4.21B | 79.91× | jitter |
 | Python | 2.09B | 9.04B | 6.95B | 131.93× | jitter |
 | Perl | 2.97B | 13.0B | 9.99B | 189.53× | jitter |
-| COBOL | 5.13B | 22.5B | 17.4B | 330.02× | exact |
 
 ### The headline: recursion + random array access, and Elixir's wall
 
@@ -140,10 +138,7 @@ This benchmark is mostly **array indexing, comparisons and recursion**, C's home
 (1.00×) with the compiled/JIT languages trailing closely (Rust 1.34×, Go 1.41×, C# 1.46×, Swift
 1.89×). The JVM pays a bit more for the recursive partition over a `LongArray` (Kotlin 3.55×, Scala
 3.10×), and the interpreters pay per-operation as always (PHP 39×, Python 132×, Perl 190×, almost
-exactly its fannkuch number, since both are tight integer-array loops). Slowest of all is **COBOL
-at 330×** - and it is *native-compiled*: GnuCOBOL emits a libcob call per statement, so even
-hand-written integer array code trails every interpreter here, the suite's sharpest reminder that
-compiled ≠ fast. Unlike the interpreters its counts are bit-exact.
+exactly its fannkuch number, since both are tight integer-array loops).
 
 The standout is **Elixir at 36.47×**, by far its worst showing relative to the others on any axis.
 The BEAM has no mutable array, so an in-place quicksort must run on `:atomics`, where **every element
@@ -169,7 +164,6 @@ Differential vs C = 1.0× across the suite:
 | Ruby | 104.64× | 10.34× | 117.20× | 56.39× | 57.08× | 79.91× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× | 114.00× | 131.93× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× | 181.17× | 189.53× |
-| COBOL | 26.78× | 182.75× | 7908.42× | 7686.05× | 221.82× | 330.02× |
 
 - **Rust** stays inside 1.0–2.7× on all six: the only language that never surprises.
 - **Elixir** now shows its full split personality: best-in-class at functional allocation (0.30×),
@@ -178,11 +172,6 @@ Differential vs C = 1.0× across the suite:
 - **The JVM and the interpreters** keep their shapes: managed languages competitive except where a
   general-purpose container (its hash map, its `:atomics`) is in the hot path; interpreters uniformly
   10–200× with their relative best always on whichever axis their native-C internals do the work.
-- **COBOL** is the outlier that breaks the compiled/interpreted dichotomy: native-compiled yet the
-  slowest language in the suite on almost every axis (libcob call per statement), 27–330× on the
-  plain integer/array loops here, and it has *cliffs* where it lacks a native primitive -
-  mandelbrot 7908× (COMP-2 doubles routed through GMP arbitrary-precision DECIMAL, no FPU codegen)
-  and k-nucleotide 7686× (string-keyed hashing). On sort-search it lands at 330×, behind Perl.
 
 Six benchmarks, six orderings. The thesis only hardens with each axis added.
 

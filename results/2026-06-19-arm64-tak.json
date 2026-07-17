@@ -56,44 +56,6 @@
       "determinism": "exact"
     },
     {
-      "language": "cobol",
-      "benchmark": "tak",
-      "version": "3.1",
-      "backend": "qemu-insn",
-      "metric": "instructions",
-      "kind": "native",
-      "n1": 6,
-      "n2": 8,
-      "runs": 5,
-      "i_n1": {
-        "median": 285199240,
-        "min": 285199240,
-        "max": 285199240,
-        "runs": [
-          285199240,
-          285199240,
-          285199240,
-          285199240,
-          285199240
-        ]
-      },
-      "i_n2": {
-        "median": 10969868095,
-        "min": 10969868095,
-        "max": 10969868095,
-        "runs": [
-          10969868095,
-          10969868095,
-          10969868095,
-          10969868095,
-          10969868095
-        ]
-      },
-      "differential": 10684668855,
-      "correct": true,
-      "determinism": "exact"
-    },
-    {
       "language": "csharp",
       "benchmark": "tak",
       "version": "9.0",

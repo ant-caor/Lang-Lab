@@ -105,7 +105,6 @@ backtrace can accidentally produce the right hash, but it is far harder to produ
 | C# | `long[]` × 2 | `int[]` | `int[]` |
 | Elixir | `:atomics` for vit_prev/vit_next/obs/back/path; LCG state + trans/emit threaded functionally |
 | Ruby | `Array` |  |  |
-| COBOL | `PIC S9(18) COMP-5 OCCURS` for scores/trans/emit; `PIC S9(9) COMP-5 OCCURS` for back/path/obs |
 
 ## Sizes
 
@@ -139,7 +138,6 @@ work. C (gcc `-O2`, no GC) is the reference floor; below 1.0x beats C.
 | Elixir | 2.72B | 4.47B | 1.74B | 35.16× | jitter |
 | Ruby | 1.47B | 5.04B | 3.57B | 71.98× | jitter |
 | Python | 1.73B | 6.79B | 5.06B | 102.04× | jitter |
-| COBOL | 2.24B | 8.93B | 6.69B | 134.90×\* | exact (extrap.) |
 | Perl | 2.69B | 10.7B | 8.03B | 161.86× | jitter |
 
 ## Reproduce

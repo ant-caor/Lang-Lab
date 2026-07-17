@@ -10,8 +10,7 @@
 #   scripts/bench-fast.sh                  # all languages x all benchmarks
 #   scripts/bench-fast.sh rust go          # a subset of languages
 #   PAR=8 BENCH=sha256 scripts/bench-fast.sh c   # cap parallelism / one benchmark
-# Honors the adaptive RUNS in measure.sh (set RUNS to pin). Pathological cells can be handed to
-# scripts/extrapolate.sh separately.
+# Honors the adaptive RUNS in measure.sh (set RUNS to pin).
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
@@ -51,37 +50,6 @@ run_cell() {
   fi
   local redir="$RES/${STAMP}__result-$L-$B.json"
   [ "$mode" = "gate" ] && redir="/dev/null"
-  # Extrapolation for pathological cells (count phase only): EXTRAP_CELLS="lang:bench:complexity:p1:p2 ..."
-  # Probe two small sizes and project via g(n). The native gate still ran at the real spec sizes.
-  # ONLY valid for runtimes with negligible startup (COBOL/native): a JIT/GC VM (JVM/CLR/BEAM) has a
-  # large startup baseline that dominates tiny probes, so the projected work collapses to ~0. Use it
-  # for COBOL only.
-  if [ "$mode" = "count" ]; then
-    local ex="" c
-    for c in ${EXTRAP_CELLS:-}; do case "$c" in "$L:$B:"*) ex="$c";; esac; done
-    if [ -n "$ex" ]; then
-      local cx ver probes pa pb pout ia ib
-      local pargs=()
-      cx=$(printf '%s' "$ex"|cut -d: -f3)
-      probes=$(printf '%s' "$ex"|cut -d: -f4-|tr ':' ' ')
-      ver=$(jq -r --arg l "$L" '.[$l]' versions.lock.json)
-      # Measure consecutive probe pairs (measure.sh takes two sizes per run). Pass 3+ probes so
-      # extrapolate.py can run its mid-probe fit check instead of taking the complexity on faith.
-      set -- $probes
-      while [ $# -ge 2 ]; do
-        pa="$1"; pb="$2"
-        pout=$(docker run --rm -e SKIP_GATE=1 -e RUNS=1 -e RUNTIME_KIND="$kind" -e N1="$pa" -e N2="$pb" \
-          ${envf[@]+"${envf[@]}"} "lang-lab-$L" "${override[@]}" 2>>"$LOGD/extrap-$L-$B.err")
-        ia=$(printf '%s' "$pout"|jq -r '.i_n1.median'); ib=$(printf '%s' "$pout"|jq -r '.i_n2.median')
-        [ "${#pargs[@]}" -eq 0 ] && pargs+=("$pa:$ia")
-        pargs+=("$pb:$ib")
-        shift
-      done
-      python3 scripts/extrapolate.py "$L" "$B" "$ver" "$kind" "$cx" "$n1" "$n2" "${pargs[@]}" \
-        > "$redir" 2>>"$LOGD/extrap-$L-$B.err"
-      return
-    fi
-  fi
   local gateflag="-e SKIP_GATE=1"
   [ "$mode" = "gate" ] && gateflag="-e GATE_ONLY=1"
   docker run --rm $gateflag \
@@ -105,14 +73,10 @@ done
 echo ">> gate (serial)" >&2
 gate_fail=0
 for L in "${langs[@]}"; do for B in "${benches[@]}"; do
-  # spec-declared N/A cells (e.g. message-ring for perl/cobol: no cooperative primitive)
+  # spec-declared N/A cells (e.g. message-ring for perl: no cooperative primitive)
   if jq -e --arg l "$L" '.na // [] | index($l)' "benchmarks/$B/spec.json" >/dev/null; then
     echo "   skip $L/$B (N/A per spec)" >&2; continue
   fi
-  # extrap cells are projected from small probes; their full-size NATIVE gate is itself slow, and
-  # their checksum was verified when the spec was bootstrapped, so skip the gate for them.
-  skip=0; for ec in ${EXTRAP_CELLS:-}; do case "$ec" in "$L:$B:"*) skip=1;; esac; done
-  [ "$skip" = 1 ] && { echo "   skip gate $L/$B (extrapolated)" >&2; continue; }
   if run_cell gate "$L" "$B"; then :; else
     echo "!! GATE FAIL $L/$B :: $(tail -1 "$LOGD/gate-$L-$B.err" 2>/dev/null)" >&2; gate_fail=1
   fi

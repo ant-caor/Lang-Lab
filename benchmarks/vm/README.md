@@ -70,7 +70,6 @@ print "vm(N)"                                          # line 2
 | C# | `long[]` |
 | Elixir | a list/tuple stack threaded through recursion (state is tiny) |
 | Ruby | `Array` (`[]`) stack + locals; values masked `& 0xFFFFFFFF` |
-| COBOL | `PIC S9(18) COMP-5 OCCURS` tables (`STK`/`LOC`); `EVALUATE` dispatch, no native bit-mask (`FUNCTION MOD` for the 2³² wrap) |
 
 ## Sizes
 
@@ -81,7 +80,7 @@ print "vm(N)"                                          # line 2
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(800000) − I(200000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-vm.json`](../../results/2026-06-17-arm64-vm.json).
-All 13 ran the same program and printed the identical `350689618` / `234207083` results.
+All 12 ran the same program and printed the identical `350689618` / `234207083` results.
 
 ![relative real work](../../docs/charts/vm-diff-ratio.svg)
 
@@ -96,7 +95,6 @@ All 13 ran the same program and printed the identical `350689618` / `234207083` 
 | Scala | 810.0M | 1.16B | 345.5M | 2.10× | jitter |
 | Elixir | 2.28B | 3.04B | 754.4M | 4.59× | jitter |
 | PHP | 2.16B | 8.53B | 6.37B | 38.76× | exact |
-| COBOL | 2.88B | 11.5B | 8.66B | 52.65× | exact |
 | Python | 4.35B | 17.3B | 12.9B | 78.57× | jitter |
 | Ruby | 4.92B | 18.8B | 13.9B | 84.66× | jitter |
 | Perl | 7.44B | 29.7B | 22.3B | 135.53× | jitter |
@@ -111,12 +109,6 @@ and pattern-matching is the BEAM's native idiom, so its "interpreter loop" is fa
 imperative array work (it is 36–56× on sort-search and dijkstra). The interpreters (PHP 39×, Python
 79×, Perl 136×) are *interpreting a bytecode in a language that is itself interpreted*, yet they land
 below their compute-axis multipliers, because each opcode is only a handful of their own bytecodes.
-**COBOL lands at 52.65×, slotting between PHP and Python** - a native-compiled language sitting
-deep among the interpreters. GnuCOBOL emits a heavy libcob call per statement, so its hand-written
-dispatch loop pays interpreter-grade overhead on every fetch/branch/push despite compiling to ELF;
-"compiled" buys it nothing here. It is one of vm's best COBOL showings, though: on the integer-loop
-axes COBOL stays in the 27–730× band, far below its sha256 (222956×), mandelbrot (7908×) and
-k-nucleotide (7686×) cliffs, where it lacks a native primitive entirely.
 
 ## Reproduce
 

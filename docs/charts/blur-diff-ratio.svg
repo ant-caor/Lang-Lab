@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="622" viewBox="0 0 760 622" font-family="ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial">
-<rect width="760" height="622" rx="10" fill="#0d1117"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="582" viewBox="0 0 760 582" font-family="ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial">
+<rect width="760" height="582" rx="10" fill="#0d1117"/>
 <text x="22" y="34" font-size="19" font-weight="700" fill="#e6edf3">blur:relative real work (I(256)−I(128), C = 1.0×)</text>
 <text x="22" y="56" font-size="13" fill="#9aa7b4">differential cancels startup + JIT · qemu+insn · arm64 · the fair metric · lower is better</text>
 <text x="120" y="97" text-anchor="end" font-size="14" fill="#9aa7b4">Rust</text>
@@ -35,10 +35,7 @@
 <text x="120" y="497" text-anchor="end" font-size="14" fill="#9aa7b4">Python</text>
 <rect x="132" y="481" width="243.3" height="24" rx="5" fill="#f0883e"/>
 <text x="384.3" y="498" font-size="13" fill="#e6edf3">120.91×</text>
-<text x="120" y="537" text-anchor="end" font-size="14" fill="#9aa7b4">COBOL</text>
-<rect x="132" y="521" width="307.3" height="24" rx="5" fill="#3fb950"/>
-<text x="448.3" y="538" font-size="13" fill="#e6edf3">152.72×</text>
-<text x="120" y="577" text-anchor="end" font-size="14" fill="#9aa7b4">Perl</text>
-<rect x="132" y="561" width="532.0" height="24" rx="5" fill="#f0883e"/>
-<text x="673.0" y="578" font-size="13" fill="#e6edf3">264.40×</text>
+<text x="120" y="537" text-anchor="end" font-size="14" fill="#9aa7b4">Perl</text>
+<rect x="132" y="521" width="532.0" height="24" rx="5" fill="#f0883e"/>
+<text x="673.0" y="538" font-size="13" fill="#e6edf3">264.40×</text>
 </svg>

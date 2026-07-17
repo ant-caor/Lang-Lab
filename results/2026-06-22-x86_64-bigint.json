@@ -50,38 +50,6 @@
       "determinism": "exact"
     },
     {
-      "language": "cobol",
-      "benchmark": "bigint",
-      "version": "3.1",
-      "backend": "qemu-insn",
-      "metric": "instructions",
-      "kind": "native",
-      "n1": 1500,
-      "n2": 6000,
-      "runs": 2,
-      "i_n1": {
-        "median": 1290624590,
-        "min": 1290624590,
-        "max": 1290624590,
-        "runs": [
-          1290624590,
-          1290624590
-        ]
-      },
-      "i_n2": {
-        "median": 25755202014,
-        "min": 25755202014,
-        "max": 25755202014,
-        "runs": [
-          25755202014,
-          25755202014
-        ]
-      },
-      "differential": 24464577424,
-      "correct": true,
-      "determinism": "exact"
-    },
-    {
       "language": "csharp",
       "benchmark": "bigint",
       "version": "9.0",

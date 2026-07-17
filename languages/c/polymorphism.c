@@ -7,7 +7,7 @@
 // N*M real dispatches happen. The only thing this measures is the cost of that runtime dispatch.
 //
 // C has no OOP, so its idiomatic equivalent of a vtable is a FUNCTION POINTER stored per object
-// (an indirect call resolved by the object's runtime data) - the documented C/COBOL asymmetry,
+// (an indirect call resolved by the object's runtime data),
 // the fair analogue of a virtual/interface/duck-typed method call. NOT a source-level type switch.
 // All integer; checksum = the final accumulator. K=6 (> a typical polymorphic-inline-cache).
 #include <stdio.h>

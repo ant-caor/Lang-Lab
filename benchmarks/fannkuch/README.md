@@ -18,7 +18,7 @@ element, and report `Pfannkuchen(n)` (the maximum number of reversals) and a par
 | 7 | `228` | `16` |
 | 9 | `8629` | `30` |
 
-**Correctness: 13/13 ✅.** The 12 language implementations + C (baseline) reproduce the checksums.
+**Correctness: 12/12 ✅.** The 11 language implementations + C (baseline) reproduce the checksums.
 
 ---
 
@@ -44,7 +44,7 @@ qemu 10 from source), it turned out to be a **harness bug, not emulation**:
 > (`python …`, `java …`) → qemu couldn't find them and failed silently. **Fix:** resolve
 > `argv[0]` to an absolute path before handing it to qemu (`scripts/measure.sh`).
 
-With that, **qemu 7.2 emulates all 13 fine.** Lesson: *"produces no output" ≠ "can't emulate"*.
+With that, **qemu 7.2 emulates all 12 fine.** Lesson: *"produces no output" ≠ "can't emulate"*.
 Verify the cause before concluding.
 
 Four real infrastructure problems were solved along the way, documented in
@@ -64,7 +64,7 @@ set) at build time and run `beam.smp` directly under qemu as a single instrument
 
 ## Results: uniform qemu+insn pass
 
-Single backend (`qemu-insn`, qemu 7.2), same ISA (arm64 local), **all 13 directly comparable**.
+Single backend (`qemu-insn`, qemu 7.2), same ISA (arm64 local), **all 12 directly comparable**.
 Raw data in [`results/2026-06-16-arm64-fannkuch.json`](../../results/2026-06-16-arm64-fannkuch.json).
 
 ### The fair metric: real work `I(9) − I(7)`, normalized to C = 1.0×
@@ -84,7 +84,6 @@ isolating the algorithm's real work. C (gcc `-O2`, no GC) is the reference floor
 | Scala | 683.2M | 909.7M | 226.5M | 2.73× | jitter |
 | Kotlin | 168.7M | 445.0M | 276.3M | 3.34× | jitter |
 | Swift | 15.1M | 298.7M | 283.7M | 3.42× | exact |
-| COBOL | 31.4M | 2.25B | 2.22B | 26.78× | exact |
 | Elixir | 2.04B | 4.50B | 2.46B | 29.71× | jitter |
 | PHP | 62.0M | 2.85B | 2.79B | 33.62× | exact |
 | Python | 100.8M | 5.86B | 5.76B | 69.57× | jitter |
@@ -92,9 +91,8 @@ isolating the algorithm's real work. C (gcc `-O2`, no GC) is the reference floor
 | Perl | 165.5M | 15.9B | 15.7B | 189.62× | jitter |
 
 > Regenerated from `results/2026-06-16-arm64-fannkuch.json`. Ordering: native/AOT (C, Rust, Go, C# ≈
-> 1–1.6×) < JVM (Scala/Kotlin ≈ 2.5–2.8×) < Swift (3.42×, bounds/overflow checks) < **COBOL** (26.78×, native-compiled yet
-> lands in the managed tier - even *beating* Elixir's 29.71×) < managed/interpreted (Elixir, PHP,
-> Python, Perl, tens to hundreds ×).
+> 1–1.6×) < JVM (Scala/Kotlin ≈ 2.5–2.8×) < Swift (3.42×, bounds/overflow checks) <
+> managed/interpreted (Elixir, PHP, Python, Perl, tens to hundreds ×).
 
 **Readings:**
 - **C and Rust are the efficiency floor** (Rust only a few % above C: bounds checks).
@@ -102,9 +100,6 @@ isolating the algorithm's real work. C (gcc `-O2`, no GC) is the reference floor
 - **Swift costs more than its native peers** (3.42×): the flip loop's per-swap copy-on-write and
   bounds checks are gone via `withUnsafeMutableBufferPointer` (down from 4.75×); the residual is the
   permutation-generation loop's own bounds and overflow checks. A genuine, idiomatic Swift cost.
-- **COBOL is "compiled ≠ fast"**: GnuCOBOL transpiles to native ELF (and is bit-**exact**, unlike
-  the interpreters) yet emits heavy `libcob` calls per statement, so on this plain integer loop it
-  costs 26.78× - slower than every JVM/native peer and even past Elixir's BEAM.
 - **Interpreters** confirm their cost (Perl the priciest).
 - **Determinism:** pure natives (C, Rust, Swift) and the PHP interpreter are bit-exact across
   runs. Concurrent/JIT runtimes (Go, C#, Kotlin, Scala, Python, Elixir) jitter even with the

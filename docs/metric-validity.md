@@ -66,7 +66,6 @@ median shift is 1.005 (no systematic bias). The tail is the story, and it is **t
 | Ruby | 75.3 | 76.5\* | mostly |
 | Python | 103.7 | 113.5 | yes |
 | Perl | 145.5 | 130.0 | mostly |
-| COBOL | 460.5 | 436.1 | yes |
 
 \* The arm64 geomeans for Swift, Ruby and C# are recomputed from the current envelopes: Swift and
 Ruby reflect the post-fix tree (Swift tak/fannkuch, commit `2132918`; Ruby k-nucleotide, commit

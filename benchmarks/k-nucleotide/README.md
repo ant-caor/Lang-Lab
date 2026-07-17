@@ -90,7 +90,6 @@ The benchmark measures the **hash map**, so the rules protect that:
 | C# | `Dictionary<string, long>` via `GetAlternateLookup<ReadOnlySpan<char>>` (.NET 9) | span probe; a `string` is allocated only on first sight of each distinct k-mer |
 | Elixir | immutable `Map` (`Map.update`) | k-mer binary |
 | Ruby | built-in `Hash` (`Hash.new(0)`) | k-mer `String` |
-| COBOL | hand-rolled open-addressing (FNV-1a + linear probing, parallel `OCCURS` arrays) | 8-byte k-mer (`PIC X(8)`) |
 
 ## Sizes
 
@@ -102,7 +101,7 @@ cancelling startup + JIT.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(200000) − I(100000)` normalized
 to **C = 1.0×**. Source: [`results/2026-06-17-arm64-k-nucleotide.json`](../../results/2026-06-17-arm64-k-nucleotide.json).
-All 13 printed the identical `267275319` / `552155843` checksums: the order-independent sum holds
+All 12 printed the identical `267275319` / `552155843` checksums: the order-independent sum holds
 across 12 completely different hash-map implementations.
 
 ![relative real work](../../docs/charts/k-nucleotide-diff-ratio.svg)
@@ -121,7 +120,6 @@ across 12 completely different hash-map implementations.
 | Elixir | 2.41B | 2.74B | 326.4M | 39.64× | jitter |
 | Python | 709.7M | 1.12B | 410.1M | 49.80× | jitter |
 | Ruby | 1.45B | 1.91B | 464.4M | 56.39× | jitter |
-| COBOL | 63.8B | 127.1B | 63.3B | 7686.05× | exact |
 
 ### The headline: the std hash map is expensive; a hand-rolled C table is not
 
@@ -145,11 +143,9 @@ offers one.
 Below the managed cluster, **the interpreters land between 16× and 56×** - PHP 16×, Perl 36×,
 Elixir 40×, Python 50× and Ruby 56× - close enough that the std hash map is clearly not where most
 of them bleed (their raw-compute axes are far worse); the detail is in the section below.
-**The one genuine outlier is COBOL: 7686.05×** - native-compiled, but GnuCOBOL has no
-string-hashing primitive, so the k-mer map is emulated with heavy per-statement libcob calls. It is
-one of COBOL's three cliffs (the others being mandelbrot 7908× and sha256 222956×, the latter the
-single most extreme cell in the entire suite), a striking case of *compiled ≠ fast* - and unlike the
-interpreters, COBOL is still bit-**exact**.
+There is no genuine outlier on this axis: the whole field fits between C's 1.00× and Ruby's
+56.39×, so even the slowest cell stays within an order of magnitude of the managed cluster.
+Compare that with mandelbrot, where the same interpreters reach 217×.
 
 **A fairness nuance worth stating:** C and Rust key on an inline / fixed-size 8-byte k-mer
 (`[u8; 8]`), so they skip the per-k-mer **heap string allocation** that Go, Swift, Kotlin,
@@ -188,7 +184,6 @@ Differential vs C = 1.0× across the whole suite:
 | Ruby | 104.64× | 10.34× | 117.20× | 56.39× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× |
-| COBOL | 26.78× | 182.75× | 7908.42× | 7686.05× |
 
 What the fourth column adds:
 - **Rust finally breaks from C.** Flat at ~1.15× on the first three axes, it jumps to 2.73× here,

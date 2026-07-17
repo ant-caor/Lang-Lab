@@ -99,7 +99,6 @@ The comparison is `<=` (pinned). The tree layout is the flat complete-binary-tre
 | C# | `int[]` | `int[]` | `long` |
 | Elixir | `:atomics` (feat/thr/leafval/sample) | `:atomics` | bignum (mod P) |
 | Ruby | `Array` | `Array` | `Integer` |
-| COBOL | `PIC S9(9) COMP-5 OCCURS` (feat/thr/leafval/sample) | — | `PIC S9(18) COMP-5` (h/total) |
 
 ## Sizes
 
@@ -133,7 +132,6 @@ work. C (gcc `-O2`, no GC) is the reference floor; below 1.0x beats C.
 | Ruby | 10.6B | 41.3B | 30.7B | 90.95× | jitter |
 | Python | 12.0B | 46.8B | 34.8B | 103.27× | jitter |
 | Perl | 13.8B | 54.5B | 40.6B | 120.60× | jitter |
-| COBOL | 17.9B | 69.0B | 51.1B | 151.47×\* | exact (extrap.) |
 
 ## Reproduce
 

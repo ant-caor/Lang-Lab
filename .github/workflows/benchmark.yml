@@ -17,16 +17,7 @@ on:
 permissions:
   contents: write
 
-# COBOL pathological cells: their full-size qemu instruction count is impractical (sha256 alone is
-# ~trillions of guest insns and would time out the job), so project it from two cheap small-size
-# probes via scripts/extrapolate.py, exactly like scripts/bench-fast.sh does locally. Format
-# "lang:bench:complexity:p1:p2"; COBOL only (negligible startup, so tiny probes are not swamped by a
-# runtime baseline the way a JIT or GC VM would be). Probe sizes and complexity match the merged
-# results envelopes.
 env:
-  # Three probes per cell: the fit uses the lowest+highest, and extrapolate.py checks the declared
-  # complexity against the middle probe (mid-probe residual) instead of taking it on faith.
-  EXTRAP_CELLS: "cobol:sha256:linear:50:100:200 cobol:gemm:cubic:64:96:128 cobol:viterbi:linear:5000:10000:20000 cobol:gbdt:linear:1250:2500:5000"
   # Cells that genuinely can't be measured on the free x86_64 runner (e.g. the CLR crashing/OOMing
   # under qemu-user for csharp/k-nucleotide at n2 — measures fine on arm64). A failure here is
   # RECORDED as an unmeasured cell ({"measured": false}) and the run stays green; a failure for any
@@ -60,7 +51,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [c, python, go, rust, swift, perl, php, kotlin, csharp, elixir, scala, ruby, cobol]
+        language: [c, python, go, rust, swift, perl, php, kotlin, csharp, elixir, scala, ruby]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -85,8 +76,7 @@ jobs:
 
       - name: Measure every benchmark (qemu+insn, adaptive RUNS)
         # measure.sh now probes 2 reps and escalates to 5 only on jitter (bit-exact langs are
-        # proven deterministic in 2). Pathological cells (e.g. cobol/sha256) should be projected
-        # via scripts/extrapolate.sh, mirroring scripts/bench-fast.sh, rather than run full-size.
+        # proven deterministic in 2).
         # N1/N2 and the checksum gates are spec-driven per benchmark; measure.sh
         # appends the size itself. The `run` template's {b} is the benchmark name;
         # elixir wraps it so beam.smp runs directly (launchWrap).
@@ -101,7 +91,7 @@ jobs:
             jq -r --arg l "$L" '.[$l].runtimeEnv // {} | to_entries[] | "\(.key)\t\(.value)"' languages.json)
           for spec in benchmarks/*/spec.json; do
             b=$(jq -r .benchmark "$spec")
-            # spec-declared N/A cells (e.g. message-ring for perl/cobol) are skipped entirely
+            # spec-declared N/A cells (e.g. message-ring for perl) are skipped entirely
             if jq -e --arg l "$L" '.na // [] | index($l)' "$spec" >/dev/null; then
               echo "skip $L/$b (N/A per spec: $(jq -r '.naReason // ""' "$spec"))"
               continue
@@ -115,54 +105,30 @@ jobs:
             else
               override=(/usr/local/bin/measure.sh "$L" "$b" -- $runcmd)
             fi
-            # Pathological cells (COBOL only): project the qemu count from two cheap small probes
-            # instead of counting full-size, which would be trillions of guest insns and time out.
-            # Mirrors scripts/bench-fast.sh; the checksum was verified when the spec was bootstrapped,
-            # so the gate is skipped for these cells.
-            ex=""
-            for c in ${EXTRAP_CELLS:-}; do case "$c" in "$L:$b:"*) ex="$c";; esac; done
             echo "::group::measure $L / $b"
-            if [ -n "$ex" ]; then
-              cx=$(printf '%s' "$ex" | cut -d: -f3)
-              probes=$(printf '%s' "$ex" | cut -d: -f4- | tr ':' ' ')
-              # measure consecutive probe pairs (measure.sh takes two sizes per run); 3+ probes
-              # let extrapolate.py run its mid-probe fit check on the declared complexity
-              pargs=(); set -- $probes
-              while [ $# -ge 2 ]; do
-                pout=$(docker run --rm -e SKIP_GATE=1 -e RUNS=1 -e RUNTIME_KIND="$KIND" -e N1="$1" -e N2="$2" \
-                  ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}")
-                ia=$(printf '%s' "$pout" | jq -r '.i_n1.median')
-                ib=$(printf '%s' "$pout" | jq -r '.i_n2.median')
-                [ "${#pargs[@]}" -eq 0 ] && pargs+=("$1:$ia")
-                pargs+=("$2:$ib")
-                shift
-              done
-              python3 scripts/extrapolate.py "$L" "$b" "$VER" "$KIND" "$cx" "$n1" "$n2" "${pargs[@]}" > "result-$L-$b.json"
-            else
-              # A cell can fail to emit a count (e.g. the CLR crashing/OOMing under qemu-x86_64).
-              # If it's allow-listed in ALLOW_NOMEASURE, record it as an unmeasured cell and carry
-              # on (run stays green); otherwise fail the job so real regressions still surface.
-              rc=0
-              docker run --rm \
-                -e RUNTIME_KIND="$KIND" -e N1="$n1" -e N2="$n2" \
-                -e CHECK1_SUM="$c1" -e CHECK1_FLIPS="$s1" -e CHECK2_SUM="$c2" -e CHECK2_FLIPS="$s2" \
-                ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}" > "result-$L-$b.json" 2> "err-$L-$b.txt" || rc=$?
-              if [ "$rc" -ne 0 ]; then
-                allowed=0
-                for a in ${ALLOW_NOMEASURE:-}; do [ "$a" = "$L:$b" ] && allowed=1; done
-                reason=$(tail -n 3 "err-$L-$b.txt" | tr '\n' ' ')
-                if [ "$allowed" = 1 ]; then
-                  echo "::warning::$L/$b unmeasurable on x86_64 (exit $rc) — recorded as skipped: $reason"
-                  jq -n --arg l "$L" --arg b "$b" --arg ver "$VER" --arg k "$KIND" \
-                     --arg note "not measured on x86_64 (exit $rc): $reason" \
-                     '{language:$l, benchmark:$b, version:$ver, backend:"qemu-insn",
-                       metric:"instructions", kind:$k, measured:false, note:$note}' \
-                     > "result-$L-$b.json"
-                else
-                  echo "::error::$L/$b failed to measure (exit $rc); not in ALLOW_NOMEASURE"
-                  cat "err-$L-$b.txt" >&2
-                  exit "$rc"
-                fi
+            # A cell can fail to emit a count (e.g. the CLR crashing/OOMing under qemu-x86_64).
+            # If it's allow-listed in ALLOW_NOMEASURE, record it as an unmeasured cell and carry
+            # on (run stays green); otherwise fail the job so real regressions still surface.
+            rc=0
+            docker run --rm \
+              -e RUNTIME_KIND="$KIND" -e N1="$n1" -e N2="$n2" \
+              -e CHECK1_SUM="$c1" -e CHECK1_FLIPS="$s1" -e CHECK2_SUM="$c2" -e CHECK2_FLIPS="$s2" \
+              ${envflags[@]+"${envflags[@]}"} "lang-lab-$L" "${override[@]}" > "result-$L-$b.json" 2> "err-$L-$b.txt" || rc=$?
+            if [ "$rc" -ne 0 ]; then
+              allowed=0
+              for a in ${ALLOW_NOMEASURE:-}; do [ "$a" = "$L:$b" ] && allowed=1; done
+              reason=$(tail -n 3 "err-$L-$b.txt" | tr '\n' ' ')
+              if [ "$allowed" = 1 ]; then
+                echo "::warning::$L/$b unmeasurable on x86_64 (exit $rc) — recorded as skipped: $reason"
+                jq -n --arg l "$L" --arg b "$b" --arg ver "$VER" --arg k "$KIND" \
+                   --arg note "not measured on x86_64 (exit $rc): $reason" \
+                   '{language:$l, benchmark:$b, version:$ver, backend:"qemu-insn",
+                     metric:"instructions", kind:$k, measured:false, note:$note}' \
+                   > "result-$L-$b.json"
+              else
+                echo "::error::$L/$b failed to measure (exit $rc); not in ALLOW_NOMEASURE"
+                cat "err-$L-$b.txt" >&2
+                exit "$rc"
               fi
             fi
             cat "result-$L-$b.json"

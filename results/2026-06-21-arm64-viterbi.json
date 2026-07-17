@@ -50,37 +50,6 @@
       "determinism": "exact"
     },
     {
-      "language": "cobol",
-      "benchmark": "viterbi",
-      "version": "3.1",
-      "backend": "qemu-insn",
-      "metric": "instructions",
-      "kind": "native",
-      "n1": 20000,
-      "n2": 80000,
-      "runs": 2,
-      "i_n1": {
-        "median": 2236367162,
-        "min": 2236367162,
-        "max": 2236367162,
-        "runs": [
-          2236367162
-        ]
-      },
-      "i_n2": {
-        "median": 8930244530,
-        "min": 8930244530,
-        "max": 8930244530,
-        "runs": [
-          8930244530
-        ]
-      },
-      "differential": 6693877368,
-      "correct": true,
-      "determinism": "projected",
-      "note": "extrapolated (linear) from probes [5000, 10000] (identical per-linear work; ratio scale-invariant); a direct n2=80000 run is impractical"
-    },
-    {
       "language": "csharp",
       "benchmark": "viterbi",
       "version": "9.0",

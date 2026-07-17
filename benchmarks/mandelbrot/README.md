@@ -88,7 +88,6 @@ Each language uses its native 64-bit double; documented here to pre-empt the
 | C# | `double` | CLR does not auto-fuse |
 | Elixir | `float` | BEAM `float` is IEEE double; each op separately rounded |
 | Ruby | `Float` | MRI `Float` is C `double`; each op separately rounded |
-| COBOL | `COMP-2` | IEEE double in source, but GnuCOBOL has no native FPU: each op routes through libcob/GMP arbitrary-precision **decimal**, re-deriving the same bits |
 
 ## Sizes
 
@@ -100,7 +99,7 @@ JIT. Tunable up for a stronger signal if the slow interpreters stay tractable un
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(256) − I(128)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-mandelbrot.json`](../../results/2026-06-17-arm64-mandelbrot.json).
-All 13 printed the identical `6518` / `26004` counts; the FMA-proof formulation holds across
+All 12 printed the identical `6518` / `26004` counts; the FMA-proof formulation holds across
 every toolchain.
 
 ![relative real work](../../docs/charts/mandelbrot-diff-ratio.svg)
@@ -119,7 +118,6 @@ every toolchain.
 | Ruby | 825.5M | 2.46B | 1.63B | 117.20× | jitter |
 | Python | 620.0M | 2.36B | 1.74B | 124.76× | jitter |
 | Perl | 1.02B | 4.04B | 3.02B | 216.87× | jitter |
-| COBOL | 36.3B | 146.4B | 110.1B | 7908.42× | exact |
 
 ### The headline: compiled/JIT codegen converges; interpreters detonate
 
@@ -132,18 +130,9 @@ here: no arrays, no ARC, just registers of doubles.
 
 The interpreters tell the opposite story: floating-point is their **worst** axis. Every
 `double` is boxed and every operation is a dynamically-dispatched call: PHP 34×, Python 125×,
-Perl **217×** (its heaviest result of any interpreter). Elixir's 18.76× sits between: the BEAM
-boxes floats on its heap but its JIT (BEAMAsm) recovers a lot.
-
-But the most extreme result is not an interpreter at all: **COBOL - native-compiled to ELF,
-bit-exact - detonates at 7908×**, by far the slowest on this axis and a striking demonstration
-that *compiled ≠ fast*. GnuCOBOL 3.1.2 has **no native-FPU codegen**: every `COMP-2` double
-operation is routed through libcob/GMP arbitrary-precision **decimal** arithmetic (`cob_decimal_mul`
-sits squarely on the hot loop, verified, and is unavoidable without a fairness-violating C `CALL`).
-So where the interpreters at least box a real IEEE-754 double, COBOL re-derives the same bits the
-long way through GMP - a far heavier path. On plain integer loops the same compiler is "only"
-27–730× (it even beats Elixir on fannkuch, 26.78× vs 29.71×); it is precisely the lack of a native
-floating-point primitive that opens this cliff.
+Perl **217×** (its heaviest result of any interpreter, and the slowest cell on this axis).
+Elixir's 18.76× sits between: the BEAM boxes floats on its heap but its JIT (BEAMAsm) recovers
+a lot.
 
 ### Why this benchmark earns its place: the three-axis picture
 
@@ -163,7 +152,6 @@ Differential vs C = 1.0× on all three:
 | Ruby | 104.64× | 10.34× | 117.20× |
 | Python | 69.57× | 11.15× | 124.76× |
 | Perl | 189.62× | 18.98× | 216.87× |
-| COBOL | 26.78× | 182.75× | 7908.42× |
 
 What the third column reveals that the first two could not:
 - **Rust is the only language flat across all three axes** (1.14 / 1.19 / 1.17): the

@@ -6,9 +6,8 @@ try to be a server benchmark. It decomposes "concurrency" into the facets that c
 **objectively and reproducibly** here, and is explicit about the ones that cannot (see
 [What this does not measure](#what-this-does-not-measure)).
 
-Coverage: 12 languages. COBOL has no concurrency primitive and sits the whole study out. Perl has
-no core *cooperative* primitive, so it participates in scalability (Axis 2, via `fork`) but is N/A
-for primitive overhead (Axis 1).
+Coverage: 12 languages. Perl has no core *cooperative* primitive, so it participates in
+scalability (Axis 2, via `fork`) but is N/A for primitive overhead (Axis 1).
 
 ## The three axes
 

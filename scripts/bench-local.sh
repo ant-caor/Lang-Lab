@@ -36,7 +36,7 @@ for lang in "${langs[@]}"; do
   for bench in "${benches[@]}"; do
     spec="benchmarks/$bench/spec.json"
     [ -f "$spec" ] || { echo "!! no spec for benchmark $bench" >&2; continue; }
-    # spec-declared N/A cells (e.g. message-ring for perl/cobol: no cooperative primitive)
+    # spec-declared N/A cells (e.g. message-ring for perl: no cooperative primitive)
     if jq -e --arg l "$lang" '.na // [] | index($l)' "$spec" >/dev/null; then
       echo ">> skip $lang / $bench (N/A per spec)" >&2; continue
     fi

@@ -24,9 +24,6 @@ _Real work each language does vs the **C baseline** (= 1.00×), as the different
 | 10 | Ruby | **75.3×** | binary-trees 10.3× | sha256 278× |
 | 11 | Python | **104×** | binary-trees 11.2× | sha256 601× |
 | 12 | Perl | **146×** | binary-trees 19.0× | sha256 701× |
-| 13 | COBOL | **461×*** | fannkuch 26.8× | sha256 223k×* |
-
-_* includes axes extrapolated from small probes (negligible-startup runtimes only), not measured full-size. Over directly measured axes alone: COBOL 339×._
 
 </details>
 
@@ -102,7 +99,7 @@ methodology meets the hard runtimes early.
 
 | Archetype | Languages |
 |---|---|
-| Native (no GC) | **Rust**, **Swift**, **C** (1.0× baseline), **COBOL** (GnuCOBOL→native) |
+| Native (no GC) | **Rust**, **Swift**, **C** (1.0× baseline) |
 | Compiled + concurrent GC | **Go** |
 | Interpreter | **Python**, **Perl**, **PHP**, **Ruby** |
 | VM with JIT + GC | **Kotlin** (JVM), **Scala** (JVM), **C#** (CLR) |
@@ -190,7 +187,7 @@ micro-benchmark isn't enough.
 | **gemm** | AI/ML — quantized int8 matrix multiply: the dominant tensor inference kernel, cache-pressure inner loop | [benchmarks/gemm](benchmarks/gemm/README.md) |
 | **viterbi** | AI/ML — HMM/CRF sequence decoding: integer max-plus DP trellis + back-pointer trace | [benchmarks/viterbi](benchmarks/viterbi/README.md) |
 | **gbdt** | AI/ML — gradient-boosted tree ensemble inference: data-dependent branchy tree traversal | [benchmarks/gbdt](benchmarks/gbdt/README.md) |
-| **message-ring** | Concurrency overhead: per-handoff cost of a language's cooperative message-passing primitive (a 32-worker ring); N/A for Perl and COBOL | [benchmarks/message-ring](benchmarks/message-ring/README.md) |
+| **message-ring** | Concurrency overhead: per-handoff cost of a language's cooperative message-passing primitive (a 32-worker ring); N/A for Perl | [benchmarks/message-ring](benchmarks/message-ring/README.md) |
 
 Every benchmark has a **reference checksum** that all implementations must reproduce bit for
 bit: proof that they all do exactly the same work.
@@ -217,9 +214,8 @@ machine-speed noise, so it stays stable on shared CI runners (validated to ±0.0
 rulebook (decomposition, partition, no-shared-write rules, per-language primitives) lives in
 [docs/scaling-track.md](docs/scaling-track.md).
 
-Five embarrassingly-parallel axes are measured across every language that has a concurrency
-primitive (all but COBOL), each using its idiomatic real-parallel primitive (pthreads,
-goroutines, fork/processes, BEAM Tasks, JVM/CLR thread pools):
+Five embarrassingly-parallel axes are measured across every language, each using its idiomatic
+real-parallel primitive (pthreads, goroutines, fork/processes, BEAM Tasks, JVM/CLR thread pools):
 
 | Benchmark | Speedup charts |
 |---|---|
@@ -271,12 +267,12 @@ docs/metric-validity.md          empirical validity of the instruction metric (c
 
 ## Status
 
-**v0**: 12 languages + a C baseline measured uniformly under qemu+insn across a nineteen-benchmark
+**v0**: 11 languages + a C baseline measured uniformly under qemu+insn across a nineteen-benchmark
 suite (fannkuch, binary-trees, mandelbrot, k-nucleotide, reverse-complement, sort-search, dijkstra,
 blur, k-means, sha256, lz77, vm, bigint, tak, polymorphism, gemm, viterbi, gbdt, message-ring: integer / allocation / floating-point / hash-map / string /
 algorithms / graphs / image / ML / bit-manipulation / compression / interpreter-dispatch /
 multi-precision / call-overhead / dynamic-dispatch / quantized-matmul / sequence-DP / tree-ensemble /
-concurrency-overhead; message-ring is N/A for Perl and COBOL, which have no cooperative primitive,
+concurrency-overhead; message-ring is N/A for Perl, which has no cooperative primitive,
 and is shown in the matrix but excluded from the geomean/leaderboard because instruction counts are
 syscall-blind for context-switch primitives),
 the measurement engine characterized empirically, CI pipelines defined. A complementary wall-clock

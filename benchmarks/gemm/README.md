@@ -5,7 +5,7 @@ kernel in every modern neural-network runtime. A square N×N matmul (O(N³) work
 integer inputs in 0..127, 64-bit accumulators, and a pinned loop order — the same shape
 as INT8 GEMM in `llama.cpp`, TensorRT, and similar engines.
 
-Integer (not float) removes all FMA / summation-order divergence, so all thirteen
+Integer (not float) removes all FMA / summation-order divergence, so all twelve
 implementations land on the bit-identical result.
 
 ## The algorithm
@@ -77,7 +77,6 @@ Secondary checksum = `C[N*N-1] % P` (the bottom-right cell).
 | C#       | `long[]`     | `long[]`     |
 | Elixir   | `:atomics`   | `:atomics`   |
 | Ruby     | `Array`      | `Array`      |
-| COBOL    | `PIC S9(9) COMP-5 OCCURS` (A, B) / `PIC S9(18) COMP-5 OCCURS` (C) |
 
 ## Sizes
 
@@ -112,7 +111,6 @@ work. C (gcc `-O2`, no GC) is the reference floor; below 1.0x beats C.
 | Ruby | 1.75B | 11.8B | 10.1B | 96.60× | jitter |
 | Perl | 2.09B | 16.2B | 14.1B | 135.04× | jitter |
 | Python | 2.67B | 20.6B | 18.0B | 171.95× | jitter |
-| COBOL | 10.6B | 84.8B | 74.2B | 710.47×\* | exact (extrap.) |
 
 ## Reproduce
 

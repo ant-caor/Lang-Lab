@@ -75,7 +75,6 @@ included) a full 3×3 window, so there is no special-cased border.
 | C# | two `int[]` |
 | Elixir | two `:atomics` (flat N·N 64-bit arrays; swap the refs) |
 | Ruby | two `Array` (flat N·N; swap the refs via parallel assignment) |
-| COBOL | two `PIC S9(9) COMP-5 OCCURS N·N` tables (32-bit int limbs; swap via a parity flag) |
 
 ## Sizes
 
@@ -86,7 +85,7 @@ included) a full 3×3 window, so there is no special-cased border.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(256) − I(128)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-blur.json`](../../results/2026-06-17-arm64-blur.json).
-All 13 printed the identical `722869223` / `229750350` hashes.
+All 12 printed the identical `722869223` / `229750350` hashes.
 
 ![relative real work](../../docs/charts/blur-diff-ratio.svg)
 
@@ -103,7 +102,6 @@ All 13 printed the identical `722869223` / `229750350` hashes.
 | PHP | 557.2M | 2.12B | 1.57B | 43.03× | exact |
 | Ruby | 1.68B | 5.88B | 4.20B | 115.20× | jitter |
 | Python | 1.51B | 5.91B | 4.40B | 120.91× | jitter |
-| COBOL | 1.86B | 7.42B | 5.56B | 152.72× | exact |
 | Perl | 3.23B | 12.9B | 9.63B | 264.40× | jitter |
 
 ### The headline: the one axis where C is beaten
@@ -139,9 +137,8 @@ Differential vs C = 1.0× across all eight benchmarks:
 | Ruby | 104.64× | 10.34× | 117.20× | 56.39× | 57.08× | 79.91× | 77.28× | 115.20× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× | 114.00× | 131.93× | 92.92× | 120.91× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× | 181.17× | 189.53× | 155.46× | 264.40× |
-| COBOL | 26.78× | 182.75× | 7908.42× | 7686.05× | 221.82× | 330.02× | 391.75× | 152.72× |
 
-Eight benchmarks, eight orderings of the same thirteen languages: the case the suite was built to make:
+Eight benchmarks, eight orderings of the same twelve languages: the case the suite was built to make:
 
 - **C is the baseline, not the ceiling.** It wins six of eight axes, ties one (k-nucleotide it leads,
   blur it loses), but on a vectorizable stencil, LLVM-backed Rust and Swift beat it outright.
@@ -153,15 +150,6 @@ Eight benchmarks, eight orderings of the same thirteen languages: the case the s
   functional allocation, hopeless at in-place array and graph work.
 - **The interpreters** sit a steady 1–2 orders of magnitude back, each least-bad wherever its
   native-C internals carry the load.
-- **COBOL** is the suite's "compiled ≠ fast" exhibit: GnuCOBOL transpiles to a native ELF and is
-  bit-exact, yet emits heavy `libcob` calls per statement, leaving it the **slowest language on
-  almost every axis**. On this stencil it lands at 152.72×, between Python and Perl - slower than
-  every interpreter except Perl, despite never touching a bytecode loop. Its true cliffs are
-  elsewhere: where it lacks a native primitive it falls off a shelf no other language reaches -
-  k-nucleotide 7686× (string-keyed hashing) and mandelbrot 7908× (COMP-2 doubles routed through
-  GMP arbitrary-precision DECIMAL, no FPU codegen), with sha256 hitting **222956×** off-table, the
-  single most extreme cell in the entire suite. On a plain integer stencil, none of that bites:
-  blur is one of its tamer results.
 
 **There is no scalar "speed of a language," only a speed at a kind of work.** Eight axes prove it.
 

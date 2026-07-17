@@ -45,13 +45,11 @@ compiler can fold away:
   No memoization of `apply` results.
 - The **megamorphic order is preserved** (objects stay in LCG generation order; they are NOT
   sorted by type, which would let a JIT see one type per run and devirtualize).
-- **Documented asymmetry (the fair non-OOP equivalents).** **C** has no objects, so each object
+- **Documented asymmetry (the fair non-OOP equivalent).** **C** has no objects, so each object
   stores a **function pointer** (its vtable equivalent) and the call is `obj->apply(obj, acc)` --
-  an indirect call resolved by the object's runtime data. **COBOL** uses a dynamic
-  `CALL identifier` whose subprogram name is held per object -- runtime-resolved subprogram
-  dispatch. Both are genuine runtime-data-driven indirect calls (the faithful analogue of a
-  vtable), NOT a branch. This is the same kind of explicitly-documented, allowed asymmetry as
-  k-nucleotide's inline-key C/COBOL FNV table.
+  a genuine runtime-data-driven indirect call (the faithful analogue of a vtable), NOT a branch.
+  This is the same kind of explicitly-documented, allowed asymmetry as k-nucleotide's inline-key
+  C FNV table.
 - Same N, K, LCG, per-type formulas and fold order across all languages; all integer, mod 1e9+7.
 
 ## Sizes
@@ -71,7 +69,6 @@ warm-up.
 | Python / Ruby / PHP / Perl | duck-typed method call on six classes |
 | Kotlin / Scala / C# | abstract/virtual method, array of the base type |
 | Elixir | a protocol (or behaviour) dispatched per struct |
-| COBOL | dynamic `CALL` of a per-object subprogram name |
 
 ## Results
 
@@ -100,7 +97,6 @@ work. C (gcc `-O2`, no GC) is the reference floor; below 1.0x beats C.
 | Perl | 1.30B | 4.76B | 3.46B | 97.53× | jitter |
 | Python | 1.48B | 5.16B | 3.68B | 103.71× | jitter |
 | Elixir | 4.43B | 9.26B | 4.83B | 136.15× | jitter |
-| COBOL | 3.87B | 14.4B | 10.5B | 295.41× | exact |
 
 ## Reproduce
 

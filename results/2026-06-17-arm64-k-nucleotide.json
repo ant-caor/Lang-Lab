@@ -472,38 +472,6 @@
       "differential": 464371255,
       "correct": true,
       "determinism": "jitter"
-    },
-    {
-      "language": "cobol",
-      "benchmark": "k-nucleotide",
-      "version": "3.1",
-      "backend": "qemu-insn",
-      "metric": "instructions",
-      "kind": "native",
-      "n1": 100000,
-      "n2": 200000,
-      "runs": 2,
-      "i_n1": {
-        "median": 63760697017,
-        "min": 63760697017,
-        "max": 63760697017,
-        "runs": [
-          63760697017,
-          63760697017
-        ]
-      },
-      "i_n2": {
-        "median": 127050213878,
-        "min": 127050213878,
-        "max": 127050213878,
-        "runs": [
-          127050213878,
-          127050213878
-        ]
-      },
-      "differential": 63289516861,
-      "correct": true,
-      "determinism": "exact"
     }
   ]
 }

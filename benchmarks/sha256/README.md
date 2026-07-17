@@ -69,7 +69,6 @@ print "sha256(N)"                               # line 2
 | PHP | `int`, masked `& 0xFFFFFFFF` |
 | Elixir | `int`, `Bitwise.band(_, 0xFFFFFFFF)`, `bsr`/`bsl` |
 | Ruby | `Integer`, masked `& 0xFFFFFFFF`, logical `>>` (non-negative shift) |
-| COBOL | `PIC S9(18) COMP-5`, masked `MOD 4294967296`, hand-emulated XOR/AND/NOT/rotate/shift |
 
 ## Sizes
 
@@ -80,7 +79,7 @@ the differential `I(10000) − I(2500)` is dominated by the marginal compression
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(10000) − I(2500)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-sha256.json`](../../results/2026-06-17-arm64-sha256.json).
-All 13 printed the identical `720457911` / `506466333` hashes.
+All 12 printed the identical `720457911` / `506466333` hashes.
 
 ![relative real work](../../docs/charts/sha256-diff-ratio.svg)
 
@@ -98,29 +97,19 @@ All 13 printed the identical `720457911` / `506466333` hashes.
 | Ruby | 2.59B | 9.53B | 6.94B | 278.14× | jitter |
 | Python | 5.04B | 20.0B | 15.0B | 600.64× | jitter |
 | Perl | 5.85B | 23.3B | 17.5B | 701.29× | jitter |
-| COBOL | 1.85T | 7.42T | 5.56T | 222956.36×\* | exact (extrap.) |
 
 ### The headline: no native 32-bit integer is catastrophic
 
-This is **the single most extreme cell in the entire project**: COBOL's `222956.36×\*` here is
-roughly 28× past the next-most-extreme cell (COBOL's own mandelbrot, 7908×), and the reason is the one rule
-the benchmark turns on: every operation is **unsigned 32-bit**. Rust (0.90×, beating C), C, Go, C# and
-Swift all have a native `u32`/`uint` whose adds wrap and whose shifts are free, so they sit at 0.9–1.8×.
+The whole benchmark turns on one rule: every operation is **unsigned 32-bit**. Rust (0.90×, beating
+C), C, Go, C# and Swift all have a native `u32`/`uint` whose adds wrap and whose shifts are free, so
+they sit at 0.9–1.8×.
 The languages with **no native 32-bit type pay for it on every single operation**: Python (`600×`) and
 Perl (`701×`) (their worst results anywhere by a wide margin) must do a full arbitrary-precision
 `& 0xFFFFFFFF` after *every* add, XOR, rotate and shift, and SHA-256 is nothing but those. Python's
 arbitrary-precision integers, a strength on a bignum workload, are a **catastrophe** on fixed-width
 bit-twiddling; PHP (98×) fares better only because its int is a fixed 64-bit. The JVM (Kotlin/Scala
 ~5.5×) is mid-pack: `Int` is exactly 32 bits and wraps for free, but it pays the usual JIT overhead on
-the tight round loop. COBOL is the catastrophe taken to its limit: GnuCOBOL is **native-compiled yet the
-slowest language in the suite**, and SHA-256 is its single worst axis because it has no native 32-bit
-bit primitive - every rotate, XOR and shift is hand-emulated through `libcob` decimal arithmetic, so the
-per-operation cost explodes on a workload that is nothing *but* those operations. `compiled ≠ fast`,
-stated as loudly as the suite can state it.
-
-\* COBOL's `222956.36×` is **extrapolated** (linear in iterations): a direct `n2 = 10000` run is
-~7.42 trillion guest instructions, impractical to measure, so the differential is projected from the
-`n1` slope. The bit-exact digest still verifies - COBOL prints the identical `720457911` / `506466333`.
+the tight round loop.
 
 ### The ten-axis picture: the full suite
 
@@ -140,7 +129,6 @@ graph / image / ML / crypto):
 | Ruby | 104.64 | 10.34 | 117.20 | 56.39 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 |
 | Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 | 600.64 |
 | Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 | 701.29 |
-| COBOL | 26.78 | 182.75 | 7908.42 | 7686.05 | 221.82 | 330.02 | 391.75 | 152.72 | 398.73 | 222956.36\* |
 
 Ten benchmarks, ten orderings, the thesis, conclusively:
 
@@ -148,18 +136,11 @@ Ten benchmarks, ten orderings, the thesis, conclusively:
   on crypto. A `gcc -O3` build would narrow those; the suite pins idiomatic `-O2`.
 - **Rust** is the only language to beat C on **four** axes (rev-comp, blur, k-means, sha256) and never
   exceeds 2.73×: the one language that is never the wrong default.
-- **The same row spans up to ~8300×** (COBOL 26.78× → 222956.36×). Averaging that into one "language
+- **The same row spans up to ~190×** (Elixir 0.30× → 56.47×). Averaging that into one "language
   speed" number would be not just imprecise but actively misleading.
-- **Compiled ≠ fast**: COBOL is native-compiled (GnuCOBOL → ELF) yet the **slowest language in the
-  suite on almost every axis** - `libcob` emits heavy library calls per statement. On plain integer
-  loops it is "only" 27–730× (and even **beats Elixir on fannkuch**, 26.78× vs 29.71×), but it falls off
-  three cliffs where it lacks a native primitive: **sha256 222956×** (hand-emulated bit ops - the most
-  extreme cell in the project), **mandelbrot 7908×** (COMP-2 doubles routed through GMP arbitrary-
-  precision DECIMAL, no FPU codegen), and **k-nucleotide 7686×** (string-keyed hashing). It is bit-exact
-  throughout (unlike the interpreters), so the cliffs are pure cost, not correctness.
 - **Each language has a fingerprint, not a rank**: the JVM's allocation supremacy, C#'s even keel,
-  Elixir's functional-vs-imperative split, Python/Perl's bignum cliff on fixed-width bits, COBOL's
-  no-native-primitive cliffs. The suite measures *shape*, and shape is the only honest thing to measure.
+  Elixir's functional-vs-imperative split, Python/Perl's bignum cliff on fixed-width bits. The suite
+  measures *shape*, and shape is the only honest thing to measure.
 
 **There is no single speed of a language. Ten axes prove it.**
 

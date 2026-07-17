@@ -2,7 +2,7 @@
   "benchmark": "message-ring",
   "n1": 500,
   "n2": 2000,
-  "na": ["perl", "cobol"],
+  "na": ["perl"],
   "naReason": "no cooperative concurrency primitive to measure (see the study README)",
   "checksums": {
     "n1": {

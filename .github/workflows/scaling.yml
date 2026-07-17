@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Languages with a parRun in scaling-config.json (COBOL has no concurrency primitive).
+        # Languages with a parRun in scaling-config.json.
         language: [c, go, rust, swift, python, perl, php, ruby, kotlin, scala, csharp, elixir]
     steps:
       - uses: actions/checkout@v4

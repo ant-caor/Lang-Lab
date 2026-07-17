@@ -28,7 +28,7 @@ ISA = "arm64"
 BG, FG, MUTED, GRID = "#0d1117", "#e6edf3", "#9aa7b4", "#0d1117"
 NAMES = {"c": "C", "rust": "Rust", "swift": "Swift", "go": "Go", "python": "Python",
          "perl": "Perl", "php": "PHP", "kotlin": "Kotlin", "scala": "Scala",
-         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby", "cobol": "COBOL"}
+         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby"}
 # Archetype colour for the row label (matches make_charts.py palette).
 PALETTE = {"native": "#3fb950", "interpreter": "#f0883e", "vm": "#a371f7"}
 KIND_ARCH = {"native": "native", "interp": "interpreter", "inproc-vm": "vm", "launcher": "vm"}
