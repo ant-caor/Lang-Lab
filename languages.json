@@ -89,7 +89,7 @@
     "run": "ruby /app/{b}.rb"
   },
   "java": {
-    "eol": "java",
+    "eol": "openjdk-builds-from-oracle",
     "dockerfile": "languages/java/Dockerfile",
     "buildArg": "JAVA_VERSION",
     "runtimeKind": "inproc-vm",

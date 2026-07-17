@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **11 languages + a C baseline**, chosen to cover every backend runtime archetype: C, Rust and
   Swift (native), Go (compiled + concurrent GC), Python, Perl, PHP and Ruby
   (interpreters), Kotlin, Scala and C# (VMs with JIT + GC), and Elixir (BEAM).
+- **Java** (plain JVM, Temurin/OpenJDK 26): all 19 benchmarks implemented with bit-exact
+  reference checksums (19/19 gates on the first try), one runnable jar per benchmark, measured
+  under the same SerialGC single-thread pinning as Kotlin/Scala and carrying the same
+  ISA-specific leaderboard marker. Version-watched via the `openjdk-builds-from-oracle` feed
+  (endoflife.date has no `java` slug).
 - **An 18-benchmark suite**, each stressing an orthogonal runtime axis, every implementation
   reproducing a bit-exact reference checksum: fannkuch, binary-trees, mandelbrot, k-nucleotide,
   reverse-complement, sort-search, dijkstra, blur, k-means, sha256, lz77, vm, bigint, tak,
