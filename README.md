@@ -121,7 +121,7 @@ The scaling track and the `message-ring` wall-clock companion exist precisely be
 metric cannot see parallelism or syscall cost (its limits are quantified in
 [docs/metric-validity.md](docs/metric-validity.md)).
 
-## Languages (11 + a C baseline)
+## Languages (13 + a C baseline)
 
 Chosen to cover every backend **runtime archetype**, not just the popular ones, so the
 methodology meets the hard runtimes early.
@@ -131,7 +131,8 @@ methodology meets the hard runtimes early.
 | Native (no GC) | **Rust**, **Swift**, **C** (1.0× baseline) |
 | Compiled + concurrent GC | **Go** |
 | Interpreter | **Python**, **Perl**, **PHP**, **Ruby** |
-| VM with JIT + GC | **Kotlin** (JVM), **Scala** (JVM), **C#** (CLR) |
+| VM with JIT + GC | **Java** (JVM), **Kotlin** (JVM), **Scala** (JVM), **C#** (CLR) |
+| Speculative JIT with deopts | **JavaScript** (Node.js / V8) |
 | Actor VM (BEAM) | **Elixir** |
 
 ## The measurement engine
@@ -170,7 +171,8 @@ reproducibility, and it is disclosed rather than hidden:
 | Runtime | Pinned configuration | What it means for the numbers |
 |---|---|---|
 | Go | `GOMAXPROCS=1`, `GODEBUG=asyncpreemptoff=1`; **GC on** (default `GOGC=100`) | GC work runs on the measured thread and is counted |
-| Kotlin / Scala (JVM) | `-XX:+UseSerialGC` | the serial collector still collects; its work is counted on the measured thread instead of on concurrent GC threads |
+| Java / Kotlin / Scala (JVM) | `-XX:+UseSerialGC` | the serial collector still collects; its work is counted on the measured thread instead of on concurrent GC threads |
+| JavaScript (Node.js / V8) | `node --predictable --single-threaded --single-threaded-gc`, `UV_THREADPOOL_SIZE=1` | compiler/GC work runs on the measured thread (jitter drops ~600-6000×, from >4% to <0.1%) |
 | C# (CLR) | `DOTNET_gcServer=0`, `DOTNET_TieredCompilation=0` | workstation GC (still collecting) + single-tier JIT, so compilation work is deterministic; the differential cancels it |
 | Elixir (BEAM) | `+S 1:1` (single scheduler) | all reductions on one scheduler thread |
 | Interpreters (Python, Perl, PHP, Ruby) | none needed | single-threaded by design |

@@ -11,5 +11,6 @@
   "elixir": "1.18",
   "scala": "3.6.2",
   "ruby": "3.3",
-  "java": "26"
+  "java": "26",
+  "javascript": "26.5.0"
 }

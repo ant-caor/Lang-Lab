@@ -101,6 +101,7 @@
     "dockerfile": "languages/javascript/Dockerfile",
     "buildArg": "NODE_VERSION",
     "runtimeKind": "inproc-vm",
-    "run": "node /app/{b}.js"
+    "runtimeEnv": { "UV_THREADPOOL_SIZE": "1" },
+    "run": "node --predictable --single-threaded --single-threaded-gc /app/{b}.js"
   }
 }

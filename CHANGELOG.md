@@ -21,6 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   under the same SerialGC single-thread pinning as Kotlin/Scala and carrying the same
   ISA-specific leaderboard marker. Version-watched via the `openjdk-builds-from-oracle` feed
   (endoflife.date has no `java` slug).
+- **JavaScript** (Node.js 26 / V8): all 19 benchmarks implemented with bit-exact reference
+  checksums, covering the speculative-JIT-with-deopts archetype the suite lacked. V8's
+  background compiler/GC threads were characterized under the counting backend and pinned with
+  `--predictable --single-threaded --single-threaded-gc` (+ `UV_THREADPOOL_SIZE=1`), which
+  collapses run-to-run jitter from 4-24% to under 0.1%. The ports pin down JS number semantics
+  where 64-bit intermediates exceed 2^53 (`Math.imul` for the shared LCG, `>>> 0` masks,
+  explicit carry division in bigint), verified against a BigInt reference.
 - **An 18-benchmark suite**, each stressing an orthogonal runtime axis, every implementation
   reproducing a bit-exact reference checksum: fannkuch, binary-trees, mandelbrot, k-nucleotide,
   reverse-complement, sort-search, dijkstra, blur, k-means, sha256, lz77, vm, bigint, tak,
