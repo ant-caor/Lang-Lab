@@ -101,8 +101,8 @@ cancelling startup + JIT.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(200000) − I(100000)` normalized
 to **C = 1.0×**. Source: [`results/2026-06-17-arm64-k-nucleotide.json`](../../results/2026-06-17-arm64-k-nucleotide.json).
-All 12 printed the identical `267275319` / `552155843` checksums: the order-independent sum holds
-across 12 completely different hash-map implementations.
+All 14 printed the identical `267275319` / `552155843` checksums: the order-independent sum holds
+across 14 completely different hash-map implementations.
 
 ![relative real work](../../docs/charts/k-nucleotide-diff-ratio.svg)
 
@@ -130,7 +130,8 @@ slot and hashes it with FNV-1a: no per-key allocation, no indirection. Every oth
 for a *general-purpose* map. **Rust's 2.73×** is the most informative number here: its `HashMap`
 default hasher is **SipHash**, a DoS-resistant keyed hash that is deliberately slower than FNV,
 the cost of a safe default (a Rust dev could opt into `ahash`/`FxHashMap` and approach C). The
-managed languages cluster at **~10×** (Swift 9.67, C# 9.73, Kotlin 9.98, Scala 10.53): each
+managed languages cluster at **~10×** (Swift 9.67, C# 9.73, Kotlin 9.98, Scala 10.53), with Java
+(17.50) and JavaScript (18.63) trailing the cluster: each
 allocates a heap string per k-mer position and drives a hashed dictionary through a GC.
 
 **An asymmetry to know about (C#):** since the qemu-x86_64 OOM fix (2026-06-21), the C# source
@@ -181,6 +182,8 @@ Differential vs C = 1.0× across the whole suite:
 | Swift | 3.42× | 1.72× | 1.17× | 9.67× |
 | Scala | 2.73× | 0.28× | 0.97× | 10.53× |
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× |
+| Java | 3.62× | 0.33× | 2.99× | 17.50× |
+| JavaScript | 4.69× | 0.57× | 2.45× | 18.63× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× |
 | Ruby | 104.64× | 10.34× | 117.20× | 56.39× |
@@ -195,8 +198,8 @@ What the fourth column adds:
   maps relative to their compute axes, because their core associative array is native C; their
   arithmetic is what's slow. Ruby drops from 104×/117× on fannkuch/mandelbrot to 56× here; Perl
   swings hardest of all, 217× down to 36×.
-- **The JVM/CLR managed languages converge** (~10×) once the workload is "allocate strings + drive
-  a dictionary + GC," regardless of source language.
+- **The JVM/CLR managed languages converge** (~10×, with Java trailing at 17.50×) once the workload
+  is "allocate strings + drive a dictionary + GC," regardless of source language.
 
 Four benchmarks, four different orderings. No single number is "the speed of a language."
 

@@ -79,7 +79,7 @@ print "bigint(N)"                             # line 2
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(6000) − I(1500)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-bigint.json`](../../results/2026-06-17-arm64-bigint.json).
-All 12 printed the identical `831439159` / `694604666` hashes.
+All 14 printed the identical `831439159` / `694604666` hashes.
 
 ![relative real work](../../docs/charts/bigint-diff-ratio.svg)
 
@@ -120,13 +120,15 @@ Differential vs C = 1.0× across all fourteen benchmarks (`fan`=fannkuch, `btr`=
 | Swift | 3.42 | 1.72 | 1.17 | 9.67 | 1.48 | 1.89 | 2.29 | 0.56 | 2.49 | 1.84 | 1.23 | 1.80 | 2.17 | 1.15 |
 | Scala | 2.73 | 0.28 | 0.97 | 10.53 | 4.78 | 3.10 | 5.66 | 3.32 | 3.89 | 5.61 | 2.07 | 2.10 | 1.43 | 1.38 |
 | Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 | 5.45 | 1.98 | 2.08 | 1.62 | 1.66 |
+| Java | 3.62 | 0.33 | 2.99 | 17.50 | 6.13 | 4.32 | 5.21 | 2.55 | 5.18 | 6.30 | 2.84 | 1.95 | 3.01 | 1.35 |
+| JavaScript | 4.69 | 0.57 | 2.45 | 18.63 | 8.30 | 4.51 | 17.38 | 4.23 | 9.58 | 2.65 | 3.87 | 5.81 | 4.36 | 2.89 |
 | Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 | 30.97 | 25.73 | 4.59 | 60.95 | 11.01 |
 | PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 | 98.02 | 29.89 | 38.76 | 51.12 | 22.39 |
 | Ruby | 104.64 | 10.34 | 117.20 | 56.39 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 | 57.52 | 84.66 | 147.19 | 40.76 |
 | Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 | 600.64 | 120.84 | 78.57 | 300.77 | 48.80 |
 | Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 | 701.29 | 133.54 | 135.53 | 276.48 | 116.56 |
 
-Fourteen benchmarks, fourteen orderings of the same twelve languages: the final word of the project.
+Fourteen benchmarks, fourteen orderings of the same fourteen languages: the final word of the project.
 
 - **No language is fast or slow; each is fast or slow at a kind of work.** A single row spans up to
   ~50× (Rust 0.48×–2.73×) for the fast languages and over ~50× for the slow ones (Elixir 0.30×–60.95×;

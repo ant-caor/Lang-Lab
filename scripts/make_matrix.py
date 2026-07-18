@@ -18,6 +18,7 @@ import glob
 import json
 import math
 import os
+import re
 import sys
 from xml.sax.saxutils import escape as _xesc
 
@@ -26,9 +27,7 @@ OUT = os.path.join(ROOT, "docs", "charts")
 ISA = "arm64"
 
 BG, FG, MUTED, GRID = "#0d1117", "#e6edf3", "#9aa7b4", "#0d1117"
-NAMES = {"c": "C", "rust": "Rust", "swift": "Swift", "go": "Go", "python": "Python",
-         "perl": "Perl", "php": "PHP", "kotlin": "Kotlin", "scala": "Scala",
-         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby", "java": "Java", "javascript": "JavaScript"}
+from _langnames import NAMES
 # Archetype colour for the row label (matches make_charts.py palette).
 PALETTE = {"native": "#3fb950", "interpreter": "#f0883e", "vm": "#a371f7"}
 KIND_ARCH = {"native": "native", "interp": "interpreter", "inproc-vm": "vm", "launcher": "vm"}
@@ -125,7 +124,7 @@ def latest(b):
 def load_matrix():
     """Return (langs_by_geomean, benches_present, ratio[lang][bench], geomean[lang], arch[lang])."""
     benches = [b for b in BENCH_ORDER if latest(b)]
-    ratio, arch, extrap = {}, {}, set()
+    ratio, arch = {}, {}
     for b in benches:
         env = json.load(open(latest(b)))
         rs = {r["language"]: r for r in env["results"] if r.get("i_n1") and r.get("i_n2")}
@@ -133,21 +132,20 @@ def load_matrix():
         for L, r in rs.items():
             ratio.setdefault(L, {})[b] = r["differential"] / cdiff
             arch[L] = LANG_ARCH.get(L) or KIND_ARCH.get(r.get("kind", "native"), "native")
-            if "extrapolat" in (r.get("note") or "").lower():
-                extrap.add((L, b))
-    geomean, geomean_meas = {}, {}
+    geomean = {}
     for L, row in ratio.items():
         vals = [row[b] for b in benches if b in row and b not in NOT_RANKED]
+        if not vals:
+            # a language with no ranked cell yet (e.g. only message-ring measured so far)
+            # cannot be ranked; skip it instead of crashing the whole matrix
+            print(f"make_matrix: skipping {L} (no ranked axes present)", file=sys.stderr)
+            continue
         geomean[L] = math.exp(sum(math.log(v) for v in vals) / len(vals))
-        # the same geomean over directly-measured cells only (extrapolated cells dropped)
-        mvals = [row[b] for b in benches
-                 if b in row and b not in NOT_RANKED and (L, b) not in extrap]
-        geomean_meas[L] = math.exp(sum(math.log(v) for v in mvals) / len(mvals))
-    langs = sorted(ratio, key=lambda L: geomean[L])
-    return langs, benches, ratio, geomean, geomean_meas, arch, extrap
+    langs = sorted(geomean, key=geomean.get)
+    return langs, benches, ratio, geomean, arch
 
 
-def render_svg(langs, benches, ratio, geomean, arch, extrap):
+def render_svg(langs, benches, ratio, geomean, arch):
     ranked = [b for b in benches if b not in NOT_RANKED]
     cw, ch = 50, 30          # cell width / height
     left, gap, ow = 86, 16, 60   # lang-label gutter, gap before OVERALL, OVERALL width
@@ -196,18 +194,16 @@ def render_svg(langs, benches, ratio, geomean, arch, extrap):
             rgb = cell_color(r)
             s.append(f'<rect x="{x}" y="{y}" width="{cw}" height="{ch}" fill="{hexc(rgb)}" '
                      f'stroke="{GRID}" stroke-width="1"/>')
-            mark = "*" if (L, b) in extrap else ""
             s.append(f'<text x="{x + cw / 2:.1f}" y="{y + ch / 2 + 4:.1f}" text-anchor="middle" '
-                     f'font-size="10.5" font-weight="600" fill="{text_on(rgb)}">{fmt(r)}{mark}</text>')
-        # OVERALL cell (geomean over ranked axes; * if any of them is extrapolated)
+                     f'font-size="10.5" font-weight="600" fill="{text_on(rgb)}">{fmt(r)}</text>')
+        # OVERALL cell (geomean over ranked axes)
         g = geomean[L]
         rgb = cell_color(g)
-        emark = "*" if any((L, b) in extrap for b in ranked) else ""
         s.append(f'<rect x="{grid_x + grid_w + gap}" y="{y}" width="{ow}" height="{ch}" '
                  f'fill="{hexc(rgb)}" stroke="{GRID}" stroke-width="1.5"/>')
         s.append(f'<text x="{grid_x + grid_w + gap + ow / 2:.1f}" y="{y + ch / 2 + 4:.1f}" '
                  f'text-anchor="middle" font-size="11.5" font-weight="700" '
-                 f'fill="{text_on(rgb)}">{fmt(g)}×{emark}</text>')
+                 f'fill="{text_on(rgb)}">{fmt(g)}×</text>')
 
     # legend: gradient bar + ticks
     ly = grid_y + len(langs) * ch + 26
@@ -228,9 +224,6 @@ def render_svg(langs, benches, ratio, geomean, arch, extrap):
                  f'fill="{MUTED}">{txt}</text>')
     s.append(f'<text x="{lx + lw + gap}" y="{ly + 10}" font-size="10.5" fill="{MUTED}">'
              f'← beats C · slower →</text>')
-    if extrap:
-        s.append(f'<text x="{lx}" y="{ly + 42}" font-size="10" fill="{MUTED}">'
-                 f'* extrapolated from small probes (not measured full-size)</text>')
     if any(b in NOT_RANKED for b in benches):
         s.append(f'<text x="{lx}" y="{ly + 56}" font-size="10" fill="{MUTED}">'
                  f'† shown but excluded from the geomean: instruction counts are syscall-blind, '
@@ -248,7 +241,7 @@ def render_svg(langs, benches, ratio, geomean, arch, extrap):
     print("wrote", os.path.relpath(path, ROOT))
 
 
-def leaderboard_md(langs, benches, ratio, geomean, extrap):
+def leaderboard_md(langs, benches, ratio, geomean):
     ranked = [b for b in benches if b not in NOT_RANKED]
     out = ["| # | Language | Overall (vs C) | Fastest axis | Slowest axis |",
            "|--:|----------|---------------:|--------------|--------------|"]
@@ -257,14 +250,12 @@ def leaderboard_md(langs, benches, ratio, geomean, extrap):
         if L == "c":
             out.append(f"| {i} | **C** _(baseline)_ | **1.00×** | — | — |")
             continue
+        # langs comes from load_matrix's geomean, so every L here has >= 1 ranked cell
         row = {b: ratio[L][b] for b in ranked if b in ratio[L]}
         best = min(row, key=row.get)
         worst = max(row, key=row.get)
-        bmk = "*" if (L, best) in extrap else ""
-        wmk = "*" if (L, worst) in extrap else ""
-        emark = "*" if any((L, b) in extrap for b in ranked) else ""
-        out.append(f"| {i} | {name} | **{fmt(geomean[L])}×{emark}** | "
-                   f"{best} {fmt(row[best])}×{bmk} | {worst} {fmt(row[worst])}×{wmk} |")
+        out.append(f"| {i} | {name} | **{fmt(geomean[L])}×** | "
+                   f"{best} {fmt(row[best])}× | {worst} {fmt(row[worst])}× |")
     return "\n".join(out)
 
 
@@ -293,6 +284,28 @@ def family_md(langs, benches, ratio):
     return "\n".join(out)
 
 
+def check_metric_validity_sync(geomean):
+    """Warn when docs/metric-validity.md's hand-maintained arm64 geomean column disagrees
+    with the freshly computed values. That table is prose (no generator touches it) and it
+    already went stale once (C# 1.38); this check makes the desync loud instead of silent."""
+    path = os.path.join(ROOT, "docs", "metric-validity.md")
+    if not os.path.exists(path):
+        return
+    rev = {v: k for k, v in NAMES.items()}
+    row_re = re.compile(r"^\|\s*\**([A-Za-z#+ ]+?)\**\s*\|\s*\**([0-9]+\.?[0-9]*)")
+    for line in open(path, encoding="utf-8"):
+        m = row_re.match(line)
+        if not m:
+            continue
+        L = rev.get(m.group(1).strip())
+        if L and L in geomean:
+            doc = float(m.group(2))
+            if doc and abs(geomean[L] - doc) / doc > 0.01:
+                print(f"make_matrix: WARNING docs/metric-validity.md lists "
+                      f"{m.group(1).strip()} arm64 geomean {doc} but the current envelopes "
+                      f"give {geomean[L]:.2f}; the doc table is stale", file=sys.stderr)
+
+
 def splice(block):
     path = os.path.join(ROOT, "README.md")
     txt = open(path, encoding="utf-8").read()
@@ -306,16 +319,12 @@ def splice(block):
 
 
 def main():
-    langs, benches, ratio, geomean, geomean_meas, arch, extrap = load_matrix()
+    langs, benches, ratio, geomean, arch = load_matrix()
     ranked = [b for b in benches if b not in NOT_RANKED]
-    render_svg(langs, benches, ratio, geomean, arch, extrap)
-    lb = leaderboard_md(langs, benches, ratio, geomean, extrap)
-    extrap_langs = sorted({L for (L, b) in extrap if b in ranked})
+    render_svg(langs, benches, ratio, geomean, arch)
+    lb = leaderboard_md(langs, benches, ratio, geomean)
+    check_metric_validity_sync(geomean)
     foot = ""
-    if extrap_langs:
-        meas = ", ".join(f"{NAMES.get(L, L)} {fmt(geomean_meas[L])}×" for L in extrap_langs)
-        foot = ("\n\n_* includes axes extrapolated from small probes (negligible-startup runtimes "
-                f"only), not measured full-size. Over directly measured axes alone: {meas}._")
     excl = ""
     if any(b in NOT_RANKED for b in benches):
         excl = (" **message-ring is shown but not ranked**: its instruction count is syscall-blind "
@@ -327,10 +336,11 @@ def main():
                  "ISA only. Non-JVM rankings are ISA-robust "
                  "([details](docs/metric-validity.md))._")
     fam = family_md(langs, benches, ratio)
-    famnote = ("\n\n**Per-family geomean.** The flat geomean above weights every axis equally, "
-               "but the axes are not independent: 13 of the 18 sit in three families whose "
-               "members correlate at r ≈ 0.94–1.00, so it over-weights tight-loop execution. "
-               "This view casts one vote per runtime capability instead:\n\n" + fam)
+    famnote = ("\n\n**Per-family geomean** (same scale: vs C, lower is better). The flat geomean "
+               "above weights every axis equally, but the axes are not independent: 13 of the 18 "
+               "sit in three families whose members correlate at r ≈ 0.94–1.00, so it "
+               "over-weights tight-loop execution. This view casts one vote per runtime "
+               "capability instead:\n\n" + fam)
     block = ("\n![Lang Lab — the matrix: every language × every benchmark]"
              "(docs/charts/matrix.svg)\n\n"
              "_Real work each language does vs the **C baseline** (= 1.00×), as the differential "

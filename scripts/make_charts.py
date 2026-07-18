@@ -22,9 +22,7 @@ KIND_ARCH = {"native": "native", "interp": "interpreter",
 # Some languages are measured as one process (runtimeKind=native) but belong to a
 # different archetype for colouring (e.g. Elixir runs the BEAM VM directly).
 LANG_ARCH = {"elixir": "vm"}
-NAMES = {"c": "C", "rust": "Rust", "swift": "Swift", "go": "Go", "python": "Python",
-         "perl": "Perl", "php": "PHP", "kotlin": "Kotlin", "scala": "Scala",
-         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby", "java": "Java", "javascript": "JavaScript"}
+from _langnames import NAMES
 
 
 def human(v):

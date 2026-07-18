@@ -9,7 +9,7 @@ its members).
 Most ML is floating-point, but float would wreck cross-language reproducibility (FMA contraction and
 non-associative summation give different bits in different languages). So this is **integer k-means**,
 which is also exactly how quantized models run in production. Integer arithmetic is exact and
-associative, so all twelve implementations land on the bit-identical result.
+associative, so all fourteen implementations land on the bit-identical result.
 
 ## The algorithm
 
@@ -99,7 +99,7 @@ differential `I(8000) − I(2000)` is dominated by the marginal nearest-centroid
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(8000) − I(2000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-k-means.json`](../../results/2026-06-17-arm64-k-means.json).
-All 12 printed the identical `70735446` / `52003413` checksums: same clusters, same assignments.
+All 14 printed the identical `70735446` / `52003413` checksums: same clusters, same assignments.
 
 ![relative real work](../../docs/charts/k-means-diff-ratio.svg)
 
@@ -143,13 +143,15 @@ Differential vs C = 1.0× across all nine benchmarks (int / alloc / float / hash
 | Swift | 3.42 | 1.72 | 1.17 | 9.67 | 1.48 | 1.89 | 2.29 | 0.56 | 2.49 |
 | Scala | 2.73 | 0.28 | 0.97 | 10.53 | 4.78 | 3.10 | 5.66 | 3.32 | 3.89 |
 | Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 |
+| Java | 3.62 | 0.33 | 2.99 | 17.50 | 6.13 | 4.32 | 5.21 | 2.55 | 5.18 |
+| JavaScript | 4.69 | 0.57 | 2.45 | 18.63 | 8.30 | 4.51 | 17.38 | 4.23 | 9.58 |
 | Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 |
 | PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 |
 | Ruby | 104.64 | 10.34 | 117.20 | 56.39 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 |
 | Python | 69.57 | 11.15 | 124.76 | 49.80 | 114.00 | 131.93 | 92.92 | 120.91 | 149.26 |
 | Perl | 189.62 | 18.98 | 216.87 | 36.40 | 181.17 | 189.53 | 155.46 | 264.40 | 203.14 |
 
-Nine benchmarks, nine orderings of the same twelve languages, the thesis now overdetermined:
+Nine benchmarks, nine orderings of the same fourteen languages, the thesis now overdetermined:
 
 - **C is the baseline, not the ceiling.** It wins seven of nine, but loses both vectorizable axes
   (blur, k-means) to LLVM-backed Rust. A `gcc -O3` C build would narrow that, but the suite pins

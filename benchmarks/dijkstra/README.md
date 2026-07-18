@@ -104,7 +104,7 @@ pointer-chasing, mutate-in-place graph algorithm on the BEAM.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(20000) − I(5000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-dijkstra.json`](../../results/2026-06-17-arm64-dijkstra.json).
-All 12 printed the identical `562612262` / `735570774` checksums: the same heap, the same relaxation
+All 14 printed the identical `562612262` / `735570774` checksums: the same heap, the same relaxation
 order.
 
 ![relative real work](../../docs/charts/dijkstra-diff-ratio.svg)
@@ -132,7 +132,7 @@ Dijkstra is **random access**: heap sift-up/down jumps around an array, and each
 an adjacency list and probes `dist[]`. That pattern rewards lean indexing and punishes per-access
 overhead. C wins (1.00×), and for once **C# (1.94×) edges out Rust (2.22×) and Swift (2.29×)**: the
 CLR's JIT keeps the heap loop tight while Rust's and Swift's bounds-checked indexing on the
-hot heap array adds up. The JVM trails (Kotlin 4.95×, Scala 5.66×).
+hot heap array adds up. The JVM trails (Kotlin 4.95×, Java 5.21×, Scala 5.66×).
 
 **Elixir hits 56.47×, its single worst result anywhere in the suite.** Its heap *and* distance
 array live in `:atomics`, so every one of the millions of heap reads/writes and `dist[]` probes is a
@@ -152,6 +152,8 @@ Differential vs C = 1.0× across the complete suite:
 | Swift | 3.42× | 1.72× | 1.17× | 9.67× | 1.48× | 1.89× | 2.29× |
 | Scala | 2.73× | 0.28× | 0.97× | 10.53× | 4.78× | 3.10× | 5.66× |
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× | 4.39× | 3.55× | 4.95× |
+| Java | 3.62× | 0.33× | 2.99× | 17.50× | 6.13× | 4.32× | 5.21× |
+| JavaScript | 4.69× | 0.57× | 2.45× | 18.63× | 8.30× | 4.51× | 17.38× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× | 9.42× | 36.47× | 56.47× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× | 39.44× | 39.28× | 36.54× |
 | Ruby | 104.64× | 10.34× | 117.20× | 56.39× | 57.08× | 79.91× | 77.28× |
@@ -160,7 +162,7 @@ Differential vs C = 1.0× across the complete suite:
 
 The conclusion the whole suite was built to support:
 
-- **No language is "fast" or "slow," only fast or slow at a kind of work.** The same twelve
+- **No language is "fast" or "slow," only fast or slow at a kind of work.** The same fourteen
   languages reorder across these seven columns; the spread *within a single row* reaches **100×**
   (Elixir: 0.30× → 56.47×).
 - **Rust** is the lone all-rounder: never below 0.99×, never above 2.73×. If you want one language

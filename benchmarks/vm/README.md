@@ -80,7 +80,7 @@ print "vm(N)"                                          # line 2
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(800000) − I(200000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-vm.json`](../../results/2026-06-17-arm64-vm.json).
-All 12 ran the same program and printed the identical `350689618` / `234207083` results.
+All 14 ran the same program and printed the identical `350689618` / `234207083` results.
 
 ![relative real work](../../docs/charts/vm-diff-ratio.svg)
 
@@ -103,7 +103,8 @@ All 12 ran the same program and printed the identical `350689618` / `234207083` 
 
 ### The headline: an interpreter interpreting an interpreter, and Elixir's surprise
 
-The compiled and JIT'd languages bunch tightly (1.5–2.1×): a `switch` over ten opcodes plus a stack
+The compiled and JIT'd languages bunch tightly (1.5–2.1×; JavaScript is the outlier at 5.81×): a
+`switch` over ten opcodes plus a stack
 push/pop is exactly the kind of small, predictable dispatch loop every backend optimizes well. The
 standout is **Elixir at 4.59×, its second-best result in the entire suite** (only binary-trees,
 0.30×, beats it). The dispatch is a recursive function whose body **pattern-matches on the opcode**,

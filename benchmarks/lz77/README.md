@@ -80,7 +80,7 @@ match-search work while cancelling startup.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(24000) − I(6000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-lz77.json`](../../results/2026-06-17-arm64-lz77.json).
-All 12 printed the identical `423979860` / `850992747` hashes.
+All 14 printed the identical `423979860` / `850992747` hashes.
 
 ![relative real work](../../docs/charts/lz77-diff-ratio.svg)
 
@@ -102,7 +102,7 @@ All 12 printed the identical `423979860` / `850992747` hashes.
 | Perl | 1.48B | 6.05B | 4.56B | 133.54× | jitter |
 
 The longest-match search is a byte-comparison inner loop, so the compiled and JIT'd languages stay
-tight (Swift 1.23×, Rust 1.40×, the rest under ~2.1×) and the interpreters pay their usual
+tight (Swift 1.23×, Rust 1.40×, the rest under ~3.9×) and the interpreters pay their usual
 per-operation tax (Python 121×, Perl 134×). Elixir's 25.73× reflects the `:atomics` NIF crossing on
 every windowed byte read, the same penalty random-access array work costs it elsewhere.
 

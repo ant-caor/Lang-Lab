@@ -85,7 +85,7 @@ included) a full 3×3 window, so there is no special-cased border.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(256) − I(128)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-blur.json`](../../results/2026-06-17-arm64-blur.json).
-All 12 printed the identical `722869223` / `229750350` hashes.
+All 14 printed the identical `722869223` / `229750350` hashes.
 
 ![relative real work](../../docs/charts/blur-diff-ratio.svg)
 
@@ -118,7 +118,8 @@ allow, and it is the genuine answer to "whose toolchain vectorizes a stencil bes
 -ftree-vectorize` C build would close most of it; the suite pins idiomatic `-O2`.)
 
 Behind them the field is familiar: **C# ties C (1.01×)** (the CLR JIT keeps the int-array loop tight),
-Go trails at 1.23×, the JVM at ~3.3× (no auto-vectorisation of this loop + bounds checks), and the
+Go trails at 1.23×, the JVM lands between 2.55× (Java) and ~3.3× (Kotlin, Scala; no auto-vectorisation
+of this loop + bounds checks), JavaScript at 4.23×, and the
 interpreters detonate, with **Perl at 264×, its single worst result anywhere**: a per-pixel,
 per-neighbour interpreted loop is the most arithmetic-per-byte work the suite asks of them.
 
@@ -134,13 +135,15 @@ Differential vs C = 1.0× across all eight benchmarks:
 | Swift | 3.42× | 1.72× | 1.17× | 9.67× | 1.48× | 1.89× | 2.29× | **0.56×** |
 | Scala | 2.73× | 0.28× | 0.97× | 10.53× | 4.78× | 3.10× | 5.66× | 3.32× |
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× | 4.39× | 3.55× | 4.95× | 3.28× |
+| Java | 3.62× | 0.33× | 2.99× | 17.50× | 6.13× | 4.32× | 5.21× | 2.55× |
+| JavaScript | 4.69× | 0.57× | 2.45× | 18.63× | 8.30× | 4.51× | 17.38× | 4.23× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× | 9.42× | 36.47× | 56.47× | 15.49× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× | 39.44× | 39.28× | 36.54× | 43.03× |
 | Ruby | 104.64× | 10.34× | 117.20× | 56.39× | 57.08× | 79.91× | 77.28× | 115.20× |
 | Python | 69.57× | 11.15× | 124.76× | 49.80× | 114.00× | 131.93× | 92.92× | 120.91× |
 | Perl | 189.62× | 18.98× | 216.87× | 36.40× | 181.17× | 189.53× | 155.46× | 264.40× |
 
-Eight benchmarks, eight orderings of the same twelve languages: the case the suite was built to make:
+Eight benchmarks, eight orderings of the same fourteen languages: the case the suite was built to make:
 
 - **C is the baseline, not the ceiling.** It wins six of eight axes, ties one (k-nucleotide it leads,
   blur it loses), but on a vectorizable stencil, LLVM-backed Rust and Swift beat it outright.

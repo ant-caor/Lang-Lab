@@ -18,7 +18,7 @@ element, and report `Pfannkuchen(n)` (the maximum number of reversals) and a par
 | 7 | `228` | `16` |
 | 9 | `8629` | `30` |
 
-**Correctness: 12/12 ✅.** The 11 language implementations + C (baseline) reproduce the checksums.
+**Correctness: 14/14 ✅.** The 13 language implementations + C (baseline) reproduce the checksums.
 
 ---
 
@@ -44,7 +44,7 @@ qemu 10 from source), it turned out to be a **harness bug, not emulation**:
 > (`python …`, `java …`) → qemu couldn't find them and failed silently. **Fix:** resolve
 > `argv[0]` to an absolute path before handing it to qemu (`scripts/measure.sh`).
 
-With that, **qemu 7.2 emulates all 12 fine.** Lesson: *"produces no output" ≠ "can't emulate"*.
+With that, **qemu 7.2 emulates all 14 fine.** Lesson: *"produces no output" ≠ "can't emulate"*.
 Verify the cause before concluding.
 
 Four real infrastructure problems were solved along the way, documented in
@@ -64,7 +64,7 @@ set) at build time and run `beam.smp` directly under qemu as a single instrument
 
 ## Results: uniform qemu+insn pass
 
-Single backend (`qemu-insn`, qemu 7.2), same ISA (arm64 local), **all 12 directly comparable**.
+Single backend (`qemu-insn`, qemu 7.2), same ISA (arm64 local), **all 14 directly comparable**.
 Raw data in [`results/2026-06-16-arm64-fannkuch.json`](../../results/2026-06-16-arm64-fannkuch.json).
 
 ### The fair metric: real work `I(9) − I(7)`, normalized to C = 1.0×
@@ -93,8 +93,8 @@ isolating the algorithm's real work. C (gcc `-O2`, no GC) is the reference floor
 | Perl | 165.5M | 15.9B | 15.7B | 189.62× | jitter |
 
 > Regenerated from `results/2026-06-16-arm64-fannkuch.json`. Ordering: native/AOT (C, Rust, Go, C# ≈
-> 1–1.6×) < JVM (Scala/Kotlin ≈ 2.5–2.8×) < Swift (3.42×, bounds/overflow checks) <
-> managed/interpreted (Elixir, PHP, Python, Perl, tens to hundreds ×).
+> 1–1.6×) < JVM (Scala/Kotlin ≈ 2.5–2.8×) < Swift (3.42×, bounds/overflow checks) < Java (3.62×) and
+> JavaScript (4.69×) < managed/interpreted (Elixir, PHP, Python, Perl, tens to hundreds ×).
 
 **Readings:**
 - **C and Rust are the efficiency floor** (Rust only a few % above C: bounds checks).

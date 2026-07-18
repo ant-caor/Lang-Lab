@@ -38,9 +38,7 @@ LANG_ARCH = {
     "python": "interpreter", "perl": "interpreter", "php": "interpreter", "ruby": "interpreter",
     "kotlin": "vm", "scala": "vm", "csharp": "vm", "elixir": "vm",
 }
-NAMES = {"c": "C", "rust": "Rust", "swift": "Swift", "go": "Go", "python": "Python",
-         "perl": "Perl", "php": "PHP", "kotlin": "Kotlin", "scala": "Scala",
-         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby", "java": "Java", "javascript": "JavaScript"}
+from _langnames import NAMES
 
 
 def name(r):

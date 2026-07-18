@@ -22,9 +22,7 @@ PALETTE = {"native": "#3fb950", "interpreter": "#f0883e", "vm": "#a371f7"}
 LANG_ARCH = {"c": "native", "rust": "native", "go": "native", "swift": "native",
              "python": "interpreter", "perl": "interpreter", "php": "interpreter", "ruby": "interpreter",
              "kotlin": "vm", "scala": "vm", "csharp": "vm", "elixir": "vm"}
-NAMES = {"c": "C", "rust": "Rust", "swift": "Swift", "go": "Go", "python": "Python",
-         "perl": "Perl", "php": "PHP", "kotlin": "Kotlin", "scala": "Scala",
-         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby"}
+from _langnames import NAMES
 
 
 def main():

@@ -45,13 +45,24 @@ jobs:
           name: qemu-insn-base
           path: qemu-insn.tar.gz
 
+  # The language list is DERIVED from languages.json (the single registry), so adding a
+  # language there is enough: no hand-maintained matrix copy to forget.
+  langs:
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.keys.outputs.list }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: keys
+        run: echo "list=$(jq -c 'keys' languages.json)" >> "$GITHUB_OUTPUT"
+
   matrix:
-    needs: base
+    needs: [base, langs]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        language: [c, python, go, rust, swift, perl, php, kotlin, csharp, elixir, scala, ruby, java, javascript]
+        language: ${{ fromJSON(needs.langs.outputs.list) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4

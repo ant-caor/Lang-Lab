@@ -127,6 +127,10 @@ Objections we consider technically correct, stated here before anyone else state
   single-tier pinning for the CLR (`DOTNET_TieredCompilation=0`), median-of-N reporting for every
   JIT runtime, and the adaptive-RUNS escalation on jitter. Treat JIT-runtime cells as
   median-of-a-noisy-quantity, not as bit-exact counts (native/interpreter cells *are* bit-exact).
+  A related, disclosed asymmetry: V8's `--single-threaded` pinning folds its background compiler
+  onto the measured thread, while HotSpot's C1/C2 compiler threads stay concurrent and counted.
+  Within the JVM family the effect is uniform, and the differential cancels most one-time
+  compilation, but a JVM-vs-JavaScript cell comparison carries it.
 - **"Under qemu TCG the JIT does not see the real CPU."** True. A JIT emits code according to the
   CPU features it detects; under TCG it sees qemu's emulated CPU model, which is not the local
   hardware, so the emitted code (and its instruction count) can differ from what production

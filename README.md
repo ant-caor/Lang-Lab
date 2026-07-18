@@ -34,7 +34,7 @@ _Real work each language does vs the **C baseline** (= 1.00×), as the different
 
 _‡ JVM ratios are ISA-specific: metric-validity Study 2 measured them roughly doubling from arm64 to x86_64, so their single number holds for this ISA only. Non-JVM rankings are ISA-robust ([details](docs/metric-validity.md))._
 
-**Per-family geomean.** The flat geomean above weights every axis equally, but the axes are not independent: 13 of the 18 sit in three families whose members correlate at r ≈ 0.94–1.00, so it over-weights tight-loop execution. This view casts one vote per runtime capability instead:
+**Per-family geomean** (same scale: vs C, lower is better). The flat geomean above weights every axis equally, but the axes are not independent: 13 of the 18 sit in three families whose members correlate at r ≈ 0.94–1.00, so it over-weights tight-loop execution. This view casts one vote per runtime capability instead:
 
 | Language | arithmetic | memory loop nests | allocation & GC | stdlib hash map | branchy traversal | calls & dispatch |
 |---|---:|---:|---:|---:|---:|---:|
@@ -184,6 +184,13 @@ reproducibility, and it is disclosed rather than hidden:
 No configuration turns a garbage collector **off**: allocation-heavy axes like
 [binary-trees](benchmarks/binary-trees/README.md) measure real collection work in every managed
 language.
+
+One disclosed asymmetry: V8's `--single-threaded` also folds its **background JIT compiler** onto
+the measured thread, while HotSpot's C1/C2 compiler threads stay concurrent and their
+instructions are counted. This is uniform within the JVM family (Java/Kotlin/Scala compare
+cleanly with each other), and the differential cancels most one-time compilation, but a JVM vs
+JavaScript comparison carries it; see the
+[anticipated objections](docs/metric-validity.md#anticipated-objections).
 
 See the [fannkuch study](benchmarks/fannkuch/README.md) for the full results and methodology.
 

@@ -79,7 +79,7 @@ the differential `I(10000) − I(2500)` is dominated by the marginal compression
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(10000) − I(2500)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-sha256.json`](../../results/2026-06-17-arm64-sha256.json).
-All 12 printed the identical `720457911` / `506466333` hashes.
+All 14 printed the identical `720457911` / `506466333` hashes.
 
 ![relative real work](../../docs/charts/sha256-diff-ratio.svg)
 
@@ -110,8 +110,8 @@ Perl (`701×`) (their worst results anywhere by a wide margin) must do a full ar
 `& 0xFFFFFFFF` after *every* add, XOR, rotate and shift, and SHA-256 is nothing but those. Python's
 arbitrary-precision integers, a strength on a bignum workload, are a **catastrophe** on fixed-width
 bit-twiddling; PHP (98×) fares better only because its int is a fixed 64-bit. The JVM (Kotlin/Scala
-~5.5×) is mid-pack: `Int` is exactly 32 bits and wraps for free, but it pays the usual JIT overhead on
-the tight round loop.
+~5.5×, Java 6.30×) is mid-pack: `Int` is exactly 32 bits and wraps for free, but it pays the usual JIT
+overhead on the tight round loop.
 
 ### The ten-axis picture: the full suite
 
@@ -126,6 +126,8 @@ graph / image / ML / crypto):
 | Swift | 3.42 | 1.72 | 1.17 | 9.67 | 1.48 | 1.89 | 2.29 | 0.56 | 2.49 | 1.84 |
 | Scala | 2.73 | 0.28 | 0.97 | 10.53 | 4.78 | 3.10 | 5.66 | 3.32 | 3.89 | 5.61 |
 | Kotlin | 3.34 | 0.28 | 1.28 | 9.98 | 4.39 | 3.55 | 4.95 | 3.28 | 6.76 | 5.45 |
+| Java | 3.62 | 0.33 | 2.99 | 17.50 | 6.13 | 4.32 | 5.21 | 2.55 | 5.18 | 6.30 |
+| JavaScript | 4.69 | 0.57 | 2.45 | 18.63 | 8.30 | 4.51 | 17.38 | 4.23 | 9.58 | 2.65 |
 | Elixir | 29.71 | 0.30 | 18.76 | 39.64 | 9.42 | 36.47 | 56.47 | 15.49 | 39.07 | 30.97 |
 | PHP | 33.62 | 5.75 | 34.10 | 16.02 | 39.44 | 39.28 | 36.54 | 43.03 | 47.18 | 98.02 |
 | Ruby | 104.64 | 10.34 | 117.20 | 56.39 | 57.08 | 79.91 | 77.28 | 115.20 | 91.12 | 278.14 |

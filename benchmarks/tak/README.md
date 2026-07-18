@@ -56,7 +56,7 @@ startup and any JIT warm-up.
 ## Results
 
 Uniform qemu+insn pass, arm64, differential `I(8) - I(6)` normalized to **C = 1.0x**. Source:
-[`results/2026-06-19-arm64-tak.json`](../../results/2026-06-19-arm64-tak.json). All 12 printed the
+[`results/2026-06-19-arm64-tak.json`](../../results/2026-06-19-arm64-tak.json). All 14 printed the
 identical `2493349` call count (line 1) and `9` result (line 2).
 
 ![relative real work](../../docs/charts/tak-diff-ratio.svg)

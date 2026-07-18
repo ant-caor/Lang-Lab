@@ -90,7 +90,7 @@ startup + JIT.
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(400000) − I(100000)` normalized
 to **C = 1.0×**. Source: [`results/2026-06-17-arm64-reverse-complement.json`](../../results/2026-06-17-arm64-reverse-complement.json).
-All 12 printed the identical `827974717` / `533032773` hashes.
+All 14 printed the identical `827974717` / `533032773` hashes.
 
 ![relative real work](../../docs/charts/reverse-complement-diff-ratio.svg)
 
@@ -124,7 +124,7 @@ same machine code, and it is back to its flat profile here (its 2.73× on k-nucl
 hash-map-specific SipHash tax, not a string weakness). Swift (1.48×), Go (1.59×) and C# (1.71×)
 sit just behind on tight native/JIT byte buffers.
 
-The surprise is the **JVM (Kotlin 4.39×, Scala 4.78×)**: stellar at allocation and floating point,
+The surprise is the **JVM (Kotlin 4.39×, Scala 4.78×, Java 6.13×)**: stellar at allocation and floating point,
 it is *mediocre* at a per-character loop. Its `CharArray` is 16-bit UTF-16 and the JIT does not
 tighten this byte-shuffling loop the way the CLR does its 8-bit `byte[]` (C# 1.71×), a concrete
 case of "managed" not being one number. Elixir's 9.42× is its **second-best** axis: building a
@@ -142,6 +142,8 @@ Differential vs C = 1.0× across the entire suite:
 | Swift | 3.42× | 1.72× | 1.17× | 9.67× | 1.48× |
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× | 4.39× |
 | Scala | 2.73× | 0.28× | 0.97× | 10.53× | 4.78× |
+| Java | 3.62× | 0.33× | 2.99× | 17.50× | 6.13× |
+| JavaScript | 4.69× | 0.57× | 2.45× | 18.63× | 8.30× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× | 9.42× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× | 39.44× |
 | Ruby | 104.64× | 10.34× | 117.20× | 56.39× | 57.08× |
@@ -160,7 +162,7 @@ Read the rows, not the cells:
   shine (relatively) at hash maps (their native-C associative array), and crater at compute and
   per-character loops.
 
-Five benchmarks, **five different orderings of the same twelve languages**. There is no scalar
+Five benchmarks, **five different orderings of the same fourteen languages**. There is no scalar
 "speed of a language": only a speed *at a kind of work*. That is the entire reason lang-lab is a
 suite.
 

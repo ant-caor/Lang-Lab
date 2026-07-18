@@ -99,7 +99,7 @@ JIT. Tunable up for a stronger signal if the slow interpreters stay tractable un
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(256) − I(128)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-mandelbrot.json`](../../results/2026-06-17-arm64-mandelbrot.json).
-All 12 printed the identical `6518` / `26004` counts; the FMA-proof formulation holds across
+All 14 printed the identical `6518` / `26004` counts; the FMA-proof formulation holds across
 every toolchain.
 
 ![relative real work](../../docs/charts/mandelbrot-diff-ratio.svg)
@@ -123,8 +123,9 @@ every toolchain.
 
 ### The headline: compiled/JIT codegen converges; interpreters detonate
 
-On a tight floating-point loop the seven compiled or JIT-compiled languages cluster **within
-~30% of C** (Scala 0.97×, Rust 1.17×, Swift 1.17×, C# 1.19×, Kotlin 1.28×, Go 1.29×). For
+On a tight floating-point loop seven of the nine compiled or JIT-compiled languages cluster **within
+~30% of C** (Scala 0.97×, Rust 1.17×, Swift 1.17×, C# 1.19×, Kotlin 1.28×, Go 1.29×); JavaScript
+(2.45×) and Java (2.99×) sit a step behind. For
 scalar `double` arithmetic the JVM and CLR JITs emit essentially the same SSE/NEON code a C
 compiler does. Scala's hot loop even edges *below* C once the JIT warms (the differential
 strips the warm-up). Swift, 3.42× on fannkuch's bounds-checked integer loops, falls to 1.17×
@@ -149,6 +150,8 @@ Differential vs C = 1.0× on all three:
 | Swift | 3.42× | 1.72× | 1.17× |
 | Scala | 2.73× | 0.28× | 0.97× |
 | Kotlin | 3.34× | 0.28× | 1.28× |
+| Java | 3.62× | 0.33× | 2.99× |
+| JavaScript | 4.69× | 0.57× | 2.45× |
 | Elixir | 29.71× | 0.30× | 18.76× |
 | PHP | 33.62× | 5.75× | 34.10× |
 | Ruby | 104.64× | 10.34× | 117.20× |

@@ -112,7 +112,7 @@ searches, so the differential `I(200000) − I(50000)` is dominated by the margi
 
 Uniform qemu+insn pass, **arm64**, median of 5, differential `I(200000) − I(50000)` normalized to
 **C = 1.0×**. Source: [`results/2026-06-17-arm64-sort-search.json`](../../results/2026-06-17-arm64-sort-search.json).
-All 12 printed the identical `408844375` / `110297196` checksums: the same quicksort and binary
+All 14 printed the identical `408844375` / `110297196` checksums: the same quicksort and binary
 search, operation for operation.
 
 ![relative real work](../../docs/charts/sort-search-diff-ratio.svg)
@@ -138,8 +138,8 @@ search, operation for operation.
 
 This benchmark is mostly **array indexing, comparisons and recursion**, C's home turf, and it wins
 (1.00×) with the compiled/JIT languages trailing closely (Rust 1.34×, Go 1.41×, C# 1.46×, Swift
-1.89×). The JVM pays a bit more for the recursive partition over a `LongArray` (Kotlin 3.55×, Scala
-3.10×), and the interpreters pay per-operation as always (PHP 39×, Python 132×, Perl 190×, almost
+1.89×). The JVM pays a bit more for the recursive partition over a `LongArray` (Scala 3.10×, Kotlin
+3.55×, Java 4.32×), and the interpreters pay per-operation as always (PHP 39×, Python 132×, Perl 190×, almost
 exactly its fannkuch number, since both are tight integer-array loops).
 
 The standout is **Elixir at 36.47×**, by far its worst showing relative to the others on any axis.
@@ -161,6 +161,8 @@ Differential vs C = 1.0× across the suite:
 | Swift | 3.42× | 1.72× | 1.17× | 9.67× | 1.48× | 1.89× |
 | Scala | 2.73× | 0.28× | 0.97× | 10.53× | 4.78× | 3.10× |
 | Kotlin | 3.34× | 0.28× | 1.28× | 9.98× | 4.39× | 3.55× |
+| Java | 3.62× | 0.33× | 2.99× | 17.50× | 6.13× | 4.32× |
+| JavaScript | 4.69× | 0.57× | 2.45× | 18.63× | 8.30× | 4.51× |
 | Elixir | 29.71× | 0.30× | 18.76× | 39.64× | 9.42× | 36.47× |
 | PHP | 33.62× | 5.75× | 34.10× | 16.02× | 39.44× | 39.28× |
 | Ruby | 104.64× | 10.34× | 117.20× | 56.39× | 57.08× | 79.91× |

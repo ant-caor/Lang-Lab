@@ -5,7 +5,7 @@ kernel in every modern neural-network runtime. A square N×N matmul (O(N³) work
 integer inputs in 0..127, 64-bit accumulators, and a pinned loop order — the same shape
 as INT8 GEMM in `llama.cpp`, TensorRT, and similar engines.
 
-Integer (not float) removes all FMA / summation-order divergence, so all twelve
+Integer (not float) removes all FMA / summation-order divergence, so all fourteen
 implementations land on the bit-identical result.
 
 ## The algorithm

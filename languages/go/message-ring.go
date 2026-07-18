@@ -13,7 +13,8 @@
 //
 // Determinism: GOMAXPROCS=1 (pinned via runtimeEnv in languages.json) collapses all 32
 // goroutines onto a single OS thread. asyncpreemptoff=1 prevents signal-based preemption
-// from interrupting a channel-blocked goroutine mid-count. GOGC=off removes GC jitter.
+// from interrupting a channel-blocked goroutine mid-count. The GC runs (default GOGC=100) on the
+// same single thread, so its work is counted; the differential and median-of-N absorb its jitter.
 package main
 
 import (

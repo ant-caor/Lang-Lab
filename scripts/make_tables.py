@@ -8,8 +8,7 @@ cells across the study tables reproducible from the measured data instead of han
 
 Table format (sorted ascending by vs-C ratio):
     | Language | I(<n1>) | I(<n2>) | differential | vs C | determinism |
-C is bold with a bold 1.00x; sub-1.0x ratios are bold; an extrapolated cell (its "note" says
-"extrapolated") is marked with * and its determinism reads "projected".
+C is bold with a bold 1.00x; sub-1.0x ratios are bold.
 """
 import json
 import os
@@ -17,9 +16,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-NAMES = {"c": "C", "rust": "Rust", "swift": "Swift", "go": "Go", "python": "Python",
-         "perl": "Perl", "php": "PHP", "kotlin": "Kotlin", "scala": "Scala",
-         "csharp": "C#", "elixir": "Elixir", "ruby": "Ruby", "java": "Java", "javascript": "JavaScript"}
+from _langnames import NAMES
 
 
 def human(v):
@@ -62,15 +59,11 @@ def gen_table(env):
         L = r["language"]
         name = f"**{NAMES.get(L, L)}**" if L == "c" else NAMES.get(L, L)
         rat = r["differential"] / cdiff
-        extrap = "extrapolat" in (r.get("note") or "").lower()
-        cell = ratio_str(rat) + "×" + ("\\*" if extrap else "")
+        cell = ratio_str(rat) + "×"
         if L == "c" or rat <= 1.0:
             cell = f"**{cell}**"
-        det = r["determinism"]
-        if extrap and "extrap" not in det and "project" not in det:
-            det += " (extrap.)"
         out.append(f"| {name} | {human(r['i_n1']['median'])} | {human(r['i_n2']['median'])} | "
-                   f"{human(r['differential'])} | {cell} | {det} |")
+                   f"{human(r['differential'])} | {cell} | {r['determinism']} |")
     return "\n".join(out)
 
 

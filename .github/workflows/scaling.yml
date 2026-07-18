@@ -41,14 +41,24 @@ jobs:
           name: qemu-insn-base
           path: qemu-insn.tar.gz
 
+  # The scaling roster is DERIVED from scaling-config.json's langs (the languages that
+  # actually have a parRun + -par sources), so the config file is the single source.
+  langs:
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.keys.outputs.list }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: keys
+        run: echo "list=$(jq -c '.langs | keys' scaling-config.json)" >> "$GITHUB_OUTPUT"
+
   matrix:
-    needs: base
+    needs: [base, langs]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # Languages with a parRun in scaling-config.json.
-        language: [c, go, rust, swift, python, perl, php, ruby, kotlin, scala, csharp, elixir]
+        language: ${{ fromJSON(needs.langs.outputs.list) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4

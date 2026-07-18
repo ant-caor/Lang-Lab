@@ -129,7 +129,8 @@
       },
       "differential": 53478496,
       "correct": true,
-      "determinism": "jitter"
+      "determinism": "jitter",
+      "measuredDate": "2026-07-17"
     },
     {
       "language": "rust",
@@ -205,7 +206,8 @@
       },
       "differential": 56491496,
       "correct": true,
-      "determinism": "exact"
+      "determinism": "exact",
+      "measuredDate": "2026-06-27"
     },
     {
       "language": "perl",
@@ -509,7 +511,8 @@
       },
       "differential": 66115147,
       "correct": true,
-      "determinism": "jitter"
+      "determinism": "jitter",
+      "measuredDate": "2026-07-17"
     },
     {
       "language": "javascript",
@@ -547,7 +550,8 @@
       },
       "differential": 141539143,
       "correct": true,
-      "determinism": "jitter"
+      "determinism": "jitter",
+      "measuredDate": "2026-07-17"
     }
   ]
 }
