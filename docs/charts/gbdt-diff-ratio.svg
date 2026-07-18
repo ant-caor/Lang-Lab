@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="582" viewBox="0 0 760 582" font-family="ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial">
-<rect width="760" height="582" rx="10" fill="#0d1117"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="662" viewBox="0 0 760 662" font-family="ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial">
+<rect width="760" height="662" rx="10" fill="#0d1117"/>
 <text x="22" y="34" font-size="19" font-weight="700" fill="#e6edf3">gbdt:relative real work (I(20000)−I(5000), C = 1.0×)</text>
 <text x="22" y="56" font-size="13" fill="#9aa7b4">differential cancels startup + JIT · qemu+insn · arm64 · the fair metric · lower is better</text>
 <text x="120" y="97" text-anchor="end" font-size="14" fill="#9aa7b4">Rust</text>
@@ -20,22 +20,28 @@
 <text x="120" y="297" text-anchor="end" font-size="14" fill="#9aa7b4">Scala</text>
 <rect x="132" y="281" width="10.2" height="24" rx="5" fill="#a371f7"/>
 <text x="151.2" y="298" font-size="13" fill="#e6edf3">2.31×</text>
-<text x="120" y="337" text-anchor="end" font-size="14" fill="#9aa7b4">Kotlin</text>
-<rect x="132" y="321" width="11.0" height="24" rx="5" fill="#a371f7"/>
-<text x="152.0" y="338" font-size="13" fill="#e6edf3">2.49×</text>
-<text x="120" y="377" text-anchor="end" font-size="14" fill="#9aa7b4">PHP</text>
-<rect x="132" y="361" width="132.5" height="24" rx="5" fill="#f0883e"/>
-<text x="273.5" y="378" font-size="13" fill="#e6edf3">30.04×</text>
-<text x="120" y="417" text-anchor="end" font-size="14" fill="#9aa7b4">Elixir</text>
-<rect x="132" y="401" width="172.9" height="24" rx="5" fill="#a371f7"/>
-<text x="313.9" y="418" font-size="13" fill="#e6edf3">39.19×</text>
-<text x="120" y="457" text-anchor="end" font-size="14" fill="#9aa7b4">Ruby</text>
-<rect x="132" y="441" width="401.2" height="24" rx="5" fill="#f0883e"/>
-<text x="542.2" y="458" font-size="13" fill="#e6edf3">90.95×</text>
-<text x="120" y="497" text-anchor="end" font-size="14" fill="#9aa7b4">Python</text>
-<rect x="132" y="481" width="455.6" height="24" rx="5" fill="#f0883e"/>
-<text x="596.6" y="498" font-size="13" fill="#e6edf3">103.27×</text>
-<text x="120" y="537" text-anchor="end" font-size="14" fill="#9aa7b4">Perl</text>
-<rect x="132" y="521" width="532.0" height="24" rx="5" fill="#f0883e"/>
-<text x="673.0" y="538" font-size="13" fill="#e6edf3">120.60×</text>
+<text x="120" y="337" text-anchor="end" font-size="14" fill="#9aa7b4">Java</text>
+<rect x="132" y="321" width="10.4" height="24" rx="5" fill="#a371f7"/>
+<text x="151.4" y="338" font-size="13" fill="#e6edf3">2.35×</text>
+<text x="120" y="377" text-anchor="end" font-size="14" fill="#9aa7b4">Kotlin</text>
+<rect x="132" y="361" width="11.0" height="24" rx="5" fill="#a371f7"/>
+<text x="152.0" y="378" font-size="13" fill="#e6edf3">2.49×</text>
+<text x="120" y="417" text-anchor="end" font-size="14" fill="#9aa7b4">JavaScript</text>
+<rect x="132" y="401" width="18.6" height="24" rx="5" fill="#a371f7"/>
+<text x="159.6" y="418" font-size="13" fill="#e6edf3">4.21×</text>
+<text x="120" y="457" text-anchor="end" font-size="14" fill="#9aa7b4">PHP</text>
+<rect x="132" y="441" width="132.5" height="24" rx="5" fill="#f0883e"/>
+<text x="273.5" y="458" font-size="13" fill="#e6edf3">30.04×</text>
+<text x="120" y="497" text-anchor="end" font-size="14" fill="#9aa7b4">Elixir</text>
+<rect x="132" y="481" width="172.9" height="24" rx="5" fill="#a371f7"/>
+<text x="313.9" y="498" font-size="13" fill="#e6edf3">39.19×</text>
+<text x="120" y="537" text-anchor="end" font-size="14" fill="#9aa7b4">Ruby</text>
+<rect x="132" y="521" width="401.2" height="24" rx="5" fill="#f0883e"/>
+<text x="542.2" y="538" font-size="13" fill="#e6edf3">90.95×</text>
+<text x="120" y="577" text-anchor="end" font-size="14" fill="#9aa7b4">Python</text>
+<rect x="132" y="561" width="455.6" height="24" rx="5" fill="#f0883e"/>
+<text x="596.6" y="578" font-size="13" fill="#e6edf3">103.27×</text>
+<text x="120" y="617" text-anchor="end" font-size="14" fill="#9aa7b4">Perl</text>
+<rect x="132" y="601" width="532.0" height="24" rx="5" fill="#f0883e"/>
+<text x="673.0" y="618" font-size="13" fill="#e6edf3">120.60×</text>
 </svg>

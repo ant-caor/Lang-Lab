@@ -20,15 +20,17 @@ _Real work each language does vs the **C baseline** (= 1.00×), as the different
 | 1 | **C** _(baseline)_ | **1.00×** | — | — |
 | 2 | Rust | **1.11×** | blur 0.48× | k-nucleotide 2.73× |
 | 3 | C# | **1.54×** | binary-trees 0.45× | k-nucleotide 9.73× |
-| 4 | Go | **1.58×** | binary-trees 1.09× | k-nucleotide 4.93× |
+| 4 | Go | **1.64×** | tak 1.09× | k-nucleotide 4.82× |
 | 5 | Swift | **2.03×** | blur 0.56× | k-nucleotide 9.67× |
 | 6 | Scala‡ | **2.39×** | binary-trees 0.28× | k-nucleotide 10.5× |
 | 7 | Kotlin‡ | **2.53×** | binary-trees 0.28× | k-nucleotide 9.98× |
-| 8 | Elixir | **22.3×** | binary-trees 0.30× | polymorphism 136× |
-| 9 | PHP | **32.2×** | binary-trees 5.75× | sha256 98.0× |
-| 10 | Ruby | **75.3×** | binary-trees 10.3× | sha256 278× |
-| 11 | Python | **104×** | binary-trees 11.2× | sha256 601× |
-| 12 | Perl | **146×** | binary-trees 19.0× | sha256 701× |
+| 8 | Java‡ | **2.92×** | binary-trees 0.33× | k-nucleotide 17.5× |
+| 9 | JavaScript | **5.09×** | binary-trees 0.57× | k-nucleotide 18.6× |
+| 10 | Elixir | **22.3×** | binary-trees 0.30× | polymorphism 136× |
+| 11 | PHP | **32.2×** | binary-trees 5.75× | sha256 98.0× |
+| 12 | Ruby | **75.3×** | binary-trees 10.3× | sha256 278× |
+| 13 | Python | **104×** | binary-trees 11.2× | sha256 601× |
+| 14 | Perl | **146×** | binary-trees 19.0× | sha256 701× |
 
 _‡ JVM ratios are ISA-specific: metric-validity Study 2 measured them roughly doubling from arm64 to x86_64, so their single number holds for this ISA only. Non-JVM rankings are ISA-robust ([details](docs/metric-validity.md))._
 
@@ -39,10 +41,12 @@ _‡ JVM ratios are ISA-specific: metric-validity Study 2 measured them roughly 
 | **C** _(baseline)_ | 1.00× | 1.00× | 1.00× | 1.00× | 1.00× | 1.00× |
 | Rust | 1.09× | 0.73× | 1.19× | 2.73× | 1.22× | 1.25× |
 | C# | 1.42× | 1.54× | 0.45× | 9.73× | 1.53× | 1.41× |
-| Go | 1.32× | 1.57× | 1.09× | 4.93× | 1.65× | 1.45× |
+| Go | 1.32× | 1.57× | 1.67× | 4.82× | 1.73× | 1.45× |
 | Swift | 2.00× | 1.55× | 1.72× | 9.67× | 1.78× | 2.34× |
 | Scala‡ | 2.15× | 2.85× | 0.28× | 10.5× | 2.87× | 2.00× |
 | Kotlin‡ | 2.48× | 3.14× | 0.28× | 9.98× | 2.87× | 2.09× |
+| Java‡ | 3.79× | 3.03× | 0.33× | 17.5× | 3.24× | 1.89× |
+| JavaScript | 3.40× | 6.63× | 0.57× | 18.6× | 5.90× | 6.47× |
 | Elixir | 32.0× | 23.4× | 0.30× | 39.6× | 37.4× | 19.0× |
 | PHP | 49.0× | 41.8× | 5.75× | 16.0× | 33.6× | 27.2× |
 | Ruby | 150× | 87.2× | 10.3× | 56.4× | 74.7× | 53.6× |
@@ -57,8 +61,8 @@ _Families: arithmetic = fannkuch, mandelbrot, sha256, bigint · memory loop nest
 
 > **How to read the matrix.** It shows *user-space instruction work* vs C (a proxy for algorithmic
 > efficiency), **not wall-clock speed**. It is a reliable rank for native and interpreter languages
-> and ISA-robust for them; the **JVM cells (Kotlin, Scala) are ISA-specific** (their ratio roughly
-> doubles from arm64 to x86_64). For concurrency read the
+> and ISA-robust for them; the **JVM cells (Java, Kotlin, Scala) are ISA-specific** (their ratio
+> roughly doubles from arm64 to x86_64). For concurrency read the
 > [scaling track](#scaling-track-wall-clock-parallel-speedup) and the
 > [concurrency study](docs/concurrency-study.md). The metric's empirical validity is measured in
 > [docs/metric-validity.md](docs/metric-validity.md), and every implementation is adversarially
@@ -273,8 +277,9 @@ machine-speed noise, so it stays stable on shared CI runners (validated to ±0.0
 rulebook (decomposition, partition, no-shared-write rules, per-language primitives) lives in
 [docs/scaling-track.md](docs/scaling-track.md).
 
-Five embarrassingly-parallel axes are measured across every language, each using its idiomatic
-real-parallel primitive (pthreads, goroutines, fork/processes, BEAM Tasks, JVM/CLR thread pools):
+Five embarrassingly-parallel axes are measured across twelve languages, each using its idiomatic
+real-parallel primitive (pthreads, goroutines, fork/processes, BEAM Tasks, JVM/CLR thread pools);
+Java and JavaScript parallel variants are pending:
 
 | Benchmark | Speedup charts |
 |---|---|
@@ -326,7 +331,7 @@ docs/metric-validity.md          empirical validity of the instruction metric (c
 
 ## Status
 
-**v0**: 11 languages + a C baseline measured uniformly under qemu+insn across a nineteen-benchmark
+**v0**: 13 languages + a C baseline measured uniformly under qemu+insn across a nineteen-benchmark
 suite (fannkuch, binary-trees, mandelbrot, k-nucleotide, reverse-complement, sort-search, dijkstra,
 blur, k-means, sha256, lz77, vm, bigint, tak, polymorphism, gemm, viterbi, gbdt, message-ring: integer / allocation / floating-point / hash-map / string /
 algorithms / graphs / image / ML / bit-manipulation / compression / interpreter-dispatch /

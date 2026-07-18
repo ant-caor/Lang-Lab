@@ -126,6 +126,8 @@ search, operation for operation.
 | Swift | 40.8M | 140.3M | 99.5M | 1.89× | exact |
 | Scala | 770.3M | 933.7M | 163.3M | 3.10× | jitter |
 | Kotlin | 280.9M | 467.8M | 186.9M | 3.55× | jitter |
+| Java | 229.8M | 457.4M | 227.6M | 4.32× | jitter |
+| JavaScript | 240.7M | 478.2M | 237.5M | 4.51× | jitter |
 | Elixir | 2.61B | 4.53B | 1.92B | 36.47× | jitter |
 | PHP | 646.0M | 2.72B | 2.07B | 39.28× | exact |
 | Ruby | 1.52B | 5.73B | 4.21B | 79.91× | jitter |

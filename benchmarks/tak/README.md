@@ -68,8 +68,10 @@ identical `2493349` call count (line 1) and `9` result (line 2).
 | Swift | 12.8M | 69.3M | 56.5M | 1.15× | exact |
 | Rust | 1.8M | 62.9M | 61.2M | 1.25× | exact |
 | C# | 207.6M | 270.1M | 62.6M | 1.28× | jitter |
+| Java | 106.6M | 172.7M | 66.1M | 1.35× | jitter |
 | Scala | 634.4M | 701.8M | 67.4M | 1.38× | jitter |
 | Kotlin | 156.3M | 237.7M | 81.4M | 1.66× | jitter |
+| JavaScript | 118.1M | 259.7M | 141.5M | 2.89× | jitter |
 | Elixir | 1.97B | 2.51B | 539.6M | 11.01× | jitter |
 | PHP | 63.3M | 1.16B | 1.10B | 22.39× | exact |
 | Ruby | 325.9M | 2.32B | 2.00B | 40.76× | jitter |

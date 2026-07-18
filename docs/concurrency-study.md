@@ -6,8 +6,10 @@ try to be a server benchmark. It decomposes "concurrency" into the facets that c
 **objectively and reproducibly** here, and is explicit about the ones that cannot (see
 [What this does not measure](#what-this-does-not-measure)).
 
-Coverage: 12 languages. Perl has no core *cooperative* primitive, so it participates in
-scalability (Axis 2, via `fork`) but is N/A for primitive overhead (Axis 1).
+Coverage: 13 languages on the primitive-overhead axis (Axis 1); Perl has no core *cooperative*
+primitive, so it participates in scalability (Axis 2, via `fork`) but is N/A there. Java and
+JavaScript (added 2026-07-17) are measured on Axis 1 only for now: their wall-clock companion
+rows and parallel (`-par`) scaling variants are pending.
 
 ## The three axes
 

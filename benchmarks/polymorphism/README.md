@@ -89,9 +89,11 @@ work. C (gcc `-O2`, no GC) is the reference floor; below 1.0x beats C.
 | Rust | 16.7M | 53.7M | 37.0M | 1.04× | exact |
 | C# | 226.8M | 269.8M | 43.0M | 1.21× | jitter |
 | Go | 19.5M | 69.0M | 49.5M | 1.39× | jitter |
+| Java | 181.9M | 273.1M | 91.3M | 2.57× | jitter |
 | Kotlin | 233.2M | 327.2M | 93.9M | 2.65× | jitter |
 | Scala | 690.1M | 788.7M | 98.6M | 2.78× | jitter |
 | Swift | 87.8M | 305.7M | 217.8M | 6.13× | exact |
+| JavaScript | 351.1M | 924.5M | 573.4M | 16.15× | jitter |
 | PHP | 340.5M | 1.16B | 822.2M | 23.15× | exact |
 | Ruby | 856.2M | 2.44B | 1.58B | 44.55× | jitter |
 | Perl | 1.30B | 4.76B | 3.46B | 97.53× | jitter |

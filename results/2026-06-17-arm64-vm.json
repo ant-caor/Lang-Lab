@@ -56,78 +56,40 @@
       "determinism": "exact"
     },
     {
-      "language": "csharp",
+      "language": "python",
       "benchmark": "vm",
-      "version": "9.0",
+      "version": "3.13.4",
       "backend": "qemu-insn",
       "metric": "instructions",
-      "kind": "inproc-vm",
+      "kind": "interp",
       "n1": 200000,
       "n2": 800000,
       "runs": 5,
       "i_n1": {
-        "median": 312364772,
-        "min": 312361978,
-        "max": 312366299,
+        "median": 4347191395,
+        "min": 4347169472,
+        "max": 4347218046,
         "runs": [
-          312362457,
-          312364772,
-          312361978,
-          312366299,
-          312366269
+          4347189768,
+          4347217418,
+          4347218046,
+          4347191395,
+          4347169472
         ]
       },
       "i_n2": {
-        "median": 612367051,
-        "min": 612365351,
-        "max": 612369313,
+        "median": 17263415905,
+        "min": 17263372023,
+        "max": 17263491969,
         "runs": [
-          612366450,
-          612367051,
-          612368490,
-          612365351,
-          612369313
+          17263491969,
+          17263372023,
+          17263415905,
+          17263424842,
+          17263411932
         ]
       },
-      "differential": 300002279,
-      "correct": true,
-      "determinism": "jitter"
-    },
-    {
-      "language": "elixir",
-      "benchmark": "vm",
-      "version": "1.18",
-      "backend": "qemu-insn",
-      "metric": "instructions",
-      "kind": "native",
-      "n1": 200000,
-      "n2": 800000,
-      "runs": 5,
-      "i_n1": {
-        "median": 2283916791,
-        "min": 2274456455,
-        "max": 2284659005,
-        "runs": [
-          2283862403,
-          2283916791,
-          2284659005,
-          2274456455,
-          2283983295
-        ]
-      },
-      "i_n2": {
-        "median": 3038359024,
-        "min": 3037516756,
-        "max": 3040898627,
-        "runs": [
-          3038359024,
-          3037516756,
-          3040898627,
-          3038353768,
-          3039760693
-        ]
-      },
-      "differential": 754442233,
+      "differential": 12916224510,
       "correct": true,
       "determinism": "jitter"
     },
@@ -142,70 +104,108 @@
       "n2": 800000,
       "runs": 5,
       "i_n1": {
-        "median": 109288784,
-        "min": 109287449,
-        "max": 109290109,
+        "median": 109288472,
+        "min": 109288222,
+        "max": 109289715,
         "runs": [
-          109287449,
-          109288784,
-          109288556,
-          109288832,
-          109290109
+          109288357,
+          109288222,
+          109289715,
+          109288472,
+          109288545
         ]
       },
       "i_n2": {
-        "median": 436312292,
-        "min": 436311487,
-        "max": 436317872,
+        "median": 436315368,
+        "min": 436313043,
+        "max": 436318978,
         "runs": [
-          436317872,
-          436317296,
-          436311524,
-          436312292,
-          436311487
+          436314032,
+          436315684,
+          436318978,
+          436315368,
+          436313043
         ]
       },
-      "differential": 327023508,
+      "differential": 327026896,
       "correct": true,
       "determinism": "jitter"
     },
     {
-      "language": "kotlin",
+      "language": "rust",
       "benchmark": "vm",
-      "version": "2.1.0",
+      "version": "1.88.0",
       "backend": "qemu-insn",
       "metric": "instructions",
-      "kind": "inproc-vm",
+      "kind": "native",
       "n1": 200000,
       "n2": 800000,
       "runs": 5,
       "i_n1": {
-        "median": 326045699,
-        "min": 323559242,
-        "max": 328497498,
+        "median": 82962366,
+        "min": 82962366,
+        "max": 82962366,
         "runs": [
-          323559242,
-          324168323,
-          326045699,
-          328497498,
-          326296153
+          82962366,
+          82962366,
+          82962366,
+          82962366,
+          82962366
         ]
       },
       "i_n2": {
-        "median": 667847967,
-        "min": 659389479,
-        "max": 676242750,
+        "median": 331362366,
+        "min": 331362366,
+        "max": 331362366,
         "runs": [
-          670547819,
-          667847967,
-          663494649,
-          659389479,
-          676242750
+          331362366,
+          331362366,
+          331362366,
+          331362366,
+          331362366
         ]
       },
-      "differential": 341802268,
+      "differential": 248400000,
       "correct": true,
-      "determinism": "jitter"
+      "determinism": "exact"
+    },
+    {
+      "language": "swift",
+      "benchmark": "vm",
+      "version": "6.1",
+      "backend": "qemu-insn",
+      "metric": "instructions",
+      "kind": "native",
+      "n1": 200000,
+      "n2": 800000,
+      "runs": 5,
+      "i_n1": {
+        "median": 110129935,
+        "min": 110129935,
+        "max": 110129935,
+        "runs": [
+          110129935,
+          110129935,
+          110129935,
+          110129935,
+          110129935
+        ]
+      },
+      "i_n2": {
+        "median": 406529935,
+        "min": 406529935,
+        "max": 406529935,
+        "runs": [
+          406529935,
+          406529935,
+          406529935,
+          406529935,
+          406529935
+        ]
+      },
+      "differential": 296400000,
+      "correct": true,
+      "determinism": "exact"
     },
     {
       "language": "perl",
@@ -284,47 +284,85 @@
       "determinism": "exact"
     },
     {
-      "language": "python",
+      "language": "kotlin",
       "benchmark": "vm",
-      "version": "3.13.4",
+      "version": "2.1.0",
       "backend": "qemu-insn",
       "metric": "instructions",
-      "kind": "interp",
+      "kind": "inproc-vm",
       "n1": 200000,
       "n2": 800000,
       "runs": 5,
       "i_n1": {
-        "median": 4347191395,
-        "min": 4347169472,
-        "max": 4347218046,
+        "median": 326045699,
+        "min": 323559242,
+        "max": 328497498,
         "runs": [
-          4347189768,
-          4347217418,
-          4347218046,
-          4347191395,
-          4347169472
+          323559242,
+          324168323,
+          326045699,
+          328497498,
+          326296153
         ]
       },
       "i_n2": {
-        "median": 17263415905,
-        "min": 17263372023,
-        "max": 17263491969,
+        "median": 667847967,
+        "min": 659389479,
+        "max": 676242750,
         "runs": [
-          17263491969,
-          17263372023,
-          17263415905,
-          17263424842,
-          17263411932
+          670547819,
+          667847967,
+          663494649,
+          659389479,
+          676242750
         ]
       },
-      "differential": 12916224510,
+      "differential": 341802268,
       "correct": true,
       "determinism": "jitter"
     },
     {
-      "language": "rust",
+      "language": "csharp",
       "benchmark": "vm",
-      "version": "1.88.0",
+      "version": "9.0",
+      "backend": "qemu-insn",
+      "metric": "instructions",
+      "kind": "inproc-vm",
+      "n1": 200000,
+      "n2": 800000,
+      "runs": 5,
+      "i_n1": {
+        "median": 312364772,
+        "min": 312361978,
+        "max": 312366299,
+        "runs": [
+          312362457,
+          312364772,
+          312361978,
+          312366299,
+          312366269
+        ]
+      },
+      "i_n2": {
+        "median": 612367051,
+        "min": 612365351,
+        "max": 612369313,
+        "runs": [
+          612366450,
+          612367051,
+          612368490,
+          612365351,
+          612369313
+        ]
+      },
+      "differential": 300002279,
+      "correct": true,
+      "determinism": "jitter"
+    },
+    {
+      "language": "elixir",
+      "benchmark": "vm",
+      "version": "1.18",
       "backend": "qemu-insn",
       "metric": "instructions",
       "kind": "native",
@@ -332,32 +370,32 @@
       "n2": 800000,
       "runs": 5,
       "i_n1": {
-        "median": 82962366,
-        "min": 82962366,
-        "max": 82962366,
+        "median": 2283916791,
+        "min": 2274456455,
+        "max": 2284659005,
         "runs": [
-          82962366,
-          82962366,
-          82962366,
-          82962366,
-          82962366
+          2283862403,
+          2283916791,
+          2284659005,
+          2274456455,
+          2283983295
         ]
       },
       "i_n2": {
-        "median": 331362366,
-        "min": 331362366,
-        "max": 331362366,
+        "median": 3038359024,
+        "min": 3037516756,
+        "max": 3040898627,
         "runs": [
-          331362366,
-          331362366,
-          331362366,
-          331362366,
-          331362366
+          3038359024,
+          3037516756,
+          3040898627,
+          3038353768,
+          3039760693
         ]
       },
-      "differential": 248400000,
+      "differential": 754442233,
       "correct": true,
-      "determinism": "exact"
+      "determinism": "jitter"
     },
     {
       "language": "scala",
@@ -398,44 +436,6 @@
       "determinism": "jitter"
     },
     {
-      "language": "swift",
-      "benchmark": "vm",
-      "version": "6.1",
-      "backend": "qemu-insn",
-      "metric": "instructions",
-      "kind": "native",
-      "n1": 200000,
-      "n2": 800000,
-      "runs": 5,
-      "i_n1": {
-        "median": 110129935,
-        "min": 110129935,
-        "max": 110129935,
-        "runs": [
-          110129935,
-          110129935,
-          110129935,
-          110129935,
-          110129935
-        ]
-      },
-      "i_n2": {
-        "median": 406529935,
-        "min": 406529935,
-        "max": 406529935,
-        "runs": [
-          406529935,
-          406529935,
-          406529935,
-          406529935,
-          406529935
-        ]
-      },
-      "differential": 296400000,
-      "correct": true,
-      "determinism": "exact"
-    },
-    {
       "language": "ruby",
       "benchmark": "vm",
       "version": "3.3",
@@ -470,6 +470,82 @@
         ]
       },
       "differential": 13918812282,
+      "correct": true,
+      "determinism": "jitter"
+    },
+    {
+      "language": "java",
+      "benchmark": "vm",
+      "version": "26",
+      "backend": "qemu-insn",
+      "metric": "instructions",
+      "kind": "inproc-vm",
+      "n1": 200000,
+      "n2": 800000,
+      "runs": 5,
+      "i_n1": {
+        "median": 286809152,
+        "min": 284245340,
+        "max": 289069467,
+        "runs": [
+          284360025,
+          289069467,
+          287767633,
+          284245340,
+          286809152
+        ]
+      },
+      "i_n2": {
+        "median": 608074648,
+        "min": 604132900,
+        "max": 619378464,
+        "runs": [
+          608986637,
+          608074648,
+          619378464,
+          604132900,
+          606358618
+        ]
+      },
+      "differential": 321265496,
+      "correct": true,
+      "determinism": "jitter"
+    },
+    {
+      "language": "javascript",
+      "benchmark": "vm",
+      "version": "26.5.0",
+      "backend": "qemu-insn",
+      "metric": "instructions",
+      "kind": "inproc-vm",
+      "n1": 200000,
+      "n2": 800000,
+      "runs": 5,
+      "i_n1": {
+        "median": 449432555,
+        "min": 449428006,
+        "max": 449450749,
+        "runs": [
+          449428006,
+          449432555,
+          449448872,
+          449450749,
+          449432539
+        ]
+      },
+      "i_n2": {
+        "median": 1404848721,
+        "min": 1404789486,
+        "max": 1404920229,
+        "runs": [
+          1404848721,
+          1404789486,
+          1404824804,
+          1404920229,
+          1404913036
+        ]
+      },
+      "differential": 955416166,
       "correct": true,
       "determinism": "jitter"
     }

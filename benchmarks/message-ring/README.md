@@ -201,7 +201,9 @@ the harness's adaptive RUNS logic and the checksum gate will behave normally.
 
 ## Results: uniform qemu+insn pass
 
-Perl does not participate (no cooperative primitive in core), so 11 languages are compared.
+Perl does not participate (no cooperative primitive in core), so 13 languages are compared
+(Java via virtual threads + `SynchronousQueue`, JavaScript via a single-slot Promise channel on
+the event loop).
 
 > **Read the wall-clock table first.** This benchmark reports two metrics that disagree sharply, and
 > the disagreement is the point. The **instruction count** (qemu+insn, reproducible) measures how
@@ -255,8 +257,10 @@ is the reference floor. Read this as user-space machinery weight, not speed. Raw
 | PHP | 50.7M | 97.4M | 46.8M | 7.88× | exact |
 | Go | 23.2M | 91.7M | 68.5M | 11.54× | jitter |
 | Ruby | 314.7M | 425.2M | 110.5M | 18.62× | jitter |
+| JavaScript | 181.8M | 339.7M | 157.9M | 26.60× | jitter |
 | Elixir | 2.03B | 2.20B | 177.1M | 29.83× | jitter |
 | C# | 388.5M | 597.9M | 209.4M | 35.28× | jitter |
+| Java | 1.20B | 1.49B | 289.1M | 48.70× | jitter |
 | Swift | 115.5M | 425.5M | 310.0M | 52.23× | jitter |
 | Scala | 1.34B | 1.67B | 327.3M | 55.15× | jitter |
 | Kotlin | 842.8M | 1.20B | 353.7M | 59.59× | jitter |

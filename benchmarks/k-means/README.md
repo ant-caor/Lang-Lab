@@ -111,7 +111,9 @@ All 12 printed the identical `70735446` / `52003413` checksums: same clusters, s
 | Go | 24.9M | 98.9M | 74.0M | 1.68× | jitter |
 | Swift | 48.0M | 158.0M | 110.0M | 2.49× | exact |
 | Scala | 771.8M | 943.2M | 171.4M | 3.89× | jitter |
+| Java | 236.3M | 464.9M | 228.6M | 5.18× | jitter |
 | Kotlin | 282.6M | 580.6M | 298.0M | 6.76× | jitter |
+| JavaScript | 350.3M | 772.6M | 422.3M | 9.58× | jitter |
 | Elixir | 2.71B | 4.43B | 1.72B | 39.07× | jitter |
 | PHP | 728.9M | 2.81B | 2.08B | 47.18× | exact |
 | Ruby | 1.62B | 5.64B | 4.02B | 91.12× | jitter |

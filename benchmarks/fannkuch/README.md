@@ -84,6 +84,8 @@ isolating the algorithm's real work. C (gcc `-O2`, no GC) is the reference floor
 | Scala | 683.2M | 909.7M | 226.5M | 2.73× | jitter |
 | Kotlin | 168.7M | 445.0M | 276.3M | 3.34× | jitter |
 | Swift | 15.1M | 298.7M | 283.7M | 3.42× | exact |
+| Java | 116.1M | 416.0M | 299.9M | 3.62× | jitter |
+| JavaScript | 145.1M | 533.3M | 388.2M | 4.69× | jitter |
 | Elixir | 2.04B | 4.50B | 2.46B | 29.71× | jitter |
 | PHP | 62.0M | 2.85B | 2.79B | 33.62× | exact |
 | Python | 100.8M | 5.86B | 5.76B | 69.57× | jitter |

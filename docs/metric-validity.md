@@ -57,10 +57,12 @@ median shift is 1.005 (no systematic bias). The tail is the story, and it is **t
 |---|--:|--:|---|
 | Rust | 1.11 | 1.20 | yes |
 | C# | 1.54\* | 1.31 | yes |
-| Go | 1.58 | 1.58 | yes |
+| Go | 1.64\* | 1.58\* | yes |
 | Swift | 2.03 | 2.22\* | yes |
 | **Scala** | **2.39** | **4.82** | **no (x2)** |
 | **Kotlin** | **2.53** | **4.66** | **no (x1.8)** |
+| Java | 2.92 | (pending first x86_64 run) | expected no (JVM) |
+| JavaScript | 5.09 | (pending first x86_64 run) | unknown |
 | Elixir | 22.3 | 23.1 | yes |
 | PHP | 32.2 | 27.4 | yes |
 | Ruby | 75.3 | 76.5\* | mostly |
@@ -74,8 +76,12 @@ byte-identical since the figure was first written, verified against `ce840b2`): 
 arithmetic slip. The original geomean was computed over 17 of the 18 axes, omitting k-nucleotide,
 C#'s single worst cell (9.73x vs C); that one omission accounts for the entire 1.38 -> 1.54 gap
 (ln(9.73)/18 ~= 0.126 of log-mass). **1.54 is the correct 18-axis figure** and needs no further
-check. Swift's and Ruby's x86_64 cells still predate their fixes and will refresh on the next
-successful x86_64 `benchmark` CI run, after which the ISA-stability column should be re-derived.
+check. Go's arm64 geomean reads 1.64 since 2026-07-17, when its GC was turned back on (previously
+the suite ran `GOGC=off`); its x86_64 cells, like Swift's and Ruby's, still predate that change
+and the fixes, and will refresh on the next successful x86_64 `benchmark` CI run, after which the
+ISA-stability column should be re-derived. Java and JavaScript (added 2026-07-17) have no x86_64
+cells yet; Java is expected to inherit the JVM's ISA-specificity, and V8's is unknown until
+measured.
 
 These arm64 geomeans are the **same quantity as the README leaderboard**: both are computed over
 the 18 compute axes, with message-ring excluded from the ranking (it is shown in the matrix as an

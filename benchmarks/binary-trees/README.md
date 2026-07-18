@@ -94,10 +94,12 @@ Uniform qemu+insn pass, **arm64**, median of 5, differential `I(14) − I(10)` n
 | Scala | 647.8M | 860.6M | 212.8M | **0.28×** | jitter |
 | Kotlin | 185.6M | 399.4M | 213.8M | **0.28×** | jitter |
 | Elixir | 1.98B | 2.21B | 227.3M | **0.30×** | jitter |
+| Java | 130.3M | 381.1M | 250.8M | **0.33×** | jitter |
 | C# | 220.7M | 565.4M | 344.7M | **0.45×** | jitter |
+| JavaScript | 141.4M | 579.4M | 438.0M | **0.57×** | jitter |
 | **C** | 33.7M | 800.4M | 766.7M | **1.00×** | exact |
-| Go | 36.9M | 871.3M | 834.4M | 1.09× | jitter |
 | Rust | 40.2M | 949.3M | 909.0M | 1.19× | exact |
+| Go | 36.9M | 1.32B | 1.28B | 1.67× | jitter |
 | Swift | 69.5M | 1.39B | 1.32B | 1.72× | exact |
 | PHP | 226.3M | 4.64B | 4.41B | 5.75× | exact |
 | Ruby | 625.7M | 8.55B | 7.93B | 10.34× | jitter |
@@ -106,14 +108,17 @@ Uniform qemu+insn pass, **arm64**, median of 5, differential `I(14) − I(10)` n
 
 ### The headline: managed runtimes *beat* C at allocation
 
-This is the inverse of fannkuch. On binary-trees the **JVM (Scala/Kotlin 0.28×), the BEAM
-(Elixir 0.30×), and the CLR (C# 0.45×) all do *less* marginal work than C**, because allocating
+This is the inverse of fannkuch. On binary-trees the **JVM (Scala/Kotlin 0.28×, Java 0.33×), the
+BEAM (Elixir 0.30×), the CLR (C# 0.45×), and V8 (JavaScript 0.57×) all do *less* marginal work
+than C**, because allocating
 a short-lived node is a **bump-pointer** in a generational/copying nursery, while C pays a full
 `malloc` *and* a `free` per node. The benchmark's fairness rules forbid arenas precisely so this
 shows: idiomatic manual memory management is genuinely expensive for high-churn allocation, and a
-good GC amortizes it. Go (1.09×) lands next to C; the two non-GC natives that still box every node,
-Rust (1.19×, a `Box` + drop per node) and Swift (1.72×, ARC retain/release), sit just above.
-The interpreters pay per-object overhead and blow up: PHP 5.75×, Python 11.15×, Perl 18.98×.
+good GC amortizes it. Go (1.67×, measured with its default GC on and collection work counted on
+the measured thread) pays for tracing its short-lived churn; the two non-GC natives that still box
+every node, Rust (1.19×, a `Box` + drop per node) and Swift (1.72×, ARC retain/release), sit in
+the same band. The interpreters pay per-object overhead and blow up: PHP 5.75×, Python 11.15×,
+Perl 18.98×.
 
 ### Elixir: huge *absolute* cost, cheap *marginal* cost
 
@@ -137,7 +142,9 @@ argument for a suite rather than one micro-benchmark:
 | Elixir | 29.71× | 0.30× | **~100× cheaper** |
 | C# | 1.61× | 0.45× | ~4× cheaper |
 | Rust | 1.14× | 1.19× | ~flat |
-| Go | 1.49× | 1.09× | ~flat |
+| Go | 1.49× | 1.67× | ~flat |
+| Java | 3.62× | 0.33× | **~11× cheaper** |
+| JavaScript | 4.69× | 0.57× | ~8× cheaper |
 | Swift | 3.42× | 1.72× | cheaper |
 | Python | 69.57× | 11.15× | cheaper |
 | Perl | 189.62× | 18.98× | cheaper |

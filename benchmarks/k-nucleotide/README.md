@@ -110,12 +110,14 @@ across 12 completely different hash-map implementations.
 |---|--:|--:|--:|--:|---|
 | **C** | 13.6M | 21.8M | 8.2M | **1.00×** | exact |
 | Rust | 37.4M | 59.9M | 22.5M | 2.73× | jitter |
-| Go | 64.2M | 104.9M | 40.6M | 4.93× | jitter |
+| Go | 74.4M | 114.1M | 39.7M | 4.82× | jitter |
 | Swift | 112.3M | 192.0M | 79.6M | 9.67× | jitter |
 | C# | 292.4M | 372.5M | 80.1M | 9.73× | jitter |
 | Kotlin | 503.4M | 585.5M | 82.2M | 9.98× | jitter |
 | Scala | 1.01B | 1.09B | 86.7M | 10.53× | jitter |
 | PHP | 318.6M | 450.6M | 131.9M | 16.02× | exact |
+| Java | 537.4M | 681.5M | 144.1M | 17.50× | jitter |
+| JavaScript | 406.1M | 559.5M | 153.4M | 18.63× | jitter |
 | Perl | 881.3M | 1.18B | 299.7M | 36.40× | jitter |
 | Elixir | 2.41B | 2.74B | 326.4M | 39.64× | jitter |
 | Python | 709.7M | 1.12B | 410.1M | 49.80× | jitter |

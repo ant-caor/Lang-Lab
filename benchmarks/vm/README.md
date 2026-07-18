@@ -90,10 +90,12 @@ All 12 ran the same program and printed the identical `350689618` / `234207083` 
 | Rust | 83.0M | 331.4M | 248.4M | 1.51× | exact |
 | Swift | 110.1M | 406.5M | 296.4M | 1.80× | exact |
 | C# | 312.4M | 612.4M | 300.0M | 1.82× | jitter |
+| Java | 286.8M | 608.1M | 321.3M | 1.95× | jitter |
 | Go | 109.3M | 436.3M | 327.0M | 1.99× | jitter |
 | Kotlin | 326.0M | 667.8M | 341.8M | 2.08× | jitter |
 | Scala | 810.0M | 1.16B | 345.5M | 2.10× | jitter |
 | Elixir | 2.28B | 3.04B | 754.4M | 4.59× | jitter |
+| JavaScript | 449.4M | 1.40B | 955.4M | 5.81× | jitter |
 | PHP | 2.16B | 8.53B | 6.37B | 38.76× | exact |
 | Python | 4.35B | 17.3B | 12.9B | 78.57× | jitter |
 | Ruby | 4.92B | 18.8B | 13.9B | 84.66× | jitter |

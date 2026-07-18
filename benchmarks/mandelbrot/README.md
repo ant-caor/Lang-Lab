@@ -113,6 +113,8 @@ every toolchain.
 | C# | 212.1M | 228.7M | 16.6M | 1.19× | jitter |
 | Kotlin | 193.5M | 211.4M | 17.8M | 1.28× | jitter |
 | Go | 6.2M | 24.2M | 17.9M | 1.29× | jitter |
+| JavaScript | 146.0M | 180.2M | 34.2M | 2.45× | jitter |
+| Java | 141.5M | 183.1M | 41.7M | 2.99× | jitter |
 | Elixir | 2.05B | 2.31B | 261.2M | 18.76× | jitter |
 | PHP | 192.8M | 667.4M | 474.6M | 34.10× | exact |
 | Ruby | 825.5M | 2.46B | 1.63B | 117.20× | jitter |

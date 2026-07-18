@@ -115,9 +115,11 @@ order.
 | C# | 226.4M | 258.4M | 32.1M | 1.94× | jitter |
 | Rust | 11.8M | 48.5M | 36.8M | 2.22× | exact |
 | Swift | 22.7M | 60.7M | 38.0M | 2.29× | exact |
-| Go | 14.4M | 59.4M | 45.0M | 2.72× | jitter |
+| Go | 14.4M | 70.8M | 56.5M | 3.41× | jitter |
 | Kotlin | 269.5M | 351.5M | 82.0M | 4.95× | jitter |
+| Java | 183.2M | 269.5M | 86.3M | 5.21× | jitter |
 | Scala | 733.1M | 826.9M | 93.8M | 5.66× | jitter |
+| JavaScript | 302.1M | 590.1M | 288.0M | 17.38× | jitter |
 | PHP | 216.3M | 821.7M | 605.4M | 36.54× | exact |
 | Elixir | 2.37B | 3.31B | 935.6M | 56.47× | jitter |
 | Ruby | 690.0M | 1.97B | 1.28B | 77.28× | jitter |

@@ -134,6 +134,8 @@ work. C (gcc `-O2`, no GC) is the reference floor; below 1.0x beats C.
 | Swift | 44.1M | 142.3M | 98.3M | 1.98× | exact |
 | Kotlin | 246.3M | 358.2M | 111.9M | 2.26× | jitter |
 | Scala | 721.1M | 835.4M | 114.3M | 2.30× | jitter |
+| Java | 231.3M | 348.6M | 117.3M | 2.36× | jitter |
+| JavaScript | 284.0M | 562.3M | 278.3M | 5.61× | jitter |
 | PHP | 581.3M | 2.22B | 1.64B | 33.03× | exact |
 | Elixir | 2.72B | 4.47B | 1.74B | 35.16× | jitter |
 | Ruby | 1.47B | 5.04B | 3.57B | 71.98× | jitter |
