@@ -19,64 +19,64 @@
 <text x="670.0" y="448.0" text-anchor="middle" font-size="13" fill="#9aa7b4">4 cores</text>
 <polyline points="64.0,355.2 367.0,286.4 670.0,148.8" fill="none" stroke="#9aa7b4" stroke-width="1.5" stroke-dasharray="5 4"/>
 <text x="678.0" y="152.8" font-size="12" fill="#9aa7b4">ideal</text>
-<polyline points="64.0,355.2 367.0,279.6 670.0,200.1" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
+<polyline points="64.0,355.2 367.0,284.2 670.0,225.0" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
 <circle cx="64.0" cy="355.2" r="3" fill="#a371f7"/>
-<circle cx="367.0" cy="279.6" r="3" fill="#a371f7"/>
-<circle cx="670.0" cy="200.1" r="3" fill="#a371f7"/>
-<text x="678" y="204.1" font-size="12.5" fill="#a371f7">Elixir 3.25×</text>
-<polyline points="64.0,355.2 367.0,288.7 670.0,241.4" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
+<circle cx="367.0" cy="284.2" r="3" fill="#a371f7"/>
+<circle cx="670.0" cy="225.0" r="3" fill="#a371f7"/>
+<text x="678" y="229.0" font-size="12.5" fill="#a371f7">Elixir 2.89×</text>
+<polyline points="64.0,355.2 367.0,288.5 670.0,232.7" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
 <circle cx="64.0" cy="355.2" r="3" fill="#f0883e"/>
-<circle cx="367.0" cy="288.7" r="3" fill="#f0883e"/>
-<circle cx="670.0" cy="241.4" r="3" fill="#f0883e"/>
-<text x="678" y="245.4" font-size="12.5" fill="#f0883e">Ruby 2.65×</text>
-<polyline points="64.0,355.2 367.0,290.5 670.0,249.0" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
+<circle cx="367.0" cy="288.5" r="3" fill="#f0883e"/>
+<circle cx="670.0" cy="232.7" r="3" fill="#f0883e"/>
+<text x="678" y="245.0" font-size="12.5" fill="#f0883e">Ruby 2.78×</text>
+<polyline points="64.0,355.2 367.0,290.1 670.0,251.0" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
 <circle cx="64.0" cy="355.2" r="3" fill="#f0883e"/>
-<circle cx="367.0" cy="290.5" r="3" fill="#f0883e"/>
-<circle cx="670.0" cy="249.0" r="3" fill="#f0883e"/>
-<text x="678" y="261.4" font-size="12.5" fill="#f0883e">Python 2.54×</text>
-<polyline points="64.0,355.2 367.0,286.7 670.0,257.2" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
-<circle cx="64.0" cy="355.2" r="3" fill="#3fb950"/>
-<circle cx="367.0" cy="286.7" r="3" fill="#3fb950"/>
-<circle cx="670.0" cy="257.2" r="3" fill="#3fb950"/>
-<text x="678" y="277.4" font-size="12.5" fill="#3fb950">C 2.42×</text>
-<polyline points="64.0,355.2 367.0,287.0 670.0,273.5" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
+<circle cx="367.0" cy="290.1" r="3" fill="#f0883e"/>
+<circle cx="670.0" cy="251.0" r="3" fill="#f0883e"/>
+<text x="678" y="261.0" font-size="12.5" fill="#f0883e">Python 2.52×</text>
+<polyline points="64.0,355.2 367.0,286.8 670.0,273.5" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
 <circle cx="64.0" cy="355.2" r="3" fill="#a371f7"/>
-<circle cx="367.0" cy="287.0" r="3" fill="#a371f7"/>
+<circle cx="367.0" cy="286.8" r="3" fill="#a371f7"/>
 <circle cx="670.0" cy="273.5" r="3" fill="#a371f7"/>
-<text x="678" y="293.4" font-size="12.5" fill="#a371f7">C# 2.19×</text>
-<polyline points="64.0,355.2 367.0,286.7 670.0,283.7" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
+<text x="678" y="277.5" font-size="12.5" fill="#a371f7">C# 2.19×</text>
+<polyline points="64.0,355.2 367.0,298.4 670.0,273.7" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#3fb950"/>
+<circle cx="367.0" cy="298.4" r="3" fill="#3fb950"/>
+<circle cx="670.0" cy="273.7" r="3" fill="#3fb950"/>
+<text x="678" y="293.5" font-size="12.5" fill="#3fb950">C 2.18×</text>
+<polyline points="64.0,355.2 367.0,292.0 670.0,282.6" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#f0883e"/>
+<circle cx="367.0" cy="292.0" r="3" fill="#f0883e"/>
+<circle cx="670.0" cy="282.6" r="3" fill="#f0883e"/>
+<text x="678" y="309.5" font-size="12.5" fill="#f0883e">PHP 2.06×</text>
+<polyline points="64.0,355.2 367.0,286.7 670.0,284.4" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
 <circle cx="64.0" cy="355.2" r="3" fill="#3fb950"/>
 <circle cx="367.0" cy="286.7" r="3" fill="#3fb950"/>
-<circle cx="670.0" cy="283.7" r="3" fill="#3fb950"/>
-<text x="678" y="309.4" font-size="12.5" fill="#3fb950">Swift 2.04×</text>
-<polyline points="64.0,355.2 367.0,296.3 670.0,286.2" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
-<circle cx="64.0" cy="355.2" r="3" fill="#f0883e"/>
-<circle cx="367.0" cy="296.3" r="3" fill="#f0883e"/>
-<circle cx="670.0" cy="286.2" r="3" fill="#f0883e"/>
-<text x="678" y="325.4" font-size="12.5" fill="#f0883e">PHP 2.00×</text>
-<polyline points="64.0,355.2 367.0,287.6 670.0,286.6" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
+<circle cx="670.0" cy="284.4" r="3" fill="#3fb950"/>
+<text x="678" y="325.5" font-size="12.5" fill="#3fb950">Rust 2.03×</text>
+<polyline points="64.0,355.2 367.0,286.9 670.0,285.8" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
 <circle cx="64.0" cy="355.2" r="3" fill="#3fb950"/>
-<circle cx="367.0" cy="287.6" r="3" fill="#3fb950"/>
-<circle cx="670.0" cy="286.6" r="3" fill="#3fb950"/>
-<text x="678" y="341.4" font-size="12.5" fill="#3fb950">Rust 2.00×</text>
-<polyline points="64.0,355.2 367.0,287.1 670.0,287.3" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
+<circle cx="367.0" cy="286.9" r="3" fill="#3fb950"/>
+<circle cx="670.0" cy="285.8" r="3" fill="#3fb950"/>
+<text x="678" y="341.5" font-size="12.5" fill="#3fb950">Swift 2.01×</text>
+<polyline points="64.0,355.2 367.0,286.9 670.0,287.0" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
+<circle cx="64.0" cy="355.2" r="3" fill="#3fb950"/>
+<circle cx="367.0" cy="286.9" r="3" fill="#3fb950"/>
+<circle cx="670.0" cy="287.0" r="3" fill="#3fb950"/>
+<text x="678" y="357.5" font-size="12.5" fill="#3fb950">Go 1.99×</text>
+<polyline points="64.0,355.2 367.0,287.1 670.0,287.5" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
 <circle cx="64.0" cy="355.2" r="3" fill="#a371f7"/>
 <circle cx="367.0" cy="287.1" r="3" fill="#a371f7"/>
-<circle cx="670.0" cy="287.3" r="3" fill="#a371f7"/>
-<text x="678" y="357.4" font-size="12.5" fill="#a371f7">Kotlin 1.99×</text>
-<polyline points="64.0,355.2 367.0,287.2 670.0,287.4" fill="none" stroke="#3fb950" stroke-width="2.5" opacity="0.92"/>
-<circle cx="64.0" cy="355.2" r="3" fill="#3fb950"/>
-<circle cx="367.0" cy="287.2" r="3" fill="#3fb950"/>
-<circle cx="670.0" cy="287.4" r="3" fill="#3fb950"/>
-<text x="678" y="373.4" font-size="12.5" fill="#3fb950">Go 1.99×</text>
-<polyline points="64.0,355.2 367.0,290.9 670.0,297.3" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
+<circle cx="670.0" cy="287.5" r="3" fill="#a371f7"/>
+<text x="678" y="373.5" font-size="12.5" fill="#a371f7">Kotlin 1.98×</text>
+<polyline points="64.0,355.2 367.0,286.7 670.0,296.0" fill="none" stroke="#a371f7" stroke-width="2.5" opacity="0.92"/>
 <circle cx="64.0" cy="355.2" r="3" fill="#a371f7"/>
-<circle cx="367.0" cy="290.9" r="3" fill="#a371f7"/>
-<circle cx="670.0" cy="297.3" r="3" fill="#a371f7"/>
-<text x="678" y="389.4" font-size="12.5" fill="#a371f7">Scala 1.84×</text>
-<polyline points="64.0,355.2 367.0,325.1 670.0,300.0" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
+<circle cx="367.0" cy="286.7" r="3" fill="#a371f7"/>
+<circle cx="670.0" cy="296.0" r="3" fill="#a371f7"/>
+<text x="678" y="389.5" font-size="12.5" fill="#a371f7">Scala 1.86×</text>
+<polyline points="64.0,355.2 367.0,325.5 670.0,300.5" fill="none" stroke="#f0883e" stroke-width="2.5" opacity="0.92"/>
 <circle cx="64.0" cy="355.2" r="3" fill="#f0883e"/>
-<circle cx="367.0" cy="325.1" r="3" fill="#f0883e"/>
-<circle cx="670.0" cy="300.0" r="3" fill="#f0883e"/>
-<text x="678" y="405.4" font-size="12.5" fill="#f0883e">Perl 1.80×</text>
+<circle cx="367.0" cy="325.5" r="3" fill="#f0883e"/>
+<circle cx="670.0" cy="300.5" r="3" fill="#f0883e"/>
+<text x="678" y="405.5" font-size="12.5" fill="#f0883e">Perl 1.79×</text>
 </svg>
